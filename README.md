@@ -32,7 +32,7 @@ SOLVE    Problems. Numerical answers, strategy identification, proof writing.
 
 ## Walkthrough
 
-<video src="https://github.com/user-attachments/assets/lemma-walkthrough.mp4" controls width="100%"></video>
+<video src="https://github.com/michaelmillar/lemma/raw/main/assets/demo.mp4" controls width="100%"></video>
 
 Generate the video locally:
 
