@@ -1,8 +1,13 @@
-use crate::problem::{NumericalProblem, ProofProblem, RubricItem, StrategyIdProblem};
+use crate::problem::{NumericalProblem, ProofProblem, RubricItem, StrategyIdProblem, Work};
 
 pub struct GradeResult {
     pub score: u32,
     pub max_score: u32,
+    pub feedback: String,
+}
+
+pub struct WorkGradeResult {
+    pub correct: bool,
     pub feedback: String,
 }
 
@@ -60,4 +65,39 @@ fn build_proof_feedback(rubric: &[RubricItem], checked: &[bool]) -> String {
         lines.push(format!("[{}] {} ({} pts)", mark, item.criterion, item.weight));
     }
     lines.join("\n")
+}
+
+pub fn grade_comprehension(
+    problem: &ProofProblem,
+    answers: &[bool],
+) -> Vec<ComprehensionResult> {
+    problem
+        .comprehension
+        .iter()
+        .zip(answers.iter())
+        .map(|(q, &user_answer)| ComprehensionResult {
+            correct: user_answer == q.answer,
+            explanation: q.explanation.clone(),
+        })
+        .collect()
+}
+
+pub struct ComprehensionResult {
+    pub correct: bool,
+    pub explanation: String,
+}
+
+pub fn grade_work(work: &Work, user_answer: f64) -> WorkGradeResult {
+    let correct = (user_answer - work.guided_answer).abs() <= work.guided_tolerance;
+    WorkGradeResult {
+        correct,
+        feedback: if correct {
+            "Correct! You applied the method successfully.".to_string()
+        } else {
+            format!(
+                "Not quite. The answer is {:.4}. Review the worked example above and try to spot where your approach diverged.",
+                work.guided_answer
+            )
+        },
+    }
 }

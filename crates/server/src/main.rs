@@ -50,6 +50,8 @@ async fn main() -> Result<()> {
         .route("/api/submit/numerical", post(submit_numerical))
         .route("/api/submit/strategy", post(submit_strategy))
         .route("/api/submit/proof", post(submit_proof))
+        .route("/api/submit/comprehension", post(submit_comprehension))
+        .route("/api/submit/work", post(submit_work))
         .route("/api/advance-phase", post(advance_phase))
         .route("/api/hint", post(get_hint))
         .route("/api/assess/{id}", get(assess_problem))
@@ -140,7 +142,14 @@ struct ProblemDetail {
     concept_tags: Vec<String>,
     spark: SparkJson,
     ground: GroundJson,
+    work: Option<WorkJson>,
     sub_problems: Vec<SubProblemJson>,
+}
+
+#[derive(Serialize)]
+struct WorkJson {
+    worked_example: String,
+    guided_prompt: String,
 }
 
 #[derive(Serialize)]
@@ -181,12 +190,19 @@ struct SubProblemJson {
     hint_count: usize,
     choices: Vec<String>,
     rubric: Vec<RubricItemJson>,
+    exemplar: Option<String>,
+    comprehension: Vec<ComprehensionJson>,
 }
 
 #[derive(Serialize)]
 struct RubricItemJson {
     criterion: String,
     weight: u32,
+}
+
+#[derive(Serialize)]
+struct ComprehensionJson {
+    question: String,
 }
 
 fn problem_to_detail(p: &Problem) -> ProblemDetail {
@@ -226,18 +242,24 @@ fn problem_to_detail(p: &Problem) -> ProblemDetail {
                 .collect(),
             field_tags: p.ground.field_tags.clone(),
         },
+        work: p.work.as_ref().map(|w| WorkJson {
+            worked_example: w.worked_example.clone(),
+            guided_prompt: w.guided_prompt.clone(),
+        }),
         sub_problems: p
             .solve
             .sub_problems
             .iter()
             .enumerate()
             .map(|(i, sp)| {
-                let (kind, choices, rubric, hint_count) = match sp {
+                let (kind, choices, rubric, hint_count, exemplar, comprehension) = match sp {
                     SubProblem::Numerical(n) => (
                         "numerical".to_string(),
                         vec![],
                         vec![],
                         n.hints.len(),
+                        None,
+                        vec![],
                     ),
                     SubProblem::StrategyId(s) => {
                         let mut opts = s.distractors.clone();
@@ -248,6 +270,8 @@ fn problem_to_detail(p: &Problem) -> ProblemDetail {
                             opts,
                             vec![],
                             0,
+                            None,
+                            vec![],
                         )
                     }
                     SubProblem::Proof(pr) => (
@@ -261,6 +285,13 @@ fn problem_to_detail(p: &Problem) -> ProblemDetail {
                             })
                             .collect(),
                         pr.hints.len(),
+                        pr.exemplar.clone(),
+                        pr.comprehension
+                            .iter()
+                            .map(|q| ComprehensionJson {
+                                question: q.question.clone(),
+                            })
+                            .collect(),
                     ),
                 };
                 SubProblemJson {
@@ -271,6 +302,8 @@ fn problem_to_detail(p: &Problem) -> ProblemDetail {
                     hint_count,
                     choices,
                     rubric,
+                    exemplar,
+                    comprehension,
                 }
             })
             .collect(),
@@ -478,6 +511,80 @@ async fn submit_proof(
         max_score: result.max_score,
         feedback: result.feedback,
         solution_sketch: proof.solution_sketch.clone(),
+    }))
+}
+
+#[derive(Deserialize)]
+struct WorkSubmission {
+    problem_id: String,
+    answer: f64,
+}
+
+#[derive(Serialize)]
+struct WorkGradeResponse {
+    correct: bool,
+    feedback: String,
+}
+
+async fn submit_work(
+    State(state): State<Arc<AppState>>,
+    Json(req): Json<WorkSubmission>,
+) -> Result<Json<WorkGradeResponse>, StatusCode> {
+    let problem = state.content.get(&req.problem_id).ok_or(StatusCode::NOT_FOUND)?;
+    let work = problem.work.as_ref().ok_or(StatusCode::BAD_REQUEST)?;
+    let result = grading::grade_work(work, req.answer);
+    Ok(Json(WorkGradeResponse {
+        correct: result.correct,
+        feedback: result.feedback,
+    }))
+}
+
+#[derive(Deserialize)]
+struct ComprehensionSubmission {
+    problem_id: String,
+    sub_problem: usize,
+    answers: Vec<bool>,
+}
+
+#[derive(Serialize)]
+struct ComprehensionResponse {
+    results: Vec<ComprehensionResultJson>,
+    all_correct: bool,
+}
+
+#[derive(Serialize)]
+struct ComprehensionResultJson {
+    correct: bool,
+    explanation: String,
+}
+
+async fn submit_comprehension(
+    State(state): State<Arc<AppState>>,
+    Json(req): Json<ComprehensionSubmission>,
+) -> Result<Json<ComprehensionResponse>, StatusCode> {
+    let problem = state.content.get(&req.problem_id).ok_or(StatusCode::NOT_FOUND)?;
+    let sp = problem
+        .solve
+        .sub_problems
+        .get(req.sub_problem)
+        .ok_or(StatusCode::BAD_REQUEST)?;
+
+    let SubProblem::Proof(proof) = sp else {
+        return Err(StatusCode::BAD_REQUEST);
+    };
+
+    let results = grading::grade_comprehension(proof, &req.answers);
+    let all_correct = results.iter().all(|r| r.correct);
+
+    Ok(Json(ComprehensionResponse {
+        results: results
+            .into_iter()
+            .map(|r| ComprehensionResultJson {
+                correct: r.correct,
+                explanation: r.explanation,
+            })
+            .collect(),
+        all_correct,
     }))
 }
 

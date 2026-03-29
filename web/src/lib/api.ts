@@ -24,6 +24,10 @@ export type RubricItem = {
   weight: number;
 };
 
+export type ComprehensionQuestion = {
+  question: string;
+};
+
 export type SubProblem = {
   index: number;
   kind: "numerical" | "strategy_id" | "proof";
@@ -32,6 +36,13 @@ export type SubProblem = {
   hint_count: number;
   choices: string[];
   rubric: RubricItem[];
+  exemplar: string | null;
+  comprehension: ComprehensionQuestion[];
+};
+
+export type WorkSection = {
+  worked_example: string;
+  guided_prompt: string;
 };
 
 export type ProblemDetail = {
@@ -53,6 +64,7 @@ export type ProblemDetail = {
     connections: Connection[];
     field_tags: string[];
   };
+  work: WorkSection | null;
   sub_problems: SubProblem[];
 };
 
@@ -142,6 +154,21 @@ export async function submitProof(
   });
 }
 
+export type WorkGradeResponse = {
+  correct: boolean;
+  feedback: string;
+};
+
+export type ComprehensionResult = {
+  correct: boolean;
+  explanation: string;
+};
+
+export type ComprehensionResponse = {
+  results: ComprehensionResult[];
+  all_correct: boolean;
+};
+
 export type HintResponse = {
   text: string;
   cost: number;
@@ -176,6 +203,33 @@ export async function revealHint(
       problem_id: problemId,
       sub_problem: subProblem,
       hint_index: hintIndex,
+    }),
+  });
+}
+
+export async function submitWork(
+  problemId: string,
+  answer: number,
+): Promise<WorkGradeResponse> {
+  return fetchJson("/api/submit/work", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ problem_id: problemId, answer }),
+  });
+}
+
+export async function submitComprehension(
+  problemId: string,
+  subProblem: number,
+  answers: boolean[],
+): Promise<ComprehensionResponse> {
+  return fetchJson("/api/submit/comprehension", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      problem_id: problemId,
+      sub_problem: subProblem,
+      answers,
     }),
   });
 }

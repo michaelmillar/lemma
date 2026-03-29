@@ -15,103 +15,101 @@ FPS = 1
 APP_URL = "http://localhost:3003"
 
 PURPLE = (124, 58, 237)
-PURPLE_LIGHT = (139, 92, 246)
 DARK_BG = (15, 15, 20)
 TEXT_LIGHT = (226, 232, 240)
-GREEN = (34, 134, 58)
 
 SCENES = [
     {
         "title": "Lemma",
         "subtitle": (
-            "Learn mathematics through real-world problems\n"
-            "Applied first. Rigorous always."
+            "The maths behind the systems you build\n"
+            "For engineers and practitioners"
         ),
         "is_title_card": True,
+        "duration": 4,
+    },
+    {
+        "annotation": (
+            "52 problems across probability, linear algebra, calculus,\n"
+            "and discrete maths. Filter by track."
+        ),
+        "action": "problem_list",
         "duration": 6,
     },
     {
         "annotation": (
-            "Browse 52 problems across four tracks.\n"
-            "Filter by track. Progress bar shows completion."
+            "SPARK: every problem starts from a real system.\n"
+            "Spam filters, gradient descent, PageRank."
         ),
-        "action": "problem_list",
+        "action": "open_bayes",
         "duration": 8,
     },
     {
         "annotation": (
-            "Every problem starts with a Spark: a real-world scenario\n"
-            "that motivates the mathematics. Applied first."
-        ),
-        "action": "open_bayes",
-        "duration": 10,
-    },
-    {
-        "annotation": (
-            "The Ground phase teaches the concept.\n"
-            "Definitions, intuition, and connections to other areas."
+            "GROUND: the concept, compact.\n"
+            "Definitions, intuition, one key connection."
         ),
         "action": "go_ground",
-        "duration": 10,
+        "duration": 8,
     },
     {
         "annotation": (
-            "Solve phase: numerical problems are auto-graded.\n"
+            "WORK: faded worked examples.\n"
+            "Watch one solved, then complete a guided exercise."
+        ),
+        "action": "go_work",
+        "duration": 8,
+    },
+    {
+        "annotation": (
+            "SOLVE: numerical problems are auto-graded.\n"
             "Type your answer and get instant feedback."
         ),
         "action": "go_solve_numerical",
-        "duration": 10,
-    },
-    {
-        "annotation": (
-            "Strategy identification: which Zeitz/Polya tactic applies?\n"
-            "Builds meta-cognitive problem-solving skills."
-        ),
-        "action": "go_solve_strategy",
-        "duration": 10,
-    },
-    {
-        "annotation": (
-            "Proof problems use self-assessment rubrics.\n"
-            "Check which criteria you met, then see the solution sketch."
-        ),
-        "action": "go_solve_proof",
-        "duration": 10,
-    },
-    {
-        "annotation": (
-            "Review screen shows five-axis assessment.\n"
-            "Mastery level from Novice to Expert."
-        ),
-        "action": "go_review",
-        "duration": 10,
-    },
-    {
-        "annotation": (
-            "Switch tracks. Linear Algebra problems are connected\n"
-            "to ML, graphics, and recommendation engines."
-        ),
-        "action": "switch_to_la",
         "duration": 8,
     },
     {
         "annotation": (
-            "All 8 tests pass. Content validation ensures every concept\n"
-            "and strategy reference resolves correctly."
+            "Strategy identification: which Polya/Zeitz tactic applies?\n"
+            "21 named strategies as first-class content."
         ),
-        "is_terminal": True,
-        "duration": 10,
+        "action": "go_solve_strategy",
+        "duration": 8,
+    },
+    {
+        "annotation": (
+            "Proof assessment: structure checklist, comprehension\n"
+            "questions, then compare against an exemplar proof."
+        ),
+        "action": "go_solve_proof",
+        "duration": 8,
+    },
+    {
+        "annotation": (
+            "Five-axis review: conceptual understanding, strategy,\n"
+            "execution, proof quality, application awareness."
+        ),
+        "action": "go_review",
+        "duration": 8,
+    },
+    {
+        "annotation": (
+            "Switch tracks. Linear algebra problems are connected\n"
+            "to ML, graphics, and recommendation engines."
+        ),
+        "action": "switch_to_la",
+        "duration": 6,
     },
     {
         "title": "Lemma",
         "subtitle": (
-            "4 tracks: Probability, Linear Algebra, Calculus, Discrete Maths\n"
-            "52 problems from Foundation to Research tier\n"
-            "Hybrid grading: auto-check, strategy ID, self-assessed proofs\n"
-            "Rust + Svelte. Part of the studying ecosystem."
+            "4 tracks / 52 problems / Foundation to Research tier\n"
+            "Four-phase loop: Spark, Ground, Work, Solve\n"
+            "Structured proof assessment / 21 named strategies / FSRS\n"
+            "github.com/michaelmillar/lemma"
         ),
         "is_title_card": True,
-        "duration": 10,
+        "duration": 8,
     },
 ]
 
@@ -168,43 +166,6 @@ def create_title_card(title: str, subtitle: str, frame_path: Path) -> None:
 
     img.save(frame_path)
 
-
-def create_terminal_frame(frame_path: Path) -> None:
-    img = Image.new("RGB", (WIDTH, HEIGHT), color=DARK_BG)
-    draw = ImageDraw.Draw(img)
-    font = get_font(24)
-    font_small = get_font_regular(20)
-
-    lines = [
-        ("$ cargo test --workspace", PURPLE_LIGHT),
-        ("", (255, 255, 255)),
-        ("running 7 tests", TEXT_LIGHT),
-        ("test tests::all_strategy_refs_valid ... ok", GREEN),
-        ("test tests::alias_lookup_resolves ... ok", GREEN),
-        ("test tests::all_concept_refs_valid ... ok", GREEN),
-        ("test tests::all_prerequisites_valid ... ok", GREEN),
-        ("test tests::content_loads_successfully ... ok", GREEN),
-        ("test tests::tracks_discovered ... ok", GREEN),
-        ("test tests::problems_ordered_within_track ... ok", GREEN),
-        ("", (255, 255, 255)),
-        ("test result: ok. 7 passed; 0 failed", GREEN),
-        ("", (255, 255, 255)),
-        ("running 1 test", TEXT_LIGHT),
-        ("test store::tests::store_round_trip ... ok", GREEN),
-        ("", (255, 255, 255)),
-        ("test result: ok. 1 passed; 0 failed", GREEN),
-        ("", (255, 255, 255)),
-        ("$ cargo clippy --workspace", PURPLE_LIGHT),
-        ("    Finished `dev` profile [unoptimized + debuginfo]", TEXT_LIGHT),
-        ("    0 warnings", GREEN),
-    ]
-
-    y = 60
-    for text, color in lines:
-        draw.text((80, y), text, fill=color, font=font_small)
-        y += 30
-
-    img.save(frame_path)
 
 
 def add_annotation(screenshot_path: Path, annotation: str, output_path: Path) -> None:
@@ -276,28 +237,35 @@ def run_demo() -> None:
                     frame_num += 1
                 continue
 
-            if scene.get("is_terminal"):
-                for _ in range(scene["duration"] * FPS):
-                    frame_path = FRAMES_DIR / f"frame_{frame_num:04d}.png"
-                    create_terminal_frame(frame_path)
-                    if scene.get("annotation"):
-                        add_annotation(frame_path, scene["annotation"], frame_path)
-                    frame_num += 1
-                continue
-
             action = scene.get("action", "screenshot")
 
             if action == "problem_list":
                 page.goto(APP_URL, wait_until="networkidle", timeout=15000)
-                time.sleep(2)
+                time.sleep(1)
+                pills = page.query_selector_all("button.track-pill")
+                for pill in pills:
+                    text = pill.text_content() or ""
+                    if "probability" in text.lower():
+                        pill.click()
+                        time.sleep(1)
+                        break
 
             elif action == "open_bayes":
                 cards = page.query_selector_all("button.problem-card")
-                if len(cards) > 1:
-                    cards[1].click()
-                    time.sleep(2)
+                for card in cards:
+                    h3 = card.query_selector("h3")
+                    if h3 and "Bayes" in (h3.text_content() or ""):
+                        card.click()
+                        break
+                time.sleep(2)
 
             elif action == "go_ground":
+                btn = page.query_selector("button.primary")
+                if btn:
+                    btn.click()
+                    time.sleep(2)
+
+            elif action == "go_work":
                 btn = page.query_selector("button.primary")
                 if btn:
                     btn.click()
@@ -310,45 +278,85 @@ def run_demo() -> None:
                     time.sleep(1)
                 inp = page.query_selector('input[type="text"]')
                 if inp:
-                    inp.fill("0.6667")
+                    inp.fill("0.4375")
+                    time.sleep(0.5)
+                submit = page.query_selector("button.primary")
+                if submit:
+                    submit.click()
+                    time.sleep(1)
+                cont = page.query_selector("button.primary")
+                if cont:
+                    cont.click()
+                    time.sleep(1)
+                inp2 = page.query_selector('input[type="text"]')
+                if inp2:
+                    inp2.fill("0.6667")
+                    time.sleep(0.5)
+                sub1 = page.query_selector("button.primary")
+                if sub1:
+                    sub1.click()
                     time.sleep(1)
 
             elif action == "go_solve_strategy":
-                submit = page.query_selector("button.primary")
-                if submit:
-                    submit.click()
+                next1 = page.query_selector("button.primary")
+                if next1:
+                    next1.click()
                     time.sleep(1)
-                next_btn = page.query_selector("button.primary")
-                if next_btn:
-                    next_btn.click()
+                inp3 = page.query_selector('input[type="text"]')
+                if inp3:
+                    inp3.fill("0.0194")
+                    time.sleep(0.5)
+                    sub2 = page.query_selector("button.primary")
+                    if sub2:
+                        sub2.click()
+                        time.sleep(1)
+                next2 = page.query_selector("button.primary")
+                if next2:
+                    next2.click()
                     time.sleep(1)
-                next_btn2 = page.query_selector("button.primary")
-                if next_btn2:
-                    next_btn2.click()
-                    time.sleep(1)
+                page.wait_for_selector("label.choice", timeout=5000)
                 labels = page.query_selector_all("label.choice")
-                if labels:
-                    labels[0].click()
-                    time.sleep(1)
+                for label in labels:
+                    text = label.text_content() or ""
+                    if "pigeonhole" in text:
+                        label.click()
+                        break
+                time.sleep(1)
 
             elif action == "go_solve_proof":
-                submit = page.query_selector("button.primary")
-                if submit:
-                    submit.click()
+                sub_btn = page.query_selector("button.primary")
+                if sub_btn:
+                    sub_btn.click()
                     time.sleep(1)
                 next_btn = page.query_selector("button.primary")
                 if next_btn:
                     next_btn.click()
                     time.sleep(1)
                 checkboxes = page.query_selector_all('input[type="checkbox"]')
-                for cb in checkboxes[:3]:
+                for cb in checkboxes:
                     cb.check()
                     time.sleep(0.3)
 
             elif action == "go_review":
-                submit = page.query_selector("button.primary")
-                if submit:
-                    submit.click()
+                proof_btn = page.query_selector("button.primary")
+                if proof_btn:
+                    proof_btn.click()
+                    time.sleep(1)
+                comp_radios = page.query_selector_all('input[type="radio"][value="true"]')
+                for r in comp_radios:
+                    r.check()
+                    time.sleep(0.2)
+                check_btn = page.query_selector("button.primary")
+                if check_btn:
+                    check_btn.click()
+                    time.sleep(1)
+                cont_btn = page.query_selector("button.primary")
+                if cont_btn:
+                    cont_btn.click()
+                    time.sleep(1)
+                ex_btn = page.query_selector("button.primary")
+                if ex_btn:
+                    ex_btn.click()
                     time.sleep(1)
                 finish = page.query_selector("button.primary")
                 if finish:

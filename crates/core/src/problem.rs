@@ -43,6 +43,8 @@ pub struct Problem {
     pub concept_tags: Vec<String>,
     pub spark: Spark,
     pub ground: Ground,
+    #[serde(default)]
+    pub work: Option<Work>,
     pub solve: Solve,
 }
 
@@ -83,6 +85,15 @@ pub struct Definition {
 pub struct Connection {
     pub target_concept: String,
     pub relationship: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Work {
+    pub worked_example: String,
+    pub guided_prompt: String,
+    pub guided_answer: f64,
+    #[serde(default = "default_tolerance")]
+    pub guided_tolerance: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -147,9 +158,20 @@ pub struct ProofProblem {
     #[serde(default)]
     pub rubric: Vec<RubricItem>,
     pub solution_sketch: String,
+    #[serde(default)]
+    pub exemplar: Option<String>,
+    #[serde(default)]
+    pub comprehension: Vec<ComprehensionQuestion>,
     pub points: u32,
     #[serde(default)]
     pub hints: Vec<Hint>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ComprehensionQuestion {
+    pub question: String,
+    pub answer: bool,
+    pub explanation: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -57,6 +57,36 @@ relationship = "Bayes' theorem operates on events within a sample space, partiti
 target_concept = "expected-value"
 relationship = "Bayesian decision theory combines posterior probabilities with utility functions via expected value."
 
+[work]
+worked_example = """
+Problem: A factory has two machines. Machine A produces 60% of output with
+a 3% defect rate. Machine B produces 40% with a 5% defect rate. A random
+item is defective. What is the probability it came from Machine A?
+
+Step 1: Identify the pieces.
+  P(A) = 0.60, P(B) = 0.40
+  P(defect|A) = 0.03, P(defect|B) = 0.05
+
+Step 2: Compute P(defect) using total probability.
+  P(defect) = P(defect|A)*P(A) + P(defect|B)*P(B)
+            = 0.03*0.60 + 0.05*0.40
+            = 0.018 + 0.020 = 0.038
+
+Step 3: Apply Bayes' theorem.
+  P(A|defect) = P(defect|A)*P(A) / P(defect)
+              = 0.018 / 0.038
+              = 0.4737
+"""
+guided_prompt = """
+Same factory, different numbers. Machine A produces 70% of output with a
+2% defect rate. Machine B produces 30% with a 6% defect rate. A random
+item is defective. What is P(A|defect)? Round to 4 decimal places.
+
+(Hint: follow the same three steps as the worked example above.)
+"""
+guided_answer = 0.4375
+guided_tolerance = 0.001
+
 [[solve.sub_problems]]
 kind = "numerical"
 prompt = """
@@ -122,6 +152,23 @@ By definition, P(A|B) = P(A intersection B) / P(B).
 Also P(B|A) = P(A intersection B) / P(A), so P(A intersection B) = P(B|A) * P(A).
 Substituting: P(A|B) = P(B|A) * P(A) / P(B). QED.
 """
+exemplar = """
+Proof. Let A and B be events with P(B) > 0.
+
+By the definition of conditional probability:
+  P(A|B) = P(A intersection B) / P(B)              ... (1)
+
+We also know that P(B|A) is defined when P(A) > 0:
+  P(B|A) = P(A intersection B) / P(A)
+
+Rearranging gives:
+  P(A intersection B) = P(B|A) * P(A)              ... (2)
+
+Substituting (2) into (1):
+  P(A|B) = P(B|A) * P(A) / P(B)
+
+When P(A) = 0, both sides equal 0, so the identity holds trivially. QED.
+"""
 points = 20
 
 [[solve.sub_problems.rubric]]
@@ -139,3 +186,18 @@ weight = 5
 [[solve.sub_problems.rubric]]
 criterion = "Reasoning is clear and complete"
 weight = 5
+
+[[solve.sub_problems.comprehension]]
+question = "The proof requires P(A) > 0 as a precondition for all cases."
+answer = false
+explanation = "The proof handles P(A) = 0 as a trivial case where both sides are 0. Only P(B) > 0 is strictly required."
+
+[[solve.sub_problems.comprehension]]
+question = "The key step is expressing P(A intersection B) using two different conditional probability definitions."
+answer = true
+explanation = "This is the core algebraic move: writing the same joint probability two ways and substituting one into the other."
+
+[[solve.sub_problems.comprehension]]
+question = "Bayes' theorem can be derived without using the definition of conditional probability."
+answer = false
+explanation = "The definition P(A|B) = P(A intersection B)/P(B) is the starting point. Without it, there is no algebraic handle."

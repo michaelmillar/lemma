@@ -6,6 +6,8 @@
     submitNumerical,
     submitStrategy,
     submitProof,
+    submitWork,
+    submitComprehension,
     advancePhase,
     revealHint,
     assessProblem,
@@ -13,11 +15,13 @@
     type ProblemDetail,
     type GradeResponse,
     type ProofGradeResponse,
+    type WorkGradeResponse,
+    type ComprehensionResponse,
     type HintResponse,
     type AssessmentResponse,
   } from "./lib/api";
 
-  type Screen = "list" | "spark" | "ground" | "solve" | "review";
+  type Screen = "list" | "spark" | "ground" | "work" | "solve" | "review";
 
   let screen: Screen = $state("list");
   let problems: ProblemSummary[] = $state([]);
@@ -38,6 +42,11 @@
   let hintPenalty = $state(0);
   let selectedTrack = $state("all");
   let assessment: AssessmentResponse | null = $state(null);
+  let workInput = $state("");
+  let workFeedback: WorkGradeResponse | null = $state(null);
+  let proofPhase: "checklist" | "comprehension" | "exemplar" = $state("checklist");
+  let comprehensionAnswers: boolean[] = $state([]);
+  let comprehensionResults: ComprehensionResponse | null = $state(null);
 
   $effect(() => {
     function handleKeydown(e: KeyboardEvent) {
@@ -79,10 +88,24 @@
     screen = "ground";
   }
 
+  function goWork() {
+    workInput = "";
+    workFeedback = null;
+    screen = "work";
+  }
+
   function goSolve() {
     subIndex = 0;
     resetSubProblemState();
     screen = "solve";
+  }
+
+  function afterGround() {
+    if (current?.work) {
+      goWork();
+    } else {
+      goSolve();
+    }
   }
 
   function resetSubProblemState() {
@@ -93,10 +116,14 @@
     solutionSketch = "";
     showFeedback = false;
     revealedHints = [];
+    proofPhase = "checklist";
+    comprehensionAnswers = [];
+    comprehensionResults = null;
     if (current) {
       const sp = current.sub_problems[subIndex];
       if (sp?.kind === "proof") {
         checkedRubric = sp.rubric.map(() => false);
+        comprehensionAnswers = sp.comprehension.map(() => false);
       } else {
         checkedRubric = [];
       }
@@ -136,12 +163,57 @@
 
   async function handleProofSubmit() {
     if (!current) return;
+    const sp = current.sub_problems[subIndex];
+    if (sp.comprehension.length > 0 && proofPhase === "checklist") {
+      proofPhase = "comprehension";
+      return;
+    }
     const res: ProofGradeResponse = await submitProof(current.id, subIndex, checkedRubric);
     feedback = res.feedback;
     feedbackCorrect = res.score > 0;
     solutionSketch = res.solution_sketch;
     solveResults[subIndex] = { score: res.score, max: res.max_score };
+    if (sp.exemplar) {
+      proofPhase = "exemplar";
+    } else {
+      showFeedback = true;
+    }
+  }
+
+  async function handleComprehensionSubmit() {
+    if (!current) return;
+    const res = await submitComprehension(current.id, subIndex, comprehensionAnswers);
+    comprehensionResults = res;
+  }
+
+  function finishComprehension() {
+    handleProofSubmitFinal();
+  }
+
+  async function handleProofSubmitFinal() {
+    if (!current) return;
+    const sp = current.sub_problems[subIndex];
+    const res: ProofGradeResponse = await submitProof(current.id, subIndex, checkedRubric);
+    feedback = res.feedback;
+    feedbackCorrect = res.score > 0;
+    solutionSketch = res.solution_sketch;
+    solveResults[subIndex] = { score: res.score, max: res.max_score };
+    if (sp.exemplar) {
+      proofPhase = "exemplar";
+    } else {
+      showFeedback = true;
+    }
+  }
+
+  function finishExemplar() {
     showFeedback = true;
+  }
+
+  async function handleWorkSubmit() {
+    if (!current) return;
+    const answer = parseFloat(workInput);
+    if (isNaN(answer)) return;
+    workFeedback = await submitWork(current.id, answer);
   }
 
   function nextSubProblem() {
@@ -262,7 +334,36 @@
           {/each}
         </div>
       {/if}
-      <button class="primary" onclick={goSolve}>Continue to Solve</button>
+      <button class="primary" onclick={afterGround}>
+        {current.work ? "Continue to Worked Example" : "Continue to Solve"}
+      </button>
+    </section>
+
+  {:else if screen === "work" && current && current.work}
+    <section class="phase work">
+      <div class="phase-label">Work</div>
+      <h3>Worked Example</h3>
+      <div class="worked-example">{current.work.worked_example}</div>
+
+      <h3>Your Turn</h3>
+      <p class="prompt">{current.work.guided_prompt}</p>
+
+      {#if !workFeedback}
+        <div class="input-group">
+          <input
+            type="text"
+            bind:value={workInput}
+            placeholder="Enter your answer..."
+            onkeydown={(e) => e.key === 'Enter' && handleWorkSubmit()}
+          />
+          <button class="primary" onclick={handleWorkSubmit}>Submit</button>
+        </div>
+      {:else}
+        <div class="feedback" class:correct={workFeedback.correct} class:incorrect={!workFeedback.correct}>
+          <pre>{workFeedback.feedback}</pre>
+        </div>
+        <button class="primary" onclick={goSolve}>Continue to Solve</button>
+      {/if}
     </section>
 
   {:else if screen === "solve" && current}
@@ -323,16 +424,61 @@
             </button>
 
           {:else if sp.kind === "proof"}
-            <p class="rubric-intro">Self-assess your proof against these criteria:</p>
-            <div class="rubric">
-              {#each sp.rubric as item, i}
-                <label class="rubric-item">
-                  <input type="checkbox" bind:checked={checkedRubric[i]} />
-                  {item.criterion} <span class="weight">({item.weight} pts)</span>
-                </label>
-              {/each}
-            </div>
-            <button class="primary" onclick={handleProofSubmit}>Submit Self-Assessment</button>
+            {#if proofPhase === "checklist"}
+              <p class="rubric-intro">Assess your proof against these structural criteria:</p>
+              <div class="rubric">
+                {#each sp.rubric as item, i}
+                  <label class="rubric-item">
+                    <input type="checkbox" bind:checked={checkedRubric[i]} />
+                    {item.criterion} <span class="weight">({item.weight} pts)</span>
+                  </label>
+                {/each}
+              </div>
+              <button class="primary" onclick={handleProofSubmit}>
+                {sp.comprehension.length > 0 ? "Next: Comprehension Check" : "Submit"}
+              </button>
+
+            {:else if proofPhase === "comprehension"}
+              <h4>Proof Comprehension</h4>
+              <p class="rubric-intro">Answer these questions about the proof structure:</p>
+              <div class="comprehension-questions">
+                {#each sp.comprehension as q, i}
+                  <div class="comprehension-item" class:answered={comprehensionResults !== null}>
+                    <p>{q.question}</p>
+                    <div class="bool-choices">
+                      <label class:selected={comprehensionAnswers[i] === true}>
+                        <input type="radio" name={`comp-${i}`} value={true}
+                          onchange={() => comprehensionAnswers[i] = true} />
+                        True
+                      </label>
+                      <label class:selected={comprehensionAnswers[i] === false}>
+                        <input type="radio" name={`comp-${i}`} value={false}
+                          onchange={() => comprehensionAnswers[i] = false} />
+                        False
+                      </label>
+                    </div>
+                    {#if comprehensionResults}
+                      <div class="comp-feedback" class:correct={comprehensionResults.results[i]?.correct} class:incorrect={!comprehensionResults.results[i]?.correct}>
+                        {comprehensionResults.results[i]?.correct ? "Correct" : "Incorrect"} &mdash; {comprehensionResults.results[i]?.explanation}
+                      </div>
+                    {/if}
+                  </div>
+                {/each}
+              </div>
+              {#if !comprehensionResults}
+                <button class="primary" onclick={handleComprehensionSubmit}>Check Answers</button>
+              {:else}
+                <button class="primary" onclick={finishComprehension}>Continue</button>
+              {/if}
+
+            {:else if proofPhase === "exemplar" && sp.exemplar}
+              <h4>Compare Your Proof</h4>
+              <p class="rubric-intro">Read this exemplar proof and compare it to yours. Note differences in structure, clarity, and completeness.</p>
+              <div class="exemplar-proof">
+                <pre>{sp.exemplar}</pre>
+              </div>
+              <button class="primary" onclick={finishExemplar}>Continue</button>
+            {/if}
           {/if}
 
         {:else}
@@ -852,6 +998,76 @@
   }
 
   .hint-btn:hover { text-decoration: underline; }
+
+  .worked-example {
+    background: #f0f7ff;
+    border: 1px solid #c8ddf0;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    white-space: pre-wrap;
+    line-height: 1.6;
+  }
+
+  .comprehension-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .comprehension-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 0.75rem;
+  }
+
+  .comprehension-item p { margin: 0 0 0.5rem; }
+
+  .bool-choices {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .bool-choices label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .bool-choices label.selected {
+    border-color: #6f42c1;
+    background: #f5f0ff;
+  }
+
+  .comp-feedback {
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+
+  .comp-feedback.correct { background: #f0fff4; color: #22863a; }
+  .comp-feedback.incorrect { background: #fff5f5; color: #cb2431; }
+
+  .exemplar-proof {
+    background: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .exemplar-proof pre {
+    margin: 0;
+    white-space: pre-wrap;
+    font-family: inherit;
+    line-height: 1.6;
+  }
 
   .mastery-badge {
     display: inline-block;

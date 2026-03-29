@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  Learn mathematics through real-world problems.<br/>
-  Applied first. Rigorous always.
+  The maths behind the systems you build.<br/>
+  For engineers and practitioners. Applied first. Rigorous always.
 </p>
 
 <p align="center">
@@ -18,89 +18,76 @@
 
 ## What is Lemma?
 
-Lemma is a mathematics learning game that starts with *why* before teaching *what* and *how*. Every problem begins with a real-world scenario from industry (ML, networking, finance, graphics) that motivates the underlying mathematics.
+Lemma is a structured mathematics tool for software engineers, ML practitioners, and technical career-switchers who need rigorous foundations for the work they already do. Every problem starts from a real failure, bottleneck, or design decision in production systems, then maps backward into the maths that explains it.
 
-**Three-phase game loop:**
+**Four-phase learning loop:**
 
 ```
-SPARK    Real-world scenario. Why should you care about this maths?
-GROUND   The concept. Definitions, intuition, connections to other areas.
-SOLVE    Problems. Numerical answers, strategy identification, proof writing.
+SPARK    A real failure or design problem. Your gradient descent diverges.
+         Your A/B test is underpowered. Your PageRank doesn't converge.
+GROUND   The concept, compact. Definitions, intuition, one key connection.
+WORK     Faded worked examples. Watch one solved, then complete a guided one.
+SOLVE    Independent problems. Compute, identify the strategy, prove, transfer.
 ```
 
-**Hybrid grading** mixes auto-checked numerical answers, multiple-choice strategy identification (Zeitz/Polya tactics), and self-assessed proof rubrics.
+**Hybrid grading** mixes auto-checked numerical answers, named strategy identification (21 Polya/Zeitz tactics), and structured proof assessment with comprehension checks and exemplar comparison.
 
 ## Walkthrough
 
-https://github.com/user-attachments/assets/96f838b3-5d91-4e08-8663-c1b52cbba87f
+https://github.com/user-attachments/assets/ca81b863-e2f2-4d46-aa5a-ca28466aa301
 
-## Why Lemma?
+## Who is this for?
 
-There are good maths learning tools. None of them do what Lemma does.
+**Software engineers** who use maths daily but never formalised it. You can call `np.linalg.svd` but cannot explain why truncating singular values denoises your data. You tune learning rates by feel because you never properly internalised gradient dynamics.
 
-| Tool | Teaches concepts | Applied motivation | Named strategies | Spaced repetition | Practitioner audience |
+**Career-switchers** moving into ML, data science, or quantitative roles. You need probability, linear algebra, and calculus, but existing resources teach to students, not practitioners. You want to know why the maths matters for the systems you will build.
+
+## How it compares
+
+| Tool | Applied context | Named strategies | Worked examples | Proof assessment | Practitioner focus |
 |------|:---:|:---:|:---:|:---:|:---:|
-| **Brilliant** | Yes | Sometimes | No | No | No |
-| **Khan Academy** | Yes | Rarely | No | No | No |
-| **Project Euler** | No | No | No | No | Partially |
-| **3Blue1Brown** | Beautifully | Partially | No | No | No |
-| **MIT OCW** | Yes | Depends on lecturer | No | No | Partially |
-| **Art of Problem Solving** | Yes | No | Implicitly | No | No |
-| **Math Academy** | Yes | No | No | Yes (best in class) | No |
-| **Anki maths decks** | No (retention only) | No | No | Yes | Partially |
-| **Lemma** | Yes | Every problem | Yes (21 named) | Yes (FSRS) | Yes |
+| **Brilliant** | Sometimes | No | No | No | No |
+| **Khan Academy** | Rarely | No | Yes | No | No |
+| **Math Academy** | No | No | Yes | No | No |
+| **3Blue1Brown** | Partially | No | No | No | No |
+| **Art of Problem Solving** | No | Implicitly | Partially | No | No |
+| **Lemma** | Every problem | Yes (21 named) | Faded sequence | Structure + comprehension + exemplar | Yes |
 
-### What is missing elsewhere
+### Strengths
 
-**Brilliant** teaches through interactive puzzles but never names a problem-solving strategy, never connects to your actual work, and has no spaced repetition. Subscribers report depth plateaus quickly.
+1. **Every problem starts from a real system.** Spam filters, gradient descent, PageRank, packet queues, hedge ratios. Not decoration. The entry point.
 
-**Khan Academy** is excellent for fundamentals but maxes out at early university level. An engineer brushing up on eigendecomposition for PCA will find the explanation adequate, the practice shallow, and the path to application invisible.
+2. **Strategy identification is graded.** 21 Polya/Zeitz tactics as first-class content. You choose the attack before solving. No other tool does this.
 
-**Project Euler** is a puzzle collection with zero instruction. 900+ problems, no curriculum, no feedback on method. Brilliant for self-starters, useless for systematic skill-building.
+3. **Four-phase pedagogy.** Spark (why), Ground (what), Work (guided practice with faded examples), Solve (independent). Research-aligned sequencing from motivation through to transfer.
 
-**3Blue1Brown** builds beautiful geometric intuition. But you watch someone else think. The LessWrong community identifies "a sizeable chunk of value left on the table by not having exercises." The bridge from visual intuition to computational fluency does not exist.
+4. **Structured proof feedback.** Not just "rate yourself 1 to 5." Structure checklist, comprehension questions about proof logic, and compare-to-exemplar.
 
-**Art of Problem Solving** is the closest to teaching meta-strategies, but it targets gifted secondary school students preparing for competitions. Adults and engineers are not the audience. Content is contest maths, not applied maths.
+5. **FSRS spaced repetition.** Multi-axis quality signals (execution + strategy) feed scheduling across prerequisite chains.
 
-**Math Academy** has the most sophisticated adaptive SRS in the space, but it optimises for procedural fluency in a K-12 curriculum. No applied motivation, no strategy instruction, no practitioner focus.
+### Weaknesses
 
-**Anki** is a retention tool, not a learning tool. Making good maths cards takes hours per theorem, and the gap between "I can recall the definition of eigenvectors" and "I can recognise when eigendecomposition solves my problem" is never bridged.
+**52 problems is thin.** Brilliant has hundreds of courses. Each Lemma problem delivers roughly 3x the pedagogical surface of a typical exercise (spark + concept + worked example + mixed sub-problems), but the catalogue needs to grow. The TOML content format means adding a track is authoring work, not engineering.
 
-### The gap Lemma fills
+**No AI-powered proof critique yet.** The structured assessment (checklist + comprehension + exemplar) is stronger than pure self-grading, but automated feedback on free-form proofs is a clear next step.
 
-No tool combines these five properties:
-
-1. **Applied-first motivation.** Every problem starts with a real scenario (spam filters, gradient descent, PageRank) before touching the maths. This is not decoration; it is the entry point.
-
-2. **Named meta-strategies.** 21 Polya/Zeitz tactics as first-class content. Strategy identification is graded. No other digital tool does this.
-
-3. **Three-phase pedagogy.** Why (Spark), then what (Ground), then how (Solve). Khan teaches what-then-how. Brilliant teaches how. 3Blue1Brown teaches what. Lemma sequences all three.
-
-4. **FSRS spaced repetition for structured maths.** Not flat flashcards. Multi-axis quality signals (execution + strategy) feed the scheduling algorithm across prerequisite chains.
-
-5. **Practitioner audience.** Every other tool targets students. The working engineer who needs rigorous foundations for the ML, systems, or finance work they already do has zero alternatives.
-
-### The honest criticism
-
-> "52 problems is a weekend of content. Brilliant has hundreds of courses. Your catalogue is thin."
-
-This is true today. The rebuttal is threefold. Each Lemma problem delivers roughly 3x the pedagogical surface of a typical exercise (spark + concept + mixed sub-problems). The TOML content format means adding a track is authoring work, not engineering. And a small catalogue in an empty market segment is more valuable than a large catalogue in a saturated one. The architecture scales; the content follows.
+**Not for beginners.** If you need to learn what a fraction is, this is not the right tool. Lemma assumes you can read mathematical notation and have some comfort with algebra.
 
 ## Tracks
 
-| Track | Problems | Sparks |
-|-------|----------|--------|
-| **Probability** | 13 | A/B testing, spam filtering, PageRank, diffusion models, load balancing |
-| **Linear Algebra** | 13 | Word embeddings, image filters, cryptography, PCA, recommendation engines |
+| Track | Problems | Systems that use it |
+|-------|----------|---------------------|
+| **Probability** | 13 | A/B testing, spam filters, PageRank, diffusion models, load balancers |
+| **Linear Algebra** | 13 | Word embeddings, image filters, PCA, recommendation engines, cryptography |
 | **Calculus** | 13 | Gradient descent, backpropagation, game physics, Taylor approximations |
 | **Discrete Maths** | 13 | Feature combinations, social networks, hashing, RSA, route optimisation |
 
-Each track spans four difficulty tiers:
+Four difficulty tiers per track:
 
-- **Foundation** (undergraduate 1-2)
-- **Core** (final year / competition)
-- **Advanced** (Putnam/IMO level)
-- **Research** (frontier-adjacent)
+- **Foundation** . undergraduate 1-2
+- **Core** . final year / competition
+- **Advanced** . Putnam/IMO level
+- **Research** . frontier-adjacent
 
 ## Problem-Solving Framework
 
@@ -121,8 +108,10 @@ After completing a problem, Lemma computes scores across five axes:
 | Conceptual Understanding | Can you state definitions and explain intuition? |
 | Strategy Identification | Did you pick the right Polya/Zeitz tactic? |
 | Problem Execution | Did you get the numerical answer right? |
-| Proof Quality | Self-assessed clarity and completeness of reasoning |
-| Application Awareness | Can you connect the maths to real-world use? |
+| Proof Quality | Structure checklist + comprehension + exemplar comparison |
+| Application Awareness | Can you connect the maths to a real system? |
+
+Proof assessment is three layers deep. First, a structure checklist (did you start from the right definition, express the key identity, complete the derivation). Then comprehension questions that test whether you understand *why* each step works. Finally, comparison against an exemplar proof to identify gaps in clarity or completeness.
 
 Mastery levels: **Novice** < 40 | **Competent** 40-65 | **Proficient** 65-85 | **Expert** 85+
 
@@ -132,13 +121,13 @@ Mastery levels: **Novice** < 40 | **Competent** 40-65 | **Proficient** 65-85 | *
 lemma/
   Cargo.toml                 workspace
   crates/
-    core/                    types, grading, SQLite store
+    core/                    types, grading (numerical + strategy + proof), SQLite store
     content/                 TOML loader, cross-ref validation
     server/                  axum API (port 3003)
   content/
     concepts.toml            74 mathematical concepts
     strategies.toml          21 problem-solving strategies
-    tracks/                  52 problems across 4 tracks
+    tracks/                  52 problems across 4 tracks (4 phases each)
   web/                       Svelte 5 + Vite 8 frontend
 ```
 
@@ -166,7 +155,7 @@ cd web && npm run dev
 
 ## Content Format
 
-Problems are authored as TOML files. Each file contains a spark (industry scenario), ground (concept definitions and intuition), and solve section (sub-problems with hints and rubrics).
+Problems are authored as TOML files. Each file contains four phases: spark (system scenario), ground (concept), work (faded examples), and solve (independent problems with hints and rubrics).
 
 ```toml
 id = "prob-02-bayes-theorem"
@@ -182,12 +171,30 @@ scenario = "A spam filter classifies 100 million messages per day..."
 [ground]
 concept_brief = "Bayes' theorem inverts conditional probabilities..."
 
+[work]
+worked_example = "Step 1: Identify P(A), P(B|A)... Step 2: Total probability..."
+guided_prompt = "Same method, different numbers. Compute P(A|defect)..."
+guided_answer = 0.4375
+guided_tolerance = 0.001
+
 [[solve.sub_problems]]
 kind = "numerical"
 prompt = "Compute P(spam|flagged)..."
 answer = 0.6667
 tolerance = 0.001
 points = 20
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = "Prove Bayes' theorem from the definition..."
+exemplar = "Proof. By the definition of conditional probability..."
+solution_sketch = "P(A|B) = P(A intersection B)/P(B) = P(B|A)*P(A)/P(B). QED."
+points = 20
+
+[[solve.sub_problems.comprehension]]
+question = "The proof requires P(A) > 0 as a precondition for all cases."
+answer = false
+explanation = "P(A) = 0 is handled as a trivial case."
 ```
 
 ## Sources
