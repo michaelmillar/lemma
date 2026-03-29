@@ -32,7 +32,7 @@ SOLVE    Problems. Numerical answers, strategy identification, proof writing.
 
 ## Walkthrough
 
-https://github.com/user-attachments/assets/lemma-walkthrough.mp4
+<video src="https://github.com/user-attachments/assets/lemma-walkthrough.mp4" controls width="100%"></video>
 
 Generate the video locally:
 
@@ -42,6 +42,58 @@ cd scripts && python record_demo.py
 ```
 
 Requires `playwright`, `Pillow`, and `ffmpeg`.
+
+## Why Lemma?
+
+There are good maths learning tools. None of them do what Lemma does.
+
+| Tool | Teaches concepts | Applied motivation | Named strategies | Spaced repetition | Practitioner audience |
+|------|:---:|:---:|:---:|:---:|:---:|
+| **Brilliant** | Yes | Sometimes | No | No | No |
+| **Khan Academy** | Yes | Rarely | No | No | No |
+| **Project Euler** | No | No | No | No | Partially |
+| **3Blue1Brown** | Beautifully | Partially | No | No | No |
+| **MIT OCW** | Yes | Depends on lecturer | No | No | Partially |
+| **Art of Problem Solving** | Yes | No | Implicitly | No | No |
+| **Math Academy** | Yes | No | No | Yes (best in class) | No |
+| **Anki maths decks** | No (retention only) | No | No | Yes | Partially |
+| **Lemma** | Yes | Every problem | Yes (21 named) | Yes (FSRS) | Yes |
+
+### What is missing elsewhere
+
+**Brilliant** teaches through interactive puzzles but never names a problem-solving strategy, never connects to your actual work, and has no spaced repetition. Subscribers report depth plateaus quickly.
+
+**Khan Academy** is excellent for fundamentals but maxes out at early university level. An engineer brushing up on eigendecomposition for PCA will find the explanation adequate, the practice shallow, and the path to application invisible.
+
+**Project Euler** is a puzzle collection with zero instruction. 900+ problems, no curriculum, no feedback on method. Brilliant for self-starters, useless for systematic skill-building.
+
+**3Blue1Brown** builds beautiful geometric intuition. But you watch someone else think. The LessWrong community identifies "a sizeable chunk of value left on the table by not having exercises." The bridge from visual intuition to computational fluency does not exist.
+
+**Art of Problem Solving** is the closest to teaching meta-strategies, but it targets gifted secondary school students preparing for competitions. Adults and engineers are not the audience. Content is contest maths, not applied maths.
+
+**Math Academy** has the most sophisticated adaptive SRS in the space, but it optimises for procedural fluency in a K-12 curriculum. No applied motivation, no strategy instruction, no practitioner focus.
+
+**Anki** is a retention tool, not a learning tool. Making good maths cards takes hours per theorem, and the gap between "I can recall the definition of eigenvectors" and "I can recognise when eigendecomposition solves my problem" is never bridged.
+
+### The gap Lemma fills
+
+No tool combines these five properties:
+
+1. **Applied-first motivation.** Every problem starts with a real scenario (spam filters, gradient descent, PageRank) before touching the maths. This is not decoration; it is the entry point.
+
+2. **Named meta-strategies.** 21 Polya/Zeitz tactics as first-class content. Strategy identification is graded. No other digital tool does this.
+
+3. **Three-phase pedagogy.** Why (Spark), then what (Ground), then how (Solve). Khan teaches what-then-how. Brilliant teaches how. 3Blue1Brown teaches what. Lemma sequences all three.
+
+4. **FSRS spaced repetition for structured maths.** Not flat flashcards. Multi-axis quality signals (execution + strategy) feed the scheduling algorithm across prerequisite chains.
+
+5. **Practitioner audience.** Every other tool targets students. The working engineer who needs rigorous foundations for the ML, systems, or finance work they already do has zero alternatives.
+
+### The honest criticism
+
+> "52 problems is a weekend of content. Brilliant has hundreds of courses. Your catalogue is thin."
+
+This is true today. The rebuttal is threefold. Each Lemma problem delivers roughly 3x the pedagogical surface of a typical exercise (spark + concept + mixed sub-problems). The TOML content format means adding a track is authoring work, not engineering. And a small catalogue in an empty market segment is more valuable than a large catalogue in a saturated one. The architecture scales; the content follows.
 
 ## Tracks
 
