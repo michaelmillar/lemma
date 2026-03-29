@@ -34,7 +34,14 @@ SOLVE    Problems. Numerical answers, strategy identification, proof writing.
 
 https://github.com/user-attachments/assets/lemma-walkthrough.mp4
 
-> *Record a session with `vhs` or screen capture showing: problem list, spark screen, ground screen, solving a numerical problem, strategy identification, proof self-assessment, and the review screen with assessment axes.*
+Generate the video locally:
+
+```bash
+cargo run --bin lemma &
+cd scripts && python record_demo.py
+```
+
+Requires `playwright`, `Pillow`, and `ffmpeg`.
 
 ## Tracks
 
