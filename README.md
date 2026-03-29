@@ -32,16 +32,7 @@ SOLVE    Problems. Numerical answers, strategy identification, proof writing.
 
 ## Walkthrough
 
-<video src="https://github.com/michaelmillar/lemma/raw/main/assets/demo.mp4" controls width="100%"></video>
-
-Generate the video locally:
-
-```bash
-cargo run --bin lemma &
-cd scripts && python record_demo.py
-```
-
-Requires `playwright`, `Pillow`, and `ffmpeg`.
+https://github.com/user-attachments/assets/96f838b3-5d91-4e08-8663-c1b52cbba87f
 
 ## Why Lemma?
 
