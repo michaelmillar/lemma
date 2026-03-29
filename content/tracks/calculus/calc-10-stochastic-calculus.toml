@@ -1,0 +1,143 @@
+id = "calc-10-stochastic-calculus"
+title = "Stochastic Gradients and SGD"
+track = "calculus"
+tier = "advanced"
+prerequisites = ["calc-07-optimisation"]
+strategy_tags = ["get-hands-dirty", "change-viewpoint", "wishful-thinking"]
+concept_tags = ["gradient", "optimisation", "convergence"]
+
+[spark]
+scenario = """
+Training on a dataset of 10 million images, computing the full gradient
+at each step is prohibitively expensive. SGD (stochastic gradient descent)
+estimates the gradient using a random mini-batch of 64 images. The
+estimate is noisy but unbiased, and remarkably, this noise actually helps
+escape sharp local minima and find flatter, more generalisable solutions.
+Understanding why noisy gradients work is one of deep learning's key
+insights.
+"""
+industry_domain = "machine_learning"
+connection_question = "If the true gradient is 5.0 and your mini-batch estimate is 5.0 + noise with mean 0 and variance 4, what is E[gradient estimate]? How does averaging over steps reduce the effect of the noise?"
+
+[ground]
+concept_brief = """
+Stochastic gradient descent replaces the true gradient with a noisy but
+unbiased estimator computed from a random subset of data. The convergence
+theory shows that SGD converges if the learning rate decreases
+appropriately (e.g., eta_t = eta_0 / t). Mini-batch averaging reduces
+variance by a factor of 1/B where B is the batch size. The noise acts
+as implicit regularisation, biasing SGD toward flatter minima.
+"""
+intuition = """
+Imagine navigating in fog. You cannot see the entire valley, only a
+small patch around you. Your estimate of 'downhill' is noisy because you
+only sample a small area. But on average, your noisy compass points in
+the right direction. Over many steps, the errors cancel out and you
+reach the bottom. The fog (noise) actually helps you avoid getting stuck
+in narrow crevices that would trap a precise navigator.
+"""
+field_tags = ["calculus", "optimisation", "stochastic-methods"]
+
+[[ground.definitions]]
+term = "Stochastic Gradient"
+statement = "An unbiased estimator of the true gradient: E[g_batch] = nabla f(x), computed from a random mini-batch."
+
+[[ground.definitions]]
+term = "Mini-Batch Variance"
+statement = "Var(g_batch) = Var(g_single) / B, where B is the mini-batch size."
+
+[[ground.definitions]]
+term = "Learning Rate Schedule"
+statement = "A rule for decreasing eta over time. The Robbins-Monro conditions require sum(eta_t) = inf and sum(eta_t^2) < inf."
+
+[[ground.connections]]
+target_concept = "convergence"
+relationship = "SGD convergence requires decaying learning rates satisfying specific summability conditions."
+
+[[ground.connections]]
+target_concept = "optimisation"
+relationship = "SGD is the practical engine behind large-scale optimisation where full gradient computation is infeasible."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The gradient variance on a single sample is 100. With a mini-batch of
+size B = 25, what is the variance of the mini-batch gradient estimate?
+"""
+answer = 4.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "Var(g_batch) = Var(g_single) / B = 100 / 25."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Using the learning rate schedule eta_t = 1/t, compute the sum of learning
+rates from t = 1 to t = 4 (i.e., eta_1 + eta_2 + eta_3 + eta_4).
+Express as a fraction rounded to 4 decimal places.
+"""
+answer = 2.0833
+tolerance = 0.001
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "1/1 + 1/2 + 1/3 + 1/4 = 12/12 + 6/12 + 4/12 + 3/12 = 25/12."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You need to understand why SGD with large batch sizes often generalises
+worse than SGD with small batches. What strategy helps build intuition?
+"""
+correct_strategy = "draw-picture"
+distractors = ["contradiction", "induction", "pigeonhole"]
+explanation = """
+Draw the loss landscape with sharp and flat minima. Visualise that small-
+batch SGD has high gradient noise, causing it to bounce out of sharp
+minima (which are narrow) but settle into flat minima (which are wide).
+Large-batch SGD has low noise and gets trapped in whichever minimum it
+first encounters, including sharp ones. The picture makes the implicit
+regularisation effect of noise immediately clear.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that the mini-batch gradient estimator is unbiased. That is, if
+g_i = nabla f_i(x) is the gradient on sample i, and the mini-batch
+B = {i_1, ..., i_B} is drawn uniformly at random, show that
+E[g_batch] = nabla f(x) where f = (1/n) * sum_{i=1}^{n} f_i.
+"""
+solution_sketch = """
+g_batch = (1/B) * sum_{j=1}^{B} nabla f_{i_j}(x) where each i_j is
+drawn uniformly from {1, ..., n}.
+
+E[nabla f_{i_j}(x)] = (1/n) * sum_{i=1}^{n} nabla f_i(x) = nabla f(x).
+
+By linearity of expectation:
+E[g_batch] = (1/B) * sum_{j=1}^{B} E[nabla f_{i_j}(x)]
+           = (1/B) * B * nabla f(x)
+           = nabla f(x). QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Wrote the mini-batch gradient as an average over random samples"
+weight = 3
+
+[[solve.sub_problems.rubric]]
+criterion = "Computed E[nabla f_{i_j}(x)] for a uniformly random index"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied linearity of expectation"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded E[g_batch] = nabla f(x)"
+weight = 3

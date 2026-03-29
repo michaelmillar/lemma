@@ -1,0 +1,131 @@
+id = "la-02-linear-transformations"
+title = "Linear Transformations and Image Filters"
+track = "linear-algebra"
+tier = "foundation"
+prerequisites = ["la-01-vectors-and-spaces"]
+strategy_tags = ["draw-picture", "get-hands-dirty"]
+concept_tags = ["linear-transformation", "matrix", "null-space", "rank"]
+
+[spark]
+scenario = """
+Every image filter (blur, sharpen, edge detect) in computer graphics is
+a linear transformation. A 3x3 convolution kernel multiplied against pixel
+neighbourhoods produces the output image. Rotation, scaling, and shearing
+in games and UI are all matrix multiplications. Understanding what a linear
+transformation preserves and destroys is the key to all of this.
+"""
+industry_domain = "graphics_engineering"
+connection_question = "A blur filter averages neighbouring pixels. Why is averaging a linear operation? What would a nonlinear filter look like?"
+
+[ground]
+concept_brief = """
+A linear transformation T: V -> W satisfies T(au+bv) = aT(u) + bT(v).
+Every linear transformation between finite-dimensional spaces can be
+represented as a matrix. The rank tells you the dimension of the output
+(image), and the null space tells you what information is lost.
+"""
+intuition = """
+A linear transformation is a machine that takes vectors in and produces
+vectors out, preserving the operations of addition and scaling. A matrix
+is the instruction manual for that machine in a chosen coordinate system.
+The null space is the set of inputs the machine maps to zero, and the
+rank is how many independent outputs the machine can produce.
+"""
+field_tags = ["linear-algebra"]
+
+[[ground.definitions]]
+term = "Linear Transformation"
+statement = "T: V -> W is linear if T(au+bv) = aT(u) + bT(v) for all scalars a, b and vectors u, v."
+
+[[ground.definitions]]
+term = "Rank-Nullity Theorem"
+statement = "For T: V -> W, dim(V) = rank(T) + nullity(T), i.e., dimension of domain = dimension of image + dimension of kernel."
+latex = "\\dim(V) = \\text{rank}(T) + \\text{nullity}(T)"
+
+[[ground.connections]]
+target_concept = "determinant"
+relationship = "The determinant of the matrix representation tells you whether the transformation is invertible (det != 0) and how it scales volume."
+
+[[ground.connections]]
+target_concept = "eigenvalue"
+relationship = "Eigenvectors are the directions a linear transformation only scales (does not rotate)."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A matrix A is 5x3 (5 rows, 3 columns). It represents a linear map
+from R^3 to R^5. If the null space has dimension 1, what is the rank?
+"""
+answer = 2.0
+tolerance = 0.0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Rank-nullity: rank + nullity = number of columns = 3. So rank = 3 - 1 = 2."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The matrix [[1,2],[3,4],[5,6]] maps R^2 to R^3. What is the maximum
+possible rank of this matrix?
+"""
+answer = 2.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To prove that the composition of two linear transformations is linear,
+which approach is most direct?
+"""
+correct_strategy = "direct-proof"
+distractors = ["contradiction", "induction", "extreme-principle"]
+explanation = """
+Direct proof: let S and T be linear, and compute (S o T)(au+bv) =
+S(T(au+bv)) = S(aT(u)+bT(v)) = aS(T(u))+bS(T(v)) = a(SoT)(u)+b(SoT)(v).
+Each step uses the linearity of T then S. No contradiction or induction
+needed.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove the rank-nullity theorem: if T: R^n -> R^m is linear, then
+rank(T) + nullity(T) = n.
+"""
+solution_sketch = """
+Let {v1,...,vk} be a basis for null(T). Extend to a basis {v1,...,vk,u1,...,ur}
+for R^n, so k+r = n. We claim {T(u1),...,T(ur)} is a basis for im(T),
+giving rank = r and nullity = k with r+k = n.
+
+Spanning: any w in im(T) is T(x) for some x = sum a_i v_i + sum b_j u_j.
+Since T(v_i) = 0, w = sum b_j T(u_j).
+
+Independence: if sum c_j T(u_j) = 0, then T(sum c_j u_j) = 0, so
+sum c_j u_j is in null(T) = span{v1,...,vk}. But {v1,...,vk,u1,...,ur}
+is independent, so all c_j = 0. QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Started with a basis for the null space"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Extended to a basis for the full domain"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Showed the images of the extension span im(T)"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Showed the images are linearly independent"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded rank + nullity = n"
+weight = 4

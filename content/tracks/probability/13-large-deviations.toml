@@ -1,0 +1,100 @@
+id = "prob-13-large-deviations"
+title = "Large Deviations and Rare Event Simulation"
+track = "probability"
+tier = "research"
+prerequisites = ["prob-09-concentration", "prob-05-law-of-large-numbers"]
+strategy_tags = ["recast", "penultimate-step"]
+concept_tags = ["large-deviations", "concentration-inequality", "expected-value"]
+
+[spark]
+scenario = """
+A cloud provider guarantees 99.999% uptime (five nines). To test whether
+their infrastructure meets this SLA, they would need to observe 100,000
+hours of operation to see a single hour of downtime on average. Direct
+simulation is impractical. Large deviations theory quantifies the exact
+exponential rate at which rare events become rarer, enabling importance
+sampling to estimate these tiny probabilities efficiently.
+"""
+industry_domain = "reliability_engineering"
+connection_question = "If P(failure) ~ e^{-n*I} for some rate I, how would you design a simulation that estimates this probability without waiting for an exponentially long time?"
+
+[ground]
+concept_brief = """
+Large deviations theory studies the exponential decay rate of probabilities
+of rare events. For i.i.d. random variables, Cramer's theorem states that
+P(X_bar_n >= a) ~ exp(-n * I(a)) where I(a) is the rate function (the
+Legendre transform of the log-MGF). This gives the exact exponential rate,
+going beyond the polynomial bounds of Chebyshev.
+"""
+intuition = """
+The LLN says X_bar_n converges to mu. Large deviations asks: how fast do
+the probabilities of 'non-typical' values decay? The answer is exponentially
+fast, and the rate function I(a) measures exactly how 'surprising' the
+value a is. The farther a is from mu, the higher I(a), and the faster
+the probability decays. Think of it as a thermodynamic free energy for
+probability.
+"""
+field_tags = ["probability", "analysis", "information-theory"]
+
+[[ground.definitions]]
+term = "Rate Function"
+statement = "I(a) = sup_t {t*a - log M(t)} where M(t) = E[e^{tX}] is the moment generating function."
+latex = "I(a) = \\sup_{t} \\{ta - \\log M(t)\\}"
+
+[[ground.definitions]]
+term = "Cramer's Theorem"
+statement = "For i.i.d. X_i with mean mu: lim_{n->inf} (1/n) log P(X_bar_n >= a) = -I(a) for a > mu."
+
+[[ground.connections]]
+target_concept = "concentration-inequality"
+relationship = "Chernoff bounds are finite-n versions of Cramer's theorem. The rate function gives the exact exponential rate."
+
+[[ground.connections]]
+target_concept = "generating-function"
+relationship = "The rate function is the Legendre transform of the cumulant generating function (log of the MGF)."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+For X ~ Bernoulli(1/2), the MGF is M(t) = (1 + e^t)/2. The rate
+function is I(a) = a*log(a/(1/2)) + (1-a)*log((1-a)/(1/2)) (binary
+KL divergence). Compute I(0.7). Round to 4 decimal places.
+"""
+answer = 0.0819
+tolerance = 0.001
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "I(0.7) = 0.7*log(0.7/0.5) + 0.3*log(0.3/0.5). Use natural log."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "0.7*ln(1.4) + 0.3*ln(0.6) = 0.7*0.3365 + 0.3*(-0.5108) = 0.2356 - 0.1532 = 0.0823."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Using Cramer's theorem, estimate the probability that the sample mean
+of n=100 fair coin flips exceeds 0.7. Approximate as P ~ exp(-n*I(0.7)).
+Give -log(P) (i.e., n*I(0.7)). Round to 2 decimal places.
+"""
+answer = 8.19
+tolerance = 0.1
+points = 15
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To compute the rate function I(a) for a given distribution, what is the
+essential mathematical operation?
+"""
+correct_strategy = "recast"
+distractors = ["induction", "symmetry", "get-hands-dirty"]
+explanation = """
+Recast: I(a) is the Legendre transform (convex conjugate) of the
+cumulant generating function Lambda(t) = log E[e^{tX}]. This changes
+the problem from a probability question into a convex optimisation:
+I(a) = sup_t {ta - Lambda(t)}, solved by setting the derivative to zero.
+"""
+points = 10

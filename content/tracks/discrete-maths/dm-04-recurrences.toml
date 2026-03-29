@@ -1,0 +1,148 @@
+id = "dm-04-recurrences"
+title = "Recurrences and Algorithm Analysis"
+track = "discrete-maths"
+tier = "foundation"
+prerequisites = ["dm-01-counting"]
+strategy_tags = ["get-hands-dirty", "penultimate-step"]
+concept_tags = ["recurrence-relation"]
+
+[spark]
+scenario = """
+Merge sort splits an array of n elements in half, recursively sorts each half,
+then merges in O(n) time. Its running time satisfies T(n) = 2T(n/2) + n with
+T(1) = 1. What is the closed-form solution? Recurrence relations are how we
+reason about divide-and-conquer algorithms, dynamic programming, and any
+process defined in terms of smaller instances of itself.
+"""
+industry_domain = "software_engineering"
+connection_question = "How would the answer change if the split were into 3 parts of size n/3 instead of 2 parts of size n/2?"
+
+[ground]
+concept_brief = """
+A recurrence relation defines a sequence where each term depends on previous
+terms. Solving a recurrence means finding a closed-form expression (or tight
+asymptotic bound) for the nth term. Common techniques include unrolling
+(repeated substitution), the master theorem for divide-and-conquer recurrences,
+and the characteristic equation method for linear recurrences with constant
+coefficients.
+"""
+intuition = """
+Unrolling a recurrence is like tracing the recursion tree of a program.
+At each level of the tree you do some work, and the total cost is the sum
+across all levels. For T(n) = 2T(n/2) + n, each level contributes n total
+work and there are log2(n) levels, giving T(n) = n * log2(n).
+"""
+field_tags = ["discrete-mathematics", "algorithms", "computer-science"]
+
+[[ground.definitions]]
+term = "Recurrence Relation"
+statement = "An equation expressing a_n in terms of previous terms a_{n-1}, a_{n-2}, etc., together with initial conditions."
+
+[[ground.definitions]]
+term = "Master Theorem"
+statement = "For T(n) = aT(n/b) + O(n^d), the solution depends on whether log_b(a) is less than, equal to, or greater than d."
+
+[[ground.definitions]]
+term = "Characteristic Equation"
+statement = "For a linear recurrence a_n = c1*a_{n-1} + c2*a_{n-2} + ..., the polynomial x^k - c1*x^{k-1} - ... - ck = 0 whose roots determine the closed form."
+
+[[ground.connections]]
+target_concept = "counting"
+relationship = "Many counting sequences (Fibonacci, Catalan) are defined by recurrences."
+
+[[ground.connections]]
+target_concept = "generating-function"
+relationship = "Generating functions translate a recurrence into an algebraic equation that can be solved for a closed form."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Solve T(n) = 2T(n/2) + n with T(1) = 1 for n = 16. Give the exact value T(16).
+"""
+answer = 80
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Unroll: T(16) = 2T(8) + 16. T(8) = 2T(4) + 8. T(4) = 2T(2) + 4. T(2) = 2T(1) + 2 = 4."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "T(2)=4, T(4)=12, T(8)=32, T(16)=80. Alternatively, T(n)=n*log2(n)+n so T(16)=16*4+16=80."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The Fibonacci sequence is defined by F(1)=1, F(2)=1, F(n)=F(n-1)+F(n-2).
+Compute F(10).
+"""
+answer = 55
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Compute step by step: 1,1,2,3,5,8,13,21,34,55."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To prove that T(n) = 2T(n/2) + n implies T(n) = O(n log n), which approach
+from the strategies list is most fitting?
+"""
+correct_strategy = "induction"
+distractors = ["contradiction", "pigeonhole", "extreme-principle"]
+explanation = """
+After guessing T(n) <= c * n * log(n) from the recursion tree, you prove the
+bound by strong induction: assume it holds for smaller values and substitute
+into the recurrence to verify the inductive step.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Solve the recurrence a_n = 5*a_{n-1} - 6*a_{n-2} with a_0=1, a_1=4.
+Find a_4.
+"""
+answer = 146
+tolerance = 0
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "The characteristic equation is x^2 - 5x + 6 = 0, giving roots x=2 and x=3."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "a_n = A*2^n + B*3^n. From a_0=1: A+B=1. From a_1=4: 2A+3B=4. So A=-1, B=2. a_4 = -1*16 + 2*81 = -16+162 = 146."
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove by induction that the solution to T(n) = T(n-1) + n with T(0) = 0
+is T(n) = n(n+1)/2.
+"""
+solution_sketch = """
+Base case: T(0) = 0 = 0*1/2. Inductive step: assume T(k) = k(k+1)/2.
+Then T(k+1) = T(k) + (k+1) = k(k+1)/2 + (k+1) = (k+1)(k/2 + 1) = (k+1)(k+2)/2.
+This matches the formula for n = k+1, completing the induction.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Stated and verified the base case T(0) = 0"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Clearly stated the inductive hypothesis"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Correctly performed the algebraic substitution in the inductive step"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded the proof"
+weight = 5

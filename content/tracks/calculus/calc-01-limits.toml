@@ -1,0 +1,130 @@
+id = "calc-01-limits"
+title = "Limits and Rate Limiting"
+track = "calculus"
+tier = "foundation"
+prerequisites = []
+strategy_tags = ["get-hands-dirty", "draw-picture", "recast"]
+concept_tags = ["limit", "continuity", "epsilon-delta"]
+
+[spark]
+scenario = """
+Your API gateway enforces a rate limit of 1000 requests per second. As
+traffic ramps up, the actual throughput approaches but never quite reaches
+the ceiling. A monitoring dashboard plots requests/second over time and
+the curve flattens asymptotically. Understanding limits tells you exactly
+what value the system converges toward and how quickly it gets there.
+"""
+industry_domain = "backend_engineering"
+connection_question = "If throughput is f(t) = 1000(1 - e^{-t}), what value does f(t) approach as t grows large? How close is it after 5 seconds?"
+
+[ground]
+concept_brief = """
+A limit describes the value a function approaches as its input approaches
+a target. The epsilon-delta definition makes this precise: f(x) -> L as
+x -> a means for every epsilon > 0 there exists delta > 0 such that
+|f(x) - L| < epsilon whenever 0 < |x - a| < delta. Limits underpin
+continuity, derivatives, and integrals.
+"""
+intuition = """
+Imagine zooming in on a graph near the point x = a. If, no matter how far
+you zoom, the function values are squeezed inside a narrow horizontal band
+around L, then L is the limit. The epsilon is how narrow the band is;
+the delta is how close to a you must look. Limits formalise the idea
+of 'approaching without necessarily arriving'.
+"""
+field_tags = ["calculus", "analysis"]
+
+[[ground.definitions]]
+term = "Limit"
+statement = "lim_{x->a} f(x) = L means for every epsilon > 0, there exists delta > 0 such that 0 < |x-a| < delta implies |f(x)-L| < epsilon."
+latex = "\\lim_{x \\to a} f(x) = L"
+
+[[ground.definitions]]
+term = "Continuity"
+statement = "A function f is continuous at a if lim_{x->a} f(x) = f(a)."
+
+[[ground.definitions]]
+term = "One-Sided Limit"
+statement = "The limit as x approaches a from the left (x->a^-) or right (x->a^+). If both exist and agree, the two-sided limit exists."
+
+[[ground.connections]]
+target_concept = "derivative"
+relationship = "The derivative is defined as a limit of the difference quotient: f'(a) = lim_{h->0} (f(a+h) - f(a)) / h."
+
+[[ground.connections]]
+target_concept = "convergence"
+relationship = "A sequence converges when its limit exists; the epsilon-delta definition extends naturally to sequences via epsilon-N."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Compute lim_{x->2} (x^2 - 4) / (x - 2). Simplify algebraically first,
+then evaluate.
+"""
+answer = 4.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "Factor the numerator: x^2 - 4 = (x-2)(x+2)."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+For f(x) = 1000(1 - e^{-x}), compute f(3) rounded to 2 decimal places.
+How close is this to the limit of 1000?
+"""
+answer = 950.21
+tolerance = 0.1
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "e^{-3} is approximately 0.04979. So f(3) = 1000(1 - 0.04979)."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You need to prove that lim_{x->3} (2x + 1) = 7 using the epsilon-delta
+definition. What is the best opening strategy?
+"""
+correct_strategy = "penultimate-step"
+distractors = ["induction", "symmetry", "pigeonhole"]
+explanation = """
+Work backwards from the goal: you need |f(x) - 7| < epsilon. Substitute
+to get |2x + 1 - 7| = 2|x - 3| < epsilon, so |x - 3| < epsilon/2.
+Setting delta = epsilon/2 completes the proof. The penultimate step
+strategy reveals the right delta immediately.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove using the epsilon-delta definition that lim_{x->1} (3x - 1) = 2.
+"""
+solution_sketch = """
+Let epsilon > 0 be given. We need |f(x) - 2| < epsilon whenever
+0 < |x - 1| < delta.
+|3x - 1 - 2| = |3x - 3| = 3|x - 1|.
+Choose delta = epsilon/3. Then 0 < |x-1| < delta implies
+|3x - 3| = 3|x-1| < 3(epsilon/3) = epsilon. QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Stated 'let epsilon > 0 be given'"
+weight = 3
+
+[[solve.sub_problems.rubric]]
+criterion = "Correctly simplified |f(x) - L| to 3|x - 1|"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Chose delta = epsilon/3 with justification"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Completed the chain of inequalities"
+weight = 3

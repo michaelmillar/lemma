@@ -1,0 +1,160 @@
+id = "dm-11-error-correction"
+title = "Boolean Algebra and Error Correction"
+track = "discrete-maths"
+tier = "advanced"
+prerequisites = ["dm-03-modular-arithmetic"]
+strategy_tags = ["get-hands-dirty", "draw-picture", "recast"]
+concept_tags = ["boolean-algebra", "modular-arithmetic"]
+
+[spark]
+scenario = """
+Network packets occasionally suffer bit flips. A Hamming(7,4) code encodes
+4 data bits into a 7-bit codeword by adding 3 parity bits. It can detect and
+correct any single-bit error. The parity checks use XOR (addition mod 2),
+which is Boolean algebra in action. How do the parity bits pinpoint the
+flipped bit?
+"""
+industry_domain = "networking"
+connection_question = "If you doubled the number of parity bits, could you correct 2-bit errors?"
+
+[ground]
+concept_brief = """
+Boolean algebra operates on {0,1} with AND (conjunction), OR (disjunction),
+and NOT (negation). Arithmetic modulo 2 maps directly: addition is XOR,
+multiplication is AND. Error-correcting codes exploit this structure: parity
+check matrices over GF(2) detect and locate errors. The Hamming(7,4) code is
+the simplest single-error-correcting code, using a 3x7 parity check matrix
+whose columns are all nonzero 3-bit strings.
+"""
+intuition = """
+Each parity bit watches a specific subset of data bits. When a bit flips,
+the pattern of parity failures (the syndrome) is a binary number pointing
+to the position of the error. Three parity checks give a 3-bit syndrome,
+distinguishing 7 positions plus the no-error case (2^3 = 8 possibilities).
+"""
+field_tags = ["boolean-algebra", "coding-theory", "discrete-mathematics"]
+
+[[ground.definitions]]
+term = "Boolean Algebra"
+statement = "An algebraic structure (B, AND, OR, NOT) satisfying commutativity, associativity, distributivity, identity, and complement laws."
+
+[[ground.definitions]]
+term = "XOR"
+statement = "Exclusive OR: a XOR b = (a + b) mod 2. Equivalently, 1 if exactly one of a, b is 1."
+
+[[ground.definitions]]
+term = "Hamming Distance"
+statement = "The number of positions in which two binary strings of equal length differ."
+
+[[ground.definitions]]
+term = "Parity Check Matrix"
+statement = "A matrix H such that a valid codeword c satisfies Hc = 0 (over GF(2)). The syndrome Hx reveals the error pattern."
+
+[[ground.connections]]
+target_concept = "modular-arithmetic"
+relationship = "Boolean algebra is arithmetic modulo 2, the simplest finite field GF(2)."
+
+[[ground.connections]]
+target_concept = "counting"
+relationship = "The number of codewords and the error-correcting capacity relate through combinatorial bounds (Hamming bound, Singleton bound)."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The Hamming(7,4) code has minimum distance 3 between any two codewords.
+How many bit errors can it correct per codeword?
+"""
+answer = 1
+tolerance = 0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "A code with minimum distance d can correct floor((d-1)/2) errors."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "floor((3-1)/2) = 1."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Compute the Hamming distance between the 7-bit strings 1011001 and 1100110.
+"""
+answer = 6
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "XOR the strings: 1011001 XOR 1100110 = 0111111. Count the 1s."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "0111111 has six 1-bits, so the Hamming distance is 6."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A Hamming(7,4) code has 2^4 = 16 codewords in a space of 2^7 = 128 possible
+7-bit strings. Each codeword has a 'sphere' of radius 1 (itself plus 7
+single-bit neighbours). How many strings are covered by all spheres combined?
+"""
+answer = 128
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Each sphere has 1 + 7 = 8 strings. 16 codewords * 8 = 128."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "128 = 2^7. The spheres perfectly tile the space: a perfect code."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To simplify the Boolean expression (A AND B) OR (A AND NOT B), which
+strategy applies?
+"""
+correct_strategy = "recast"
+distractors = ["draw-picture", "invariant", "symmetry"]
+explanation = """
+Recast using Boolean algebra laws: A AND (B OR NOT B) = A AND 1 = A. The
+expression simplifies to A. Recasting from a disjunction of conjunctions
+to a factored form is the key step.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that any single-error-correcting binary code of length n with M
+codewords satisfies the Hamming bound: M * (1 + n) <= 2^n.
+"""
+solution_sketch = """
+Each codeword has a sphere of radius 1 containing 1 + n strings (itself plus
+n strings at Hamming distance 1). For single-error correction, these spheres
+must be disjoint: if two spheres overlapped at a string, that string would be
+distance <= 1 from two different codewords, and the decoder could not
+determine which was sent. The total number of strings in all spheres is
+M * (1 + n). Since there are only 2^n strings in total, M * (1 + n) <= 2^n.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Defined the sphere of radius 1 around each codeword"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Argued that spheres must be disjoint for unique decoding"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Counted the total strings covered: M * (1+n)"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded M*(1+n) <= 2^n"
+weight = 5

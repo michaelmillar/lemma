@@ -1,0 +1,133 @@
+id = "calc-02-derivatives"
+title = "Derivatives and Gradient Descent"
+track = "calculus"
+tier = "foundation"
+prerequisites = ["calc-01-limits"]
+strategy_tags = ["get-hands-dirty", "draw-picture", "penultimate-step"]
+concept_tags = ["derivative", "gradient"]
+
+[spark]
+scenario = """
+You are training a linear regression model. The loss function is
+L(w) = (1/n) * sum(y_i - w*x_i)^2. To minimise loss, gradient descent
+repeatedly computes dL/dw and steps in the opposite direction. The
+derivative tells you exactly how the loss changes with each tiny nudge
+to the weight, and the sign tells you which direction reduces it.
+"""
+industry_domain = "machine_learning"
+connection_question = "If L(w) = (w - 3)^2, what is dL/dw? At w = 5, should you increase or decrease w to reduce loss?"
+
+[ground]
+concept_brief = """
+The derivative f'(a) = lim_{h->0} (f(a+h) - f(a))/h measures the
+instantaneous rate of change of f at a. Geometrically it is the slope of
+the tangent line. Derivatives enable optimisation: critical points where
+f'(x) = 0 are candidates for maxima, minima, or saddle points. Gradient
+descent uses derivatives to iteratively move toward minima.
+"""
+intuition = """
+Imagine walking along a hilly landscape. The derivative at your current
+position tells you how steep the hill is and in which direction it slopes.
+Gradient descent is simply the strategy of always stepping downhill. The
+steeper the slope (larger |f'|), the bigger your step. When the slope is
+zero, you have reached a flat spot: a potential minimum.
+"""
+field_tags = ["calculus", "optimisation"]
+
+[[ground.definitions]]
+term = "Derivative"
+statement = "f'(a) = lim_{h->0} (f(a+h) - f(a))/h, the instantaneous rate of change of f at a."
+latex = "f'(a) = \\lim_{h \\to 0} \\frac{f(a+h) - f(a)}{h}"
+
+[[ground.definitions]]
+term = "Gradient Descent Update"
+statement = "w_{t+1} = w_t - eta * f'(w_t), where eta is the learning rate."
+latex = "w_{t+1} = w_t - \\eta \\, f'(w_t)"
+
+[[ground.definitions]]
+term = "Critical Point"
+statement = "A point where f'(x) = 0. May be a local minimum, local maximum, or saddle point."
+
+[[ground.connections]]
+target_concept = "limit"
+relationship = "The derivative is itself a limit. Existence of the derivative requires the limit of the difference quotient to exist."
+
+[[ground.connections]]
+target_concept = "chain-rule"
+relationship = "The chain rule extends differentiation to compositions, enabling backpropagation through layered functions."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Compute the derivative of f(x) = x^3 - 6x^2 + 9x + 1. Find the two
+critical points (where f'(x) = 0). Give the smaller critical point.
+"""
+answer = 1.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "f'(x) = 3x^2 - 12x + 9 = 3(x^2 - 4x + 3) = 3(x-1)(x-3)."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Starting at w = 10, perform one step of gradient descent on
+f(w) = (w - 3)^2 with learning rate eta = 0.1. What is w_1?
+"""
+answer = 8.6
+tolerance = 0.01
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "f'(w) = 2(w - 3). At w = 10, f'(10) = 14. w_1 = 10 - 0.1 * 14."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You need to differentiate f(x) = sin(x) from first principles. Which
+strategy is the best starting point?
+"""
+correct_strategy = "get-hands-dirty"
+distractors = ["contradiction", "pigeonhole", "invariant"]
+explanation = """
+Start by writing out the difference quotient (sin(x+h) - sin(x))/h and
+expanding sin(x+h) using the angle addition formula. Working through the
+algebra concretely reveals the key limit lim_{h->0} sin(h)/h = 1, which
+is needed for the result.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove the power rule: for any positive integer n, the derivative of
+f(x) = x^n is f'(x) = n*x^{n-1}.
+"""
+solution_sketch = """
+By the binomial theorem:
+(x+h)^n = x^n + n*x^{n-1}*h + (n choose 2)*x^{n-2}*h^2 + ... + h^n.
+
+So (f(x+h) - f(x))/h = (n*x^{n-1}*h + O(h^2))/h = n*x^{n-1} + O(h).
+
+Taking the limit as h -> 0 gives f'(x) = n*x^{n-1}. QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied the binomial theorem to expand (x+h)^n"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Correctly subtracted x^n and divided by h"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Took the limit as h -> 0, discarding higher-order terms"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Arrived at n*x^{n-1} with clear reasoning"
+weight = 3

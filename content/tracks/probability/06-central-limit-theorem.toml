@@ -1,0 +1,108 @@
+id = "prob-06-central-limit-theorem"
+title = "Central Limit Theorem and Confidence Intervals"
+track = "probability"
+tier = "core"
+prerequisites = ["prob-04-variance", "prob-05-law-of-large-numbers"]
+strategy_tags = ["recast", "get-hands-dirty"]
+concept_tags = ["central-limit-theorem", "normal-distribution", "confidence-interval", "variance"]
+
+[spark]
+scenario = """
+Your platform processes 50,000 API requests per minute. Mean latency is
+120ms with standard deviation 40ms. The SRE team needs to guarantee that
+the average latency over any 1-minute window stays below 125ms with 99%
+confidence. Is the current system sufficient?
+"""
+industry_domain = "platform_engineering"
+connection_question = "You are averaging 50,000 measurements. What does the CLT tell you about the distribution of that average?"
+
+[ground]
+concept_brief = """
+The Central Limit Theorem states that the standardised sum of n independent
+random variables converges in distribution to the standard normal N(0,1)
+as n grows, regardless of the original distribution (provided finite
+variance). This is why the normal distribution appears everywhere.
+"""
+intuition = """
+Add enough independent random things together and the sum looks like a
+bell curve. It does not matter if the individual variables are uniform,
+exponential, or anything else. The CLT is the reason confidence intervals,
+hypothesis tests, and error bars work in practice.
+"""
+field_tags = ["probability", "statistics"]
+
+[[ground.definitions]]
+term = "Central Limit Theorem"
+statement = "If X_1,...,X_n are i.i.d. with mean mu and variance sigma^2, then sqrt(n)*(X_bar - mu)/sigma converges in distribution to N(0,1)."
+
+[[ground.definitions]]
+term = "Standard Normal"
+statement = "The normal distribution with mean 0 and variance 1, denoted N(0,1) or Z."
+
+[[ground.definitions]]
+term = "Confidence Interval"
+statement = "An interval [X_bar - z*sigma/sqrt(n), X_bar + z*sigma/sqrt(n)] that contains the true mean with specified probability."
+
+[[ground.connections]]
+target_concept = "law-of-large-numbers"
+relationship = "LLN says the sample mean converges to mu. CLT quantifies how fast and describes the shape of fluctuations around mu."
+
+[[ground.connections]]
+target_concept = "concentration-inequality"
+relationship = "Concentration inequalities give non-asymptotic bounds, while CLT gives the limiting distribution."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+With n=50000, mu=120ms, sigma=40ms, what is the standard deviation of
+the sample mean X_bar? Round to 4 decimal places (in ms).
+"""
+answer = 0.1789
+tolerance = 0.001
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "SD(X_bar) = sigma / sqrt(n) = 40 / sqrt(50000)."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+What is the probability that X_bar exceeds 125ms? Use the CLT
+approximation and note that for Z ~ N(0,1), P(Z > 27.95) is
+effectively 0. Express as a decimal.
+"""
+answer = 0.0
+tolerance = 0.001
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Z = (125 - 120) / 0.1789 = 27.95. P(Z > 27.95) is vanishingly small."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+For a 99% confidence interval for the true mean, the z-value is 2.576.
+If X_bar = 120ms and SD(X_bar) = 0.1789ms, what is the half-width of
+the CI? Round to 4 decimal places.
+"""
+answer = 0.4609
+tolerance = 0.001
+points = 10
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To show that the sum of n independent Bernoulli(0.5) variables
+approximates a normal distribution, which strategy best builds intuition?
+"""
+correct_strategy = "get-hands-dirty"
+distractors = ["contradiction", "symmetry", "penultimate-step"]
+explanation = """
+Compute the distributions of the sum for n=1,2,3,4,5 and plot them.
+You will see the binomial distribution becoming increasingly bell-shaped.
+Getting your hands dirty with small cases builds the intuition that the
+formal CLT statement captures.
+"""
+points = 10

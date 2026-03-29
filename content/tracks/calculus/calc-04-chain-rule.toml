@@ -1,0 +1,141 @@
+id = "calc-04-chain-rule"
+title = "Chain Rule and Backpropagation"
+track = "calculus"
+tier = "foundation"
+prerequisites = ["calc-02-derivatives"]
+strategy_tags = ["get-hands-dirty", "penultimate-step", "recast"]
+concept_tags = ["chain-rule", "derivative"]
+
+[spark]
+scenario = """
+In a neural network, each layer applies a function to the previous layer's
+output. During training, backpropagation computes how the loss changes
+with respect to each weight by applying the chain rule through every
+layer. Without the chain rule, training deep networks would be impossible:
+it is the mathematical engine behind modern AI.
+"""
+industry_domain = "machine_learning"
+connection_question = "If a two-layer network computes y = sigma(W2 * sigma(W1 * x)), how many times do you apply the chain rule to get dy/dW1?"
+
+[ground]
+concept_brief = """
+The chain rule states that the derivative of a composition is the product
+of the derivatives along the chain: (f(g(x)))' = f'(g(x)) * g'(x). For
+multivariate functions this generalises to matrix multiplication of
+Jacobians. Backpropagation is simply the chain rule applied systematically
+from output to input through a computational graph.
+"""
+intuition = """
+Think of a chain of gears. If gear A turns gear B at 3x speed, and gear B
+turns gear C at 2x speed, then gear A turns gear C at 6x speed. The chain
+rule says: multiply the ratios along the chain. In a neural network, each
+layer is a gear, and backpropagation multiplies the 'gear ratios'
+(local derivatives) from output back to input.
+"""
+field_tags = ["calculus", "machine-learning"]
+
+[[ground.definitions]]
+term = "Chain Rule"
+statement = "If y = f(g(x)), then dy/dx = f'(g(x)) * g'(x). For compositions of n functions, the derivatives multiply."
+latex = "\\frac{dy}{dx} = \\frac{dy}{du} \\cdot \\frac{du}{dx}"
+
+[[ground.definitions]]
+term = "Backpropagation"
+statement = "An algorithm applying the chain rule to compute gradients of a loss function with respect to all weights in a computational graph."
+
+[[ground.connections]]
+target_concept = "derivative"
+relationship = "The chain rule extends single-variable differentiation to compositions. Without it, derivatives of composite functions are inaccessible."
+
+[[ground.connections]]
+target_concept = "gradient"
+relationship = "In multiple dimensions, the chain rule multiplies Jacobian matrices, producing the gradient of the composite function."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Let f(x) = (3x^2 + 1)^5. Using the chain rule, compute f'(1).
+"""
+answer = 7680.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "Let u = 3x^2 + 1. Then f = u^5, so f' = 5u^4 * 6x. At x = 1: u = 4, so f'(1) = 5 * 256 * 6 = 7680."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Consider a simple two-layer computation: z = 2x, then y = z^3. Using the
+chain rule, compute dy/dx at x = 1.
+"""
+answer = 24.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "dy/dz = 3z^2, dz/dx = 2. At x = 1, z = 2, so dy/dx = 3(4)(2) = 24."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You need to differentiate f(x) = e^{sin(x^2)}. There are three nested
+functions. What strategy best reveals the structure?
+"""
+correct_strategy = "penultimate-step"
+distractors = ["symmetry", "extreme-principle", "contradiction"]
+explanation = """
+Work from the outermost function inward. The penultimate step before
+the final answer is differentiating e^u (keeping the inner functions
+intact), then peeling off each layer: d/dx[e^{sin(x^2)}] =
+e^{sin(x^2)} * cos(x^2) * 2x. Each step asks 'what is the outermost
+function and its derivative?'
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove the chain rule for the composition of two differentiable functions:
+if y = f(u) and u = g(x), then dy/dx = (dy/du) * (du/dx).
+"""
+solution_sketch = """
+Let u = g(x) and y = f(u). For an increment Delta_x:
+Delta_u = g(x + Delta_x) - g(x)
+Delta_y = f(u + Delta_u) - f(u)
+
+When Delta_u is not zero:
+Delta_y/Delta_x = (Delta_y/Delta_u) * (Delta_u/Delta_x).
+
+Since g is differentiable, g is continuous, so Delta_u -> 0 as Delta_x -> 0.
+Taking the limit:
+dy/dx = lim_{Delta_x->0} (Delta_y/Delta_u) * (Delta_u/Delta_x)
+      = (dy/du) * (du/dx). QED.
+
+(The rigorous version handles the case Delta_u = 0 by defining
+epsilon(Delta_u) such that Delta_y = f'(u)*Delta_u + epsilon*Delta_u
+with epsilon -> 0 as Delta_u -> 0.)
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Set up the increments Delta_u and Delta_y correctly"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Expressed Delta_y/Delta_x as a product of two ratios"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Used continuity of g to argue Delta_u -> 0"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Took the limit and obtained the product of derivatives"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Acknowledged or handled the Delta_u = 0 edge case"
+weight = 4

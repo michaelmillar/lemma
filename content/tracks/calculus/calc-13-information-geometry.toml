@@ -1,0 +1,150 @@
+id = "calc-13-information-geometry"
+title = "Information Geometry and Natural Gradient"
+track = "calculus"
+tier = "research"
+prerequisites = ["calc-09-convergence"]
+strategy_tags = ["change-viewpoint", "recast", "penultimate-step"]
+concept_tags = ["gradient", "optimisation", "derivative"]
+
+[spark]
+scenario = """
+Standard gradient descent treats all parameter directions equally, but
+in a neural network, some directions in parameter space change the output
+distribution far more than others. The Fisher information matrix captures
+this geometry. The natural gradient, which multiplies the gradient by the
+inverse Fisher matrix, takes steps of equal size in distribution space
+rather than parameter space. This is why algorithms like Adam and K-FAC
+outperform vanilla SGD: they implicitly approximate the natural gradient.
+"""
+industry_domain = "machine_learning"
+connection_question = "If you reparameterise a model (e.g., replace w with w^2), the ordinary gradient changes. Does the natural gradient change? Why or why not?"
+
+[ground]
+concept_brief = """
+Information geometry treats the space of probability distributions as a
+Riemannian manifold. The Fisher information matrix F is the metric tensor:
+it defines distances between nearby distributions. The natural gradient
+is F^{-1} * nabla L, which accounts for the curvature of the statistical
+manifold. This ensures that optimisation steps are invariant to
+reparameterisation and corresponds to steepest descent in KL divergence.
+"""
+intuition = """
+Imagine optimising on the surface of a sphere. Ordinary gradient descent
+ignores the curvature and tries to step in a straight line, overshooting
+along curved directions. The natural gradient accounts for the curvature,
+stepping along the surface. The Fisher information matrix is the 'map
+legend' that tells you how distances in parameter space translate to
+distances between probability distributions. Directions where the
+distribution is sensitive get smaller steps; insensitive directions get
+larger steps.
+"""
+field_tags = ["calculus", "information-theory", "differential-geometry"]
+
+[[ground.definitions]]
+term = "Fisher Information Matrix"
+statement = "F_{ij} = E[d(log p)/d(theta_i) * d(log p)/d(theta_j)], the expected outer product of the score function."
+latex = "F_{ij} = \\mathbb{E}\\left[\\frac{\\partial \\log p}{\\partial \\theta_i} \\frac{\\partial \\log p}{\\partial \\theta_j}\\right]"
+
+[[ground.definitions]]
+term = "Natural Gradient"
+statement = "The natural gradient is F^{-1} * nabla L, where F is the Fisher information matrix."
+latex = "\\tilde{\\nabla} L = F^{-1} \\nabla L"
+
+[[ground.definitions]]
+term = "Reparameterisation Invariance"
+statement = "The natural gradient is invariant to smooth reparameterisations of the model parameters."
+
+[[ground.connections]]
+target_concept = "gradient"
+relationship = "The natural gradient modifies the ordinary gradient by accounting for the geometry of the parameter space."
+
+[[ground.connections]]
+target_concept = "optimisation"
+relationship = "Natural gradient descent converges faster than ordinary gradient descent because it adapts to the local curvature."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+For a Bernoulli model p(x; theta) = theta^x * (1-theta)^{1-x}, the
+Fisher information is I(theta) = 1/(theta*(1-theta)). Compute I(0.3).
+Round to 2 decimal places.
+"""
+answer = 4.76
+tolerance = 0.01
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "I(0.3) = 1/(0.3 * 0.7) = 1/0.21."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Continuing with the Bernoulli model: the ordinary gradient of the
+log-likelihood at theta = 0.3 given observation x = 1 is
+d(log p)/d(theta) = x/theta - (1-x)/(1-theta) = 1/0.3 = 3.333.
+What is the natural gradient (I^{-1} * gradient)? Round to 2 decimal
+places.
+"""
+answer = 0.7
+tolerance = 0.01
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "Natural gradient = I^{-1} * 3.333 = 0.21 * 3.333 = 0.7."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You want to understand why Adam optimiser works well in practice. What
+strategy best connects Adam to the natural gradient?
+"""
+correct_strategy = "change-viewpoint"
+distractors = ["induction", "contradiction", "pigeonhole"]
+explanation = """
+Change viewpoint from 'Adam as an adaptive learning rate heuristic' to
+'Adam as an approximate natural gradient method'. Adam's second-moment
+estimate approximates the diagonal of the Fisher information matrix. Seen
+from this geometric perspective, Adam works because it implicitly accounts
+for the curvature of the loss landscape in distribution space.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that the Fisher information matrix F is positive semi-definite.
+"""
+solution_sketch = """
+For any vector v:
+v^T F v = v^T E[s * s^T] v where s = nabla_theta log p(x; theta).
+
+= E[v^T s * s^T v]      (linearity of expectation)
+= E[(v^T s)^2]           (since v^T s is a scalar)
+= E[(s^T v)^2]
+>= 0                     (expectation of a non-negative quantity).
+
+Therefore v^T F v >= 0 for all v, so F is positive semi-definite. QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Wrote v^T F v in terms of the score function s"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied linearity of expectation correctly"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Recognised that (v^T s)^2 is always non-negative"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded F is positive semi-definite"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Reasoning is clear and complete"
+weight = 3

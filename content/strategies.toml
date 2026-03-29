@@ -1,0 +1,139 @@
+[[strategies]]
+id = "understand"
+label = "Understand the Problem"
+category = "polya_phase"
+description = "Identify the unknown, the data, and the conditions. Restate the problem in your own words."
+
+[[strategies]]
+id = "plan"
+label = "Devise a Plan"
+category = "polya_phase"
+description = "Find a connection between the data and the unknown. Consider related problems you have solved."
+
+[[strategies]]
+id = "execute"
+label = "Carry Out the Plan"
+category = "polya_phase"
+description = "Implement your plan step by step, checking each step as you go."
+
+[[strategies]]
+id = "look-back"
+label = "Look Back"
+category = "polya_phase"
+description = "Check the result. Can you derive it differently? Can you use the method elsewhere?"
+
+[[strategies]]
+id = "get-hands-dirty"
+label = "Get Your Hands Dirty"
+category = "zeitz_strategy"
+description = "Try small cases, compute examples, look for patterns before attempting a general proof."
+aliases = ["experiment", "try small cases", "compute examples"]
+
+[[strategies]]
+id = "penultimate-step"
+label = "The Penultimate Step"
+category = "zeitz_strategy"
+description = "Work backwards from the goal. What must be true just before the conclusion?"
+aliases = ["work backwards"]
+
+[[strategies]]
+id = "wishful-thinking"
+label = "Wishful Thinking"
+category = "zeitz_strategy"
+description = "Assume the ideal scenario holds, then relax constraints to see what breaks."
+
+[[strategies]]
+id = "draw-picture"
+label = "Draw a Picture"
+category = "zeitz_strategy"
+description = "Visualise the problem with a diagram, graph, or geometric representation."
+aliases = ["draw a figure", "visualise"]
+
+[[strategies]]
+id = "recast"
+label = "Recast the Problem"
+category = "zeitz_strategy"
+description = "Change the representation: algebraic to geometric, discrete to continuous, or vice versa."
+aliases = ["change representation"]
+
+[[strategies]]
+id = "change-viewpoint"
+label = "Change the Point of View"
+category = "zeitz_strategy"
+description = "Consider the problem from a different perspective or count the same thing two ways."
+aliases = ["double counting"]
+
+[[strategies]]
+id = "symmetry"
+label = "Symmetry"
+category = "zeitz_tactic"
+description = "Exploit or impose symmetry to simplify the problem."
+aliases = ["symmetry argument"]
+
+[[strategies]]
+id = "extreme-principle"
+label = "Extreme Principle"
+category = "zeitz_tactic"
+description = "Consider the maximum, minimum, or other extremal elements of the problem."
+aliases = ["extremal principle", "consider extremes"]
+
+[[strategies]]
+id = "pigeonhole"
+label = "Pigeonhole Principle"
+category = "zeitz_tactic"
+description = "If n+1 objects are placed in n boxes, at least one box contains two or more objects."
+aliases = ["pigeonhole principle", "dirichlet principle"]
+
+[[strategies]]
+id = "invariant"
+label = "Invariant"
+category = "zeitz_tactic"
+description = "Find a quantity that does not change under the operations of the problem."
+aliases = ["conservation law", "parity argument"]
+
+[[strategies]]
+id = "monovariant"
+label = "Monovariant"
+category = "zeitz_tactic"
+description = "Find a quantity that always increases or always decreases under the problem's operations."
+aliases = ["monotone quantity"]
+
+[[strategies]]
+id = "direct-proof"
+label = "Direct Proof"
+category = "proof_method"
+description = "Prove the statement by a chain of logical deductions from the hypotheses."
+
+[[strategies]]
+id = "contradiction"
+label = "Proof by Contradiction"
+category = "proof_method"
+description = "Assume the statement is false and derive a logical impossibility."
+aliases = ["reductio ad absurdum"]
+
+[[strategies]]
+id = "induction"
+label = "Mathematical Induction"
+category = "proof_method"
+description = "Prove a base case, then show that if the statement holds for n, it holds for n+1."
+aliases = ["strong induction", "inductive proof"]
+
+[[strategies]]
+id = "contrapositive"
+label = "Contrapositive"
+category = "proof_method"
+description = "Instead of proving 'if P then Q', prove the equivalent 'if not Q then not P'."
+
+[[strategies]]
+id = "construction"
+label = "Proof by Construction"
+category = "proof_method"
+description = "Prove existence by explicitly building the object or providing an algorithm."
+aliases = ["constructive proof"]
+
+[[strategies]]
+id = "bijection"
+label = "Bijection"
+category = "proof_method"
+description = "Establish a one-to-one correspondence between two sets to prove they have the same size."
+aliases = ["combinatorial bijection", "one-to-one correspondence"]

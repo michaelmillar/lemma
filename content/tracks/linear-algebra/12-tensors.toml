@@ -1,0 +1,149 @@
+id = "la-12-tensors"
+title = "Tensor Products and Deep Learning"
+track = "linear-algebra"
+tier = "research"
+prerequisites = ["la-06-inner-products"]
+strategy_tags = ["recast", "change-viewpoint", "get-hands-dirty"]
+concept_tags = ["matrix", "linear-transformation", "inner-product"]
+
+[spark]
+scenario = """
+In the transformer architecture that powers GPT and BERT, the attention
+mechanism computes Attention(Q, K, V) = softmax(Q K^T / sqrt(d)) V.
+The Q K^T term is a matrix product that measures the similarity between
+every query and every key, producing an attention score matrix. Each
+head operates on a different learned linear projection of the input.
+Multi-head attention is a direct application of tensor products: the
+input is projected into multiple subspaces, processed independently, and
+recombined. Understanding the linear algebra of tensors clarifies why
+transformers scale and how attention patterns emerge.
+"""
+industry_domain = "deep_learning"
+connection_question = "Why does dividing by sqrt(d) matter in Q K^T / sqrt(d)? What happens to the softmax gradients without this scaling?"
+
+[ground]
+concept_brief = """
+A tensor product V tensor W creates a new vector space whose elements
+represent bilinear relationships between V and W. In deep learning,
+tensor products appear as outer products of embeddings, multi-head
+attention projections, and higher-order interactions between features.
+The key property is the universal property: any bilinear map from V x W
+factors uniquely through V tensor W.
+"""
+intuition = """
+A matrix is a 2-dimensional array of numbers. A tensor generalises this
+to any number of dimensions. A vector is a 1-tensor, a matrix is a
+2-tensor, and the attention scores across multiple heads form a
+3-tensor. The tensor product is the operation that combines two vector
+spaces into one, capturing all pairwise interactions. In Q K^T, each
+entry (i,j) captures the interaction between query i and key j. This is
+the essence of bilinearity: the result depends linearly on each input
+separately.
+"""
+field_tags = ["linear-algebra"]
+
+[[ground.definitions]]
+term = "Tensor Product"
+statement = "For vector spaces V and W, the tensor product V tensor W is a vector space equipped with a bilinear map V x W -> V tensor W satisfying the universal property."
+
+[[ground.definitions]]
+term = "Bilinear Map"
+statement = "A function f: V x W -> U that is linear in each argument separately: f(av1+bv2, w) = af(v1,w) + bf(v2,w) and similarly in the second argument."
+
+[[ground.definitions]]
+term = "Multi-head Attention"
+statement = "Projects input into h separate subspaces, computes attention independently in each, and concatenates results. Equivalent to learning h different bilinear forms simultaneously."
+
+[[ground.connections]]
+target_concept = "inner-product"
+relationship = "The Q K^T computation in attention is a batch of inner products: entry (i,j) = <q_i, k_j>. The inner product structure underlies the similarity measurement."
+
+[[ground.connections]]
+target_concept = "matrix"
+relationship = "The attention score matrix softmax(Q K^T / sqrt(d)) is a stochastic matrix whose rows sum to 1, acting as a learned linear combination of value vectors."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+In a single attention head with d = 64, queries Q and keys K are both
+n x 64 matrices. The raw attention score for position i attending to
+position j is q_i^T k_j. If ||q_i|| = 8 and ||k_j|| = 8 and they are
+perfectly aligned, what is q_i^T k_j / sqrt(d)?
+"""
+answer = 8.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "q_i^T k_j = ||q_i|| * ||k_j|| * cos(0) = 64. Divide by sqrt(64) = 8. Result = 8."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A transformer has 12 attention heads, each with d_k = 64. The input
+embedding dimension is d_model = 768. Each head projects using matrices
+W_Q, W_K, W_V of size 768 x 64. How many total parameters are in the
+Q, K, V projection matrices across all heads?
+"""
+answer = 1769472.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "Per head: 3 matrices of 768*64 = 147456. Times 12 heads = 12 * 147456 = 1769472."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To understand why multi-head attention works better than single-head
+attention with the same total dimension, which reasoning strategy helps
+most?
+"""
+correct_strategy = "change-viewpoint"
+distractors = ["contradiction", "induction", "extreme-principle"]
+explanation = """
+Change viewpoint: instead of viewing attention as one large bilinear
+form in d-dimensional space, change viewpoint to see it as h independent
+bilinear forms in d/h-dimensional subspaces. Each head can specialise
+in a different type of relationship (syntactic, semantic, positional).
+The concatenation recombines these perspectives. The key insight is that
+multiple low-rank bilinear forms capture more diverse patterns than a
+single full-rank one.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that the map (u, v) -> u v^T (outer product) from R^m x R^n to
+R^{m x n} is bilinear.
+"""
+solution_sketch = """
+Linearity in the first argument: (au1 + bu2) v^T = a(u1 v^T) + b(u2 v^T)
+by distributivity of matrix multiplication over addition and
+compatibility with scalar multiplication.
+
+Linearity in the second argument: u (av1 + bv2)^T = u (av1^T + bv2^T)
+= a(u v1^T) + b(u v2^T) by the same properties.
+
+Since the map is linear in each argument separately, it is bilinear. QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Verified linearity in the first argument"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Verified linearity in the second argument"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Used correct properties of matrix arithmetic"
+weight = 3
+
+[[solve.sub_problems.rubric]]
+criterion = "Stated the bilinearity conclusion"
+weight = 2

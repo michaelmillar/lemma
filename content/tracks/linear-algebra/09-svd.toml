@@ -1,0 +1,146 @@
+id = "la-09-svd"
+title = "SVD and Latent Semantic Analysis"
+track = "linear-algebra"
+tier = "advanced"
+prerequisites = ["la-08-matrix-decompositions"]
+strategy_tags = ["recast", "change-viewpoint", "get-hands-dirty"]
+concept_tags = ["svd", "eigenvalue", "rank"]
+
+[spark]
+scenario = """
+Latent Semantic Analysis (LSA) builds a term-document matrix where each
+entry counts how often a word appears in a document. This matrix is huge
+and sparse. Applying the SVD and truncating to rank k reveals hidden
+'topics': groups of words that co-occur across documents. Two documents
+about 'cars' and 'automobiles' will have similar projections in the
+reduced space even if they share no words. Search engines, legal
+discovery tools, and academic databases use LSA to find semantically
+related documents.
+"""
+industry_domain = "information_retrieval"
+connection_question = "Why does truncating the SVD remove noise but preserve semantic structure? What role do the small singular values play?"
+
+[ground]
+concept_brief = """
+The SVD of the term-document matrix A = U Sigma V^T separates the
+matrix into three interpretable pieces. U's columns are 'topic'
+directions in word space. V's columns are 'topic' directions in document
+space. Sigma's diagonal entries weight the importance of each topic.
+Truncating to rank k keeps the k strongest topics, filtering out noise
+and revealing latent semantic relationships.
+"""
+intuition = """
+Think of the full term-document matrix as a noisy photograph. The SVD
+decomposes it into layers ordered by importance (singular values). The
+first layer captures the dominant pattern (the main image). Each
+subsequent layer adds finer detail. The last layers are mostly noise.
+Keeping only the top k layers gives you a cleaner, more meaningful
+picture of the data. In text, those layers correspond to latent topics.
+"""
+field_tags = ["linear-algebra"]
+
+[[ground.definitions]]
+term = "Latent Semantic Analysis"
+statement = "A technique that applies truncated SVD to a term-document matrix to discover hidden semantic relationships between terms and documents."
+
+[[ground.definitions]]
+term = "Truncated SVD"
+statement = "The rank-k approximation A_k = U_k Sigma_k V_k^T formed by keeping only the k largest singular values and their singular vectors."
+
+[[ground.definitions]]
+term = "Frobenius Error"
+statement = "The approximation error ||A - A_k||_F = sqrt(sigma_{k+1}^2 + ... + sigma_r^2), the root sum of squares of the discarded singular values."
+
+[[ground.connections]]
+target_concept = "pca"
+relationship = "PCA on centred data is equivalent to SVD: the principal components are the right singular vectors, and the explained variances are sigma_i^2 / (n-1)."
+
+[[ground.connections]]
+target_concept = "matrix-decomposition"
+relationship = "The SVD is the most general matrix decomposition, applicable to any matrix regardless of shape or rank."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A term-document matrix has singular values 100, 80, 40, 20, 5, 2, 1.
+What fraction of the total 'energy' (sum of squared singular values) is
+captured by a rank-3 approximation? Give your answer to 3 decimal
+places.
+"""
+answer = 0.927
+tolerance = 0.001
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "Total energy = 10000+6400+1600+400+25+4+1 = 18430. Top 3 = 18000. Fraction = 18000/18430."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A rank-k SVD approximation of a 10000x5000 matrix stores U_k (10000xk),
+Sigma_k (k values), and V_k (5000xk). For k = 200, how many numbers
+are stored in total?
+"""
+answer = 3000200.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "10000*200 + 200 + 5000*200 = 2000000 + 200 + 1000000 = 3000200."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+Two documents share no common words but are about the same topic. To
+discover their similarity from the term-document matrix, which strategy
+is most effective?
+"""
+correct_strategy = "change-viewpoint"
+distractors = ["direct-proof", "pigeonhole", "invariant"]
+explanation = """
+Change viewpoint: instead of comparing documents in the original
+high-dimensional word space (where they share no coordinates), change
+viewpoint to the latent topic space via the truncated SVD. In this
+reduced space, both documents project onto similar topic directions,
+revealing their hidden similarity. The SVD changes the coordinate system
+from words to topics.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that the rank-k truncated SVD A_k is the best rank-k
+approximation of A in the Frobenius norm (Eckart-Young theorem for
+Frobenius norm).
+"""
+solution_sketch = """
+Let A = U Sigma V^T with singular values sigma_1 >= ... >= sigma_r.
+For any rank-k matrix B, consider ||A - B||_F^2. Since U and V are
+orthogonal, ||A - B||_F = ||Sigma - U^T B V||_F. Let C = U^T B V; then
+rank(C) <= k. We need to minimise sum_{i,j} (Sigma_{ij} - C_{ij})^2
+where Sigma is diagonal with entries sigma_i. For diagonal entries,
+the best rank-k C sets C_{ii} = sigma_i for i <= k and C_{ii} = 0 for
+i > k (and all off-diagonal to zero). Then ||A - A_k||_F^2 =
+sigma_{k+1}^2 + ... + sigma_r^2, and no rank-k matrix can achieve a
+smaller error. QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Used orthogonal invariance of the Frobenius norm"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Reduced the problem to approximating a diagonal matrix"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Showed the optimal rank-k diagonal approximation keeps the top k entries"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Computed the residual error correctly"
+weight = 5

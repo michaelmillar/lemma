@@ -1,0 +1,151 @@
+id = "dm-05-inclusion-exclusion"
+title = "Inclusion-Exclusion and Bug Triage"
+track = "discrete-maths"
+tier = "core"
+prerequisites = ["dm-01-counting"]
+strategy_tags = ["draw-picture", "get-hands-dirty", "change-viewpoint"]
+concept_tags = ["inclusion-exclusion", "counting", "combinatorics"]
+
+[spark]
+scenario = """
+A QA dashboard tracks bugs across three platforms: Windows, macOS, and Linux.
+Of 200 bugs total, 120 affect Windows, 90 affect macOS, 70 affect Linux,
+40 affect both Windows and macOS, 30 affect both Windows and Linux, 20 affect
+both macOS and Linux, and 10 affect all three. How many bugs affect at least
+one platform?
+"""
+industry_domain = "software_engineering"
+connection_question = "What would go wrong if you simply added 120 + 90 + 70?"
+
+[ground]
+concept_brief = """
+The inclusion-exclusion principle (PIE) computes the size of a union of sets
+by alternately adding and subtracting intersection sizes:
+|A ∪ B ∪ C| = |A| + |B| + |C| - |A∩B| - |A∩C| - |B∩C| + |A∩B∩C|.
+It corrects for over-counting when elements belong to multiple sets. The
+principle generalises to n sets with 2^n - 1 terms.
+"""
+intuition = """
+Picture a Venn diagram of three overlapping circles. Adding the three circles
+counts elements in two-way overlaps twice and elements in the three-way
+overlap three times. Subtracting pairwise intersections removes one copy of
+each double-count but also removes the triple overlap entirely. Adding it
+back once restores it to the correct count of one.
+"""
+field_tags = ["combinatorics", "discrete-mathematics", "set-theory"]
+
+[[ground.definitions]]
+term = "Inclusion-Exclusion Principle (2 sets)"
+statement = "|A ∪ B| = |A| + |B| - |A ∩ B|."
+
+[[ground.definitions]]
+term = "Inclusion-Exclusion Principle (3 sets)"
+statement = "|A ∪ B ∪ C| = |A|+|B|+|C| - |A∩B| - |A∩C| - |B∩C| + |A∩B∩C|."
+
+[[ground.definitions]]
+term = "Derangement"
+statement = "A permutation with no fixed points. The count D(n) = n! * sum_{k=0}^{n} (-1)^k / k! is derived via inclusion-exclusion."
+
+[[ground.connections]]
+target_concept = "counting"
+relationship = "Inclusion-exclusion extends basic counting to overlapping sets."
+
+[[ground.connections]]
+target_concept = "binomial-coefficient"
+relationship = "The general inclusion-exclusion formula has C(n,k) intersection terms of size k."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Using the bug triage scenario: W=120, M=90, L=70, W∩M=40, W∩L=30,
+M∩L=20, W∩M∩L=10. How many bugs affect at least one platform?
+"""
+answer = 200
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Apply PIE: 120+90+70 - 40-30-20 + 10."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "280 - 90 + 10 = 200."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+How many integers from 1 to 100 are divisible by 2, 3, or 5?
+"""
+answer = 74
+tolerance = 0
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Let A = multiples of 2 (50), B = multiples of 3 (33), C = multiples of 5 (20). Compute intersections using LCMs."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "|A∩B|=16, |A∩C|=10, |B∩C|=6, |A∩B∩C|=3. PIE: 50+33+20-16-10-6+3 = 74."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+How many derangements of {1,2,3,4} are there? (Permutations where no element
+remains in its original position.)
+"""
+answer = 9
+tolerance = 0
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "D(4) = 4! * (1 - 1/1! + 1/2! - 1/3! + 1/4!) = 24*(1 - 1 + 1/2 - 1/6 + 1/24)."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "24 * (12/24 - 4/24 + 1/24) = 24 * 9/24 = 9."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You want to count permutations of {1,...,n} that avoid a specific pattern. The
+direct count is hard, but counting those that DO contain the pattern and
+subtracting from n! is easier. Which strategy does this exemplify?
+"""
+correct_strategy = "change-viewpoint"
+distractors = ["symmetry", "invariant", "extreme-principle"]
+explanation = """
+Counting the complement and subtracting is a classic change of viewpoint.
+Instead of counting what you want directly, count what you do not want and
+subtract from the total.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove the inclusion-exclusion formula for two sets:
+|A ∪ B| = |A| + |B| - |A ∩ B|.
+"""
+solution_sketch = """
+Partition A ∪ B into three disjoint parts: A \\ B, B \\ A, and A ∩ B.
+Then |A ∪ B| = |A \\ B| + |B \\ A| + |A ∩ B|.
+Since |A| = |A \\ B| + |A ∩ B| and |B| = |B \\ A| + |A ∩ B|, we get
+|A| + |B| = |A \\ B| + |B \\ A| + 2|A ∩ B|.
+Subtracting |A ∩ B| from both sides gives the result.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Decomposed A ∪ B into disjoint parts"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Expressed |A| and |B| in terms of the disjoint parts"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Derived the formula algebraically"
+weight = 5

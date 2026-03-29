@@ -1,0 +1,108 @@
+id = "prob-07-markov-chains"
+title = "Markov Chains and PageRank"
+track = "probability"
+tier = "core"
+prerequisites = ["prob-03-expected-value"]
+strategy_tags = ["recast", "get-hands-dirty", "draw-picture"]
+concept_tags = ["markov-chain", "transition-matrix", "stationary-distribution"]
+
+[spark]
+scenario = """
+Google's original PageRank algorithm models a 'random surfer' who follows
+links on the web. At each page, the surfer clicks a random outgoing link
+(or jumps to a random page with probability 0.15). The importance of a page
+is the long-run fraction of time the surfer spends there. This is a
+stationary distribution of a Markov chain.
+"""
+industry_domain = "search_engineering"
+connection_question = "Why does the random surfer eventually settle into a stable pattern, and why does it not matter where they start?"
+
+[ground]
+concept_brief = """
+A Markov chain is a sequence of random variables where the future depends
+only on the present state, not the history (the memoryless property).
+Given a transition matrix P, the stationary distribution pi satisfies
+pi = pi * P. Under mild conditions (irreducibility and aperiodicity),
+every Markov chain converges to a unique stationary distribution.
+"""
+intuition = """
+Imagine water flowing through pipes. Each state is a junction and the
+transition probabilities are flow rates. Eventually the water reaches
+an equilibrium where the amount entering each junction equals the amount
+leaving. That equilibrium is the stationary distribution.
+"""
+field_tags = ["probability", "linear-algebra"]
+
+[[ground.definitions]]
+term = "Markov Chain"
+statement = "A sequence X_0, X_1, ... where P(X_{n+1}|X_n, ..., X_0) = P(X_{n+1}|X_n)."
+
+[[ground.definitions]]
+term = "Transition Matrix"
+statement = "A matrix P where P_{ij} = P(X_{n+1}=j | X_n=i). Each row sums to 1."
+
+[[ground.definitions]]
+term = "Stationary Distribution"
+statement = "A probability vector pi such that pi = pi * P."
+
+[[ground.connections]]
+target_concept = "expected-value"
+relationship = "Expected hitting times and return times in Markov chains are computed via linearity of expectation."
+
+[[ground.connections]]
+target_concept = "random-walk"
+relationship = "A random walk on a graph is a special case of a Markov chain where the state space is the vertex set."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A Markov chain has two states {A, B} with transition matrix:
+  P(A->A) = 0.7, P(A->B) = 0.3
+  P(B->A) = 0.4, P(B->B) = 0.6
+Find the stationary probability of state A. Round to 4 decimal places.
+"""
+answer = 0.5714
+tolerance = 0.001
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Solve pi_A = 0.7*pi_A + 0.4*pi_B with the constraint pi_A + pi_B = 1."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "pi_A = 0.7*pi_A + 0.4*(1-pi_A). So 0.3*pi_A = 0.4 - 0.4*pi_A, giving 0.7*pi_A = 0.4, pi_A = 4/7."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Starting from state B, what is the expected number of steps to first
+reach state A? (Hint: let h = E[steps to reach A | start at B].)
+"""
+answer = 2.5
+tolerance = 0.01
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "From B: with prob 0.4 you reach A in 1 step. With prob 0.6 you stay at B and try again. So h = 0.4*1 + 0.6*(1+h)."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "h = 0.4 + 0.6 + 0.6h = 1 + 0.6h. So 0.4h = 1, h = 2.5."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To find the stationary distribution of a Markov chain with a large
+transition matrix, which approach is most practical?
+"""
+correct_strategy = "recast"
+distractors = ["induction", "pigeonhole", "extreme-principle"]
+explanation = """
+Recast the problem from a probabilistic one to a linear algebra one:
+solve the eigenvector equation pi*P = pi (or equivalently (P^T - I)*pi = 0)
+with the constraint that entries sum to 1. This turns a stochastic
+problem into a standard linear system.
+"""
+points = 10

@@ -1,0 +1,146 @@
+id = "dm-03-modular-arithmetic"
+title = "Modular Arithmetic and Hashing"
+track = "discrete-maths"
+tier = "foundation"
+prerequisites = ["dm-01-counting"]
+strategy_tags = ["get-hands-dirty", "recast"]
+concept_tags = ["modular-arithmetic"]
+
+[spark]
+scenario = """
+A hash table with 7 buckets uses the hash function h(k) = k mod 7 to assign
+keys to slots. You insert keys 14, 21, 3, 10, and 24. Which keys collide?
+Modular arithmetic underpins hash functions, checksums, and cryptographic
+algorithms throughout computing.
+"""
+industry_domain = "systems_engineering"
+connection_question = "Why do hash tables often choose a prime number for the modulus?"
+
+[ground]
+concept_brief = """
+Modular arithmetic works with integers 'wrapping around' after reaching a
+modulus m. We write a ≡ b (mod m) when m divides (a - b). Addition,
+subtraction, and multiplication respect congruences, making modular
+arithmetic a self-contained algebraic system (a ring). Division requires
+the modular multiplicative inverse, which exists only when gcd(a, m) = 1.
+"""
+intuition = """
+Think of a clock face with m hours. After reaching m, you wrap back to 0.
+Two numbers are congruent mod m when they land on the same clock position.
+Hash functions exploit this: no matter how large the key, the remainder
+mod m always falls within [0, m-1].
+"""
+field_tags = ["number-theory", "discrete-mathematics", "cryptography"]
+
+[[ground.definitions]]
+term = "Congruence"
+statement = "a ≡ b (mod m) means m divides (a - b)."
+latex = "a \\equiv b \\pmod{m} \\iff m \\mid (a - b)"
+
+[[ground.definitions]]
+term = "Modular Inverse"
+statement = "An integer a^{-1} such that a * a^{-1} ≡ 1 (mod m). Exists if and only if gcd(a, m) = 1."
+
+[[ground.definitions]]
+term = "Fermat's Little Theorem"
+statement = "If p is prime and gcd(a,p) = 1, then a^{p-1} ≡ 1 (mod p)."
+latex = "a^{p-1} \\equiv 1 \\pmod{p}"
+
+[[ground.connections]]
+target_concept = "counting"
+relationship = "Modular arithmetic partitions the integers into residue classes, enabling counting arguments on cyclic structures."
+
+[[ground.connections]]
+target_concept = "boolean-algebra"
+relationship = "Arithmetic modulo 2 is Boolean algebra: addition is XOR, multiplication is AND."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Compute 14 mod 7, 21 mod 7, 3 mod 7, 10 mod 7, and 24 mod 7. How many
+keys (from the set {14, 21, 3, 10, 24}) hash to bucket 0?
+"""
+answer = 2
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "14 mod 7 = 0, 21 mod 7 = 0, 3 mod 7 = 3, 10 mod 7 = 3, 24 mod 7 = 3."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "Only 14 and 21 give remainder 0. Two keys hash to bucket 0."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Compute 3^{-1} mod 7, that is, find x in {0,...,6} such that 3x ≡ 1 (mod 7).
+"""
+answer = 5
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Try x = 1, 2, ..., 6 and check which gives 3x mod 7 = 1."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "3 * 5 = 15 ≡ 1 (mod 7). So the inverse is 5."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Using Fermat's little theorem, compute 2^{100} mod 13. (Hint: 13 is prime.)
+"""
+answer = 3
+tolerance = 0
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "By Fermat, 2^{12} ≡ 1 (mod 13). Write 100 = 12*8 + 4, so 2^{100} ≡ 2^4 (mod 13)."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "2^4 = 16 ≡ 3 (mod 13)."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To prove that n^3 - n is divisible by 6 for all integers n, which proof
+method is most direct?
+"""
+correct_strategy = "direct-proof"
+distractors = ["contradiction", "induction", "pigeonhole"]
+explanation = """
+Factor n^3 - n = n(n-1)(n+1), the product of three consecutive integers.
+Among any three consecutive integers, one is divisible by 2 and one by 3,
+so the product is divisible by 6. A direct factoring argument suffices.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that if a ≡ b (mod m) and c ≡ d (mod m), then a + c ≡ b + d (mod m).
+"""
+solution_sketch = """
+a ≡ b (mod m) means m | (a - b). c ≡ d (mod m) means m | (c - d).
+Then m | ((a - b) + (c - d)) = (a + c) - (b + d).
+Hence a + c ≡ b + d (mod m).
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Correctly stated what congruence means in terms of divisibility"
+weight = 6
+
+[[solve.sub_problems.rubric]]
+criterion = "Combined the two divisibility statements"
+weight = 7
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded the desired congruence"
+weight = 7

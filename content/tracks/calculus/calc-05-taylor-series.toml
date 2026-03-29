@@ -1,0 +1,136 @@
+id = "calc-05-taylor-series"
+title = "Taylor Series and Approximation"
+track = "calculus"
+tier = "core"
+prerequisites = ["calc-02-derivatives"]
+strategy_tags = ["get-hands-dirty", "wishful-thinking", "recast"]
+concept_tags = ["taylor-series", "convergence"]
+
+[spark]
+scenario = """
+Game engines need fast sin and cos computations millions of times per
+frame. A full Taylor expansion is too slow, but a third-order polynomial
+approximation is blazingly fast and accurate to within 0.01% for small
+angles. GPU shader compilers use exactly this trick: replace transcendental
+functions with polynomial approximations tuned to the needed precision.
+"""
+industry_domain = "game_development"
+connection_question = "How many terms of the Maclaurin series for sin(x) do you need to guarantee |error| < 10^{-6} for x in [-pi/4, pi/4]?"
+
+[ground]
+concept_brief = """
+The Taylor series of f about a point a is the infinite polynomial
+sum_{n=0}^{inf} f^{(n)}(a)/n! * (x-a)^n. Truncating after N terms gives
+a polynomial approximation whose error is bounded by the (N+1)th term
+(Taylor's remainder theorem). Convergence of the full series depends on
+the function and the radius of convergence.
+"""
+intuition = """
+A Taylor series says: 'I can approximate any smooth function with a
+polynomial, and the more terms I keep, the better the approximation.'
+The zeroth term matches the value, the first term matches the slope, the
+second matches the curvature, and so on. Each additional term captures
+finer detail about the function's shape near the expansion point.
+"""
+field_tags = ["calculus", "numerical-methods"]
+
+[[ground.definitions]]
+term = "Taylor Series"
+statement = "f(x) = sum_{n=0}^{inf} f^{(n)}(a)/n! * (x-a)^n, provided the series converges."
+latex = "f(x) = \\sum_{n=0}^{\\infty} \\frac{f^{(n)}(a)}{n!}(x-a)^n"
+
+[[ground.definitions]]
+term = "Maclaurin Series"
+statement = "A Taylor series centred at a = 0."
+
+[[ground.definitions]]
+term = "Taylor Remainder"
+statement = "R_N(x) = f^{(N+1)}(c)/(N+1)! * (x-a)^{N+1} for some c between a and x."
+
+[[ground.connections]]
+target_concept = "derivative"
+relationship = "Each coefficient of the Taylor series involves a higher-order derivative of f at the expansion point."
+
+[[ground.connections]]
+target_concept = "convergence"
+relationship = "Whether a Taylor series converges to f depends on the growth of the derivatives and the radius of convergence."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Write the Maclaurin series for e^x up to the x^4 term. Use it to
+approximate e^{0.5}. Round to 4 decimal places.
+"""
+answer = 1.6484
+tolerance = 0.001
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "e^x ~ 1 + x + x^2/2 + x^3/6 + x^4/24. Plug in x = 0.5."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The Maclaurin series for sin(x) is x - x^3/6 + x^5/120 - ...
+Approximate sin(0.3) using the first three terms. Round to 6 decimal
+places.
+"""
+answer = 0.295520
+tolerance = 0.0001
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "0.3 - 0.027/6 + 0.00243/120 = 0.3 - 0.0045 + 0.00002025."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You want to find the Taylor series of f(x) = 1/(1-x) but computing
+derivatives gets tedious. What strategy helps you find the pattern
+quickly?
+"""
+correct_strategy = "get-hands-dirty"
+distractors = ["contradiction", "pigeonhole", "invariant"]
+explanation = """
+Compute the first few derivatives directly: f(0) = 1, f'(0) = 1,
+f''(0) = 2, f'''(0) = 6. The pattern f^{(n)}(0) = n! becomes clear,
+giving the geometric series 1 + x + x^2 + x^3 + ... Getting your hands
+dirty with small cases reveals the pattern.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that the Maclaurin series 1 + x + x^2 + x^3 + ... converges to
+1/(1-x) for |x| < 1.
+"""
+solution_sketch = """
+The partial sum S_n = 1 + x + x^2 + ... + x^{n-1} = (1 - x^n)/(1 - x)
+for x != 1 (geometric series formula).
+
+For |x| < 1, x^n -> 0 as n -> infinity.
+
+Therefore lim_{n->inf} S_n = lim_{n->inf} (1 - x^n)/(1 - x) = 1/(1 - x).
+
+The series diverges for |x| >= 1 since |x^n| does not tend to 0. QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Stated the closed form for the partial sum"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Showed x^n -> 0 for |x| < 1"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Took the limit to obtain 1/(1-x)"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Noted the radius of convergence |x| < 1"
+weight = 3

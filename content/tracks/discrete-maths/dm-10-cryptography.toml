@@ -1,0 +1,156 @@
+id = "dm-10-cryptography"
+title = "Number Theory and Public Key Crypto"
+track = "discrete-maths"
+tier = "advanced"
+prerequisites = ["dm-03-modular-arithmetic"]
+strategy_tags = ["get-hands-dirty", "penultimate-step", "recast"]
+concept_tags = ["modular-arithmetic"]
+
+[spark]
+scenario = """
+RSA encryption rests on modular exponentiation and the difficulty of
+factoring large numbers. Alice picks primes p=61, q=53, computes n=pq=3233
+and phi(n)=(p-1)(q-1)=3120. She chooses public exponent e=17 and finds
+the private exponent d such that e*d ≡ 1 (mod phi(n)). How does she compute
+d, and why can't an eavesdropper do the same without knowing the factorisation?
+"""
+industry_domain = "security_engineering"
+connection_question = "What breaks if someone discovers an efficient factoring algorithm?"
+
+[ground]
+concept_brief = """
+Public-key cryptography (RSA) relies on two number-theoretic facts: modular
+exponentiation is fast (via repeated squaring), and factoring the product of
+two large primes is believed to be hard. Euler's theorem generalises Fermat's
+little theorem: a^{phi(n)} ≡ 1 (mod n) when gcd(a,n) = 1, where phi is
+Euler's totient function. This makes decryption the inverse of encryption.
+"""
+intuition = """
+RSA is like a padlock: anyone can snap it shut (encrypt with the public key),
+but only the person with the key (the private exponent d) can open it. The
+security comes from the fact that computing d requires phi(n), which requires
+the factorisation of n. For 2048-bit n, factoring is computationally infeasible
+with current technology.
+"""
+field_tags = ["number-theory", "cryptography", "discrete-mathematics"]
+
+[[ground.definitions]]
+term = "Euler's Totient Function"
+statement = "phi(n) counts the integers from 1 to n that are coprime to n. For n = pq with distinct primes, phi(n) = (p-1)(q-1)."
+
+[[ground.definitions]]
+term = "Euler's Theorem"
+statement = "If gcd(a,n) = 1, then a^{phi(n)} ≡ 1 (mod n)."
+latex = "a^{\\varphi(n)} \\equiv 1 \\pmod{n}"
+
+[[ground.definitions]]
+term = "RSA Encryption"
+statement = "Encrypt: c = m^e mod n. Decrypt: m = c^d mod n, where e*d ≡ 1 (mod phi(n))."
+
+[[ground.definitions]]
+term = "Extended Euclidean Algorithm"
+statement = "Computes integers x, y such that ax + by = gcd(a,b). Used to find modular inverses."
+
+[[ground.connections]]
+target_concept = "modular-arithmetic"
+relationship = "RSA is built entirely on modular arithmetic: exponentiation, inversion, and Euler's theorem."
+
+[[ground.connections]]
+target_concept = "complexity-class"
+relationship = "RSA's security rests on the assumption that factoring is not in P."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Given e = 17 and phi(n) = 3120, find d such that 17d ≡ 1 (mod 3120).
+Give d as a positive integer less than 3120.
+"""
+answer = 2753
+tolerance = 0
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Use the extended Euclidean algorithm on 17 and 3120."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "3120 = 183*17 + 9. 17 = 1*9 + 8. 9 = 1*8 + 1. Back-substitute to find 17*2753 - 15*3120 = 1. So d = 2753."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Using the RSA parameters n=3233, e=17, encrypt the message m=65. Compute
+c = 65^{17} mod 3233.
+"""
+answer = 2790
+tolerance = 0
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Use repeated squaring: 65^2=4225 mod 3233=992, 65^4=992^2 mod 3233, etc."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "65^1=65, 65^2=992, 65^4=992^2=984064 mod 3233=2149, 65^8=2149^2 mod 3233=2869, 65^16=2869^2 mod 3233=2655. 65^17=2655*65 mod 3233=2790."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To compute 3^{1000} mod 100 efficiently, which strategy best describes the
+approach?
+"""
+correct_strategy = "recast"
+distractors = ["get-hands-dirty", "draw-picture", "symmetry"]
+explanation = """
+Recast the exponentiation using Euler's theorem: phi(100)=40, so 3^{40}≡1
+(mod 100). Then 3^{1000} = (3^{40})^{25} ≡ 1 (mod 100). The key insight is
+recasting the problem from raw computation to modular structure.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Compute phi(100). (100 = 2^2 * 5^2.)
+"""
+answer = 40
+tolerance = 0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "phi(p^k) = p^k - p^{k-1}. phi(100) = phi(4)*phi(25) = (4-2)*(25-5) = 2*20 = 40."
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that RSA decryption recovers the original message: if c = m^e mod n
+and m' = c^d mod n with ed ≡ 1 (mod phi(n)), then m' = m (assuming
+gcd(m,n) = 1).
+"""
+solution_sketch = """
+m' = c^d = (m^e)^d = m^{ed} (mod n).
+Since ed ≡ 1 (mod phi(n)), we can write ed = 1 + k*phi(n) for some integer k.
+Then m^{ed} = m^{1+k*phi(n)} = m * (m^{phi(n)})^k.
+By Euler's theorem, m^{phi(n)} ≡ 1 (mod n) (since gcd(m,n)=1).
+Therefore m^{ed} ≡ m * 1^k = m (mod n). So m' = m.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Expressed c^d as m^{ed}"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Wrote ed = 1 + k*phi(n)"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied Euler's theorem correctly"
+weight = 6
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded m' = m"
+weight = 6

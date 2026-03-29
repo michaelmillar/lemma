@@ -1,0 +1,141 @@
+id = "prob-02-bayes-theorem"
+title = "Bayes' Theorem and Spam Filtering"
+track = "probability"
+tier = "foundation"
+prerequisites = ["prob-01-sample-spaces"]
+strategy_tags = ["get-hands-dirty", "draw-picture"]
+concept_tags = ["conditional-probability", "bayes-theorem", "prior", "posterior", "likelihood", "law-of-total-probability"]
+
+[spark]
+scenario = """
+A spam filter at an email provider classifies 100 million messages per day.
+The filter has a 98% true positive rate and a 1% false positive rate. Only
+2% of all email is actually spam. When the filter flags a message, what is
+the probability it is truly spam?
+"""
+industry_domain = "ml_engineering"
+connection_question = "Before computing: do you expect the answer to be close to 98%, or much lower? Why?"
+
+[ground]
+concept_brief = """
+Bayes' theorem inverts conditional probabilities: it lets you compute
+P(cause | evidence) from P(evidence | cause), the prior P(cause), and
+the marginal P(evidence). It is the mathematical backbone of every
+classifier, medical test interpretation, and belief update in AI.
+"""
+intuition = """
+Think of Bayes' theorem as an update rule. You start with a prior belief
+(2% of email is spam), observe evidence (the filter flagged it), and
+update to a posterior belief. The surprise is base-rate neglect: even a
+good filter produces many false positives when the prior is low.
+"""
+field_tags = ["probability", "statistics", "information-theory"]
+
+[[ground.definitions]]
+term = "Conditional Probability"
+statement = "P(A|B) = P(A and B) / P(B), provided P(B) > 0."
+latex = "P(A \\mid B) = \\frac{P(A \\cap B)}{P(B)}"
+
+[[ground.definitions]]
+term = "Bayes' Theorem"
+statement = "P(A|B) = P(B|A) * P(A) / P(B)"
+latex = "P(A \\mid B) = \\frac{P(B \\mid A) \\, P(A)}{P(B)}"
+
+[[ground.definitions]]
+term = "Prior Probability"
+statement = "The initial belief about an event before observing evidence."
+
+[[ground.definitions]]
+term = "Law of Total Probability"
+statement = "P(B) = P(B|A)*P(A) + P(B|not A)*P(not A) for any event A."
+
+[[ground.connections]]
+target_concept = "sample-space"
+relationship = "Bayes' theorem operates on events within a sample space, partitioning it by the conditioning event."
+
+[[ground.connections]]
+target_concept = "expected-value"
+relationship = "Bayesian decision theory combines posterior probabilities with utility functions via expected value."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Using the spam filter scenario: P(spam) = 0.02, P(flagged|spam) = 0.98,
+P(flagged|not spam) = 0.01. Compute P(spam|flagged). Round to 4 decimal
+places.
+"""
+answer = 0.6667
+tolerance = 0.001
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Write the denominator using total probability: P(flagged) = P(flagged|spam)*P(spam) + P(flagged|not spam)*P(not spam)."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "P(flagged) = 0.98*0.02 + 0.01*0.98 = 0.0196 + 0.0098 = 0.0294. Now compute 0.0196/0.0294."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A medical test for a rare disease (prevalence 0.1%) has 99% sensitivity
+and 95% specificity. If you test positive, what is the probability you
+actually have the disease? Round to 4 decimal places.
+"""
+answer = 0.0194
+tolerance = 0.001
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Sensitivity = P(positive|disease) = 0.99. Specificity = P(negative|no disease) = 0.95, so P(positive|no disease) = 0.05."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "P(positive) = 0.99*0.001 + 0.05*0.999 = 0.00099 + 0.04995 = 0.05094. Now compute 0.00099/0.05094."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+A problem asks: 'In a tournament of 7 chess players, prove there exist two
+players who have played the same number of games.' Which tactic applies?
+"""
+correct_strategy = "pigeonhole"
+distractors = ["symmetry", "extreme-principle", "invariant"]
+explanation = """
+Each player can have played 0 to 6 games, giving 7 possible values. But
+0 and 6 cannot coexist (if someone played everyone, no one played nobody).
+So at most 6 distinct values for 7 players: pigeonhole.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that for any events A and B with P(B) > 0:
+  P(A|B) = P(B|A) * P(A) / P(B)
+starting from the definition of conditional probability.
+"""
+solution_sketch = """
+By definition, P(A|B) = P(A intersection B) / P(B).
+Also P(B|A) = P(A intersection B) / P(A), so P(A intersection B) = P(B|A) * P(A).
+Substituting: P(A|B) = P(B|A) * P(A) / P(B). QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Started from the definition of conditional probability"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Expressed P(A intersection B) two different ways"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Substituted correctly to derive the formula"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Reasoning is clear and complete"
+weight = 5

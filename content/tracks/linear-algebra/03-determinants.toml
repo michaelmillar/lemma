@@ -1,0 +1,125 @@
+id = "la-03-determinants"
+title = "Determinants and Invertibility"
+track = "linear-algebra"
+tier = "foundation"
+prerequisites = ["la-02-linear-transformations"]
+strategy_tags = ["get-hands-dirty", "recast", "direct-proof"]
+concept_tags = ["determinant", "matrix"]
+
+[spark]
+scenario = """
+The Hill cipher encrypts messages by multiplying blocks of plaintext
+(as numerical vectors) by a secret key matrix. Decryption requires the
+inverse of that matrix. If the determinant is zero, the cipher is broken
+because the encryption cannot be reversed. Cryptanalysts check
+determinants to assess whether a suspected key matrix is valid.
+"""
+industry_domain = "cybersecurity"
+connection_question = "Why does a zero determinant make a matrix-based cipher useless? What does the determinant measure geometrically?"
+
+[ground]
+concept_brief = """
+The determinant of a square matrix is a scalar that encodes whether the
+matrix is invertible (det != 0) and the signed volume scaling factor of
+the associated linear transformation. It can be computed via cofactor
+expansion, row reduction, or the Leibniz formula.
+"""
+intuition = """
+The determinant answers one question: does this transformation squash
+space into a lower dimension? If det(A) = 0, the transformation
+collapses at least one dimension to zero, making it impossible to
+recover the original input. The absolute value of the determinant tells
+you how volumes scale: det = 2 means every unit cube becomes a
+parallelepiped of volume 2. A negative determinant means the orientation
+flips (like a mirror).
+"""
+field_tags = ["linear-algebra"]
+
+[[ground.definitions]]
+term = "Determinant"
+statement = "A scalar det(A) computed from a square matrix A. det(A) != 0 if and only if A is invertible."
+
+[[ground.definitions]]
+term = "Cofactor Expansion"
+statement = "A recursive formula: det(A) = sum over a row or column of a_ij * C_ij, where C_ij = (-1)^(i+j) * M_ij and M_ij is the (i,j) minor."
+
+[[ground.definitions]]
+term = "Multiplicative Property"
+statement = "For square matrices A, B: det(AB) = det(A) * det(B)."
+
+[[ground.connections]]
+target_concept = "eigenvalue"
+relationship = "The determinant equals the product of all eigenvalues. If any eigenvalue is zero, the matrix is singular."
+
+[[ground.connections]]
+target_concept = "rank"
+relationship = "A square matrix has full rank if and only if its determinant is nonzero."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Compute the determinant of the matrix [[3, 1], [2, 4]].
+"""
+answer = 10.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "For a 2x2 matrix [[a,b],[c,d]], det = ad - bc."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A Hill cipher uses a 3x3 key matrix K. You know det(K) = 7 and you
+encrypt with K twice (applying K*K to the plaintext). What is the
+determinant of the combined encryption matrix K^2?
+"""
+answer = 49.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "det(K^2) = det(K) * det(K) by the multiplicative property."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To determine whether a 4x4 matrix is invertible without computing the
+full inverse, which strategy is most efficient?
+"""
+correct_strategy = "recast"
+distractors = ["contradiction", "pigeonhole", "extreme-principle"]
+explanation = """
+Recast: row-reduce the matrix to echelon form. If there are no zero
+rows on the diagonal, the determinant is nonzero and the matrix is
+invertible. This avoids computing the full 4x4 determinant by cofactor
+expansion (24 terms) and instead uses O(n^3) operations.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that if A is an n x n matrix with two identical rows, then
+det(A) = 0.
+"""
+solution_sketch = """
+Swapping two rows of a matrix multiplies the determinant by -1. If rows
+i and j are identical, swapping them leaves the matrix unchanged, so
+det(A) = -det(A). This gives 2*det(A) = 0, hence det(A) = 0. QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Stated the row-swap property: swapping two rows negates the determinant"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Observed that swapping identical rows leaves the matrix unchanged"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded det(A) = -det(A) implies det(A) = 0"
+weight = 5

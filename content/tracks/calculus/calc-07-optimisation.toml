@@ -1,0 +1,146 @@
+id = "calc-07-optimisation"
+title = "Optimisation and Convexity"
+track = "calculus"
+tier = "core"
+prerequisites = ["calc-06-multivariable"]
+strategy_tags = ["draw-picture", "penultimate-step", "get-hands-dirty"]
+concept_tags = ["optimisation", "derivative", "gradient"]
+
+[spark]
+scenario = """
+Your ML model's loss function has millions of parameters. A convex loss
+(like logistic regression) guarantees that any local minimum is also the
+global minimum, so gradient descent will find the best solution. A non-
+convex loss (like a deep network) has saddle points and local minima
+everywhere. Understanding convexity tells you when optimisation is easy
+and when it is treacherous.
+"""
+industry_domain = "machine_learning"
+connection_question = "How can you check whether f(x) = x^4 - 4x^2 + 4 is convex? What does the second derivative tell you about the shape of the graph?"
+
+[ground]
+concept_brief = """
+Optimisation finds the minimum or maximum of a function. The first
+derivative test locates critical points (where f' = 0). The second
+derivative test classifies them: f'' > 0 means a local minimum, f'' < 0
+means a local maximum. A function is convex if f''(x) >= 0 everywhere
+(or equivalently the Hessian is positive semi-definite for multivariable
+functions), guaranteeing that every local minimum is global.
+"""
+intuition = """
+Convex functions look like bowls: no matter where you start, rolling
+downhill always reaches the bottom. Non-convex functions look like egg
+cartons with many dips. The second derivative measures curvature: positive
+means the curve bends upward (bowl-shaped), negative means it bends
+downward (hill-shaped). A function that always bends upward is convex.
+"""
+field_tags = ["calculus", "optimisation"]
+
+[[ground.definitions]]
+term = "Convex Function"
+statement = "f is convex if f(lambda*x + (1-lambda)*y) <= lambda*f(x) + (1-lambda)*f(y) for all x, y and lambda in [0,1]."
+
+[[ground.definitions]]
+term = "Second Derivative Test"
+statement = "At a critical point where f'(c) = 0: if f''(c) > 0, c is a local minimum; if f''(c) < 0, c is a local maximum."
+
+[[ground.definitions]]
+term = "Hessian Matrix"
+statement = "The matrix of second partial derivatives H_{ij} = d^2f / dx_i dx_j. Positive semi-definite Hessian implies convexity."
+latex = "H_{ij} = \\frac{\\partial^2 f}{\\partial x_i \\partial x_j}"
+
+[[ground.connections]]
+target_concept = "gradient"
+relationship = "Gradient descent follows the negative gradient. Convexity ensures this always leads to the global minimum."
+
+[[ground.connections]]
+target_concept = "partial-derivative"
+relationship = "The Hessian consists of second-order partial derivatives and determines local curvature in each direction."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Find all critical points of f(x) = x^3 - 12x + 5. Classify each as a
+local minimum or local maximum using the second derivative test. Give the
+x-value of the local minimum.
+"""
+answer = 2.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "f'(x) = 3x^2 - 12 = 0 gives x = +/- 2. f''(x) = 6x. At x = 2, f'' = 12 > 0 (minimum). At x = -2, f'' = -12 < 0 (maximum)."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+For f(x, y) = x^2 + 2y^2 - 2xy - 2x, find the critical point by setting
+both partial derivatives to zero. Give the x-coordinate of the critical
+point.
+"""
+answer = 2.0
+tolerance = 0.0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "df/dx = 2x - 2y - 2 = 0 and df/dy = 4y - 2x = 0. From the second equation: y = x/2. Substituting: 2x - x - 2 = 0, so x = 2."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You need to prove that f(x) = x*log(x) is convex on (0, inf). What is
+the most direct strategy?
+"""
+correct_strategy = "get-hands-dirty"
+distractors = ["contradiction", "pigeonhole", "bijection"]
+explanation = """
+Compute directly: f'(x) = log(x) + 1, f''(x) = 1/x > 0 for all x > 0.
+Since the second derivative is everywhere positive, f is convex. Getting
+your hands dirty with the derivatives is the simplest and most direct
+approach.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that if f is convex and differentiable, then every local minimum
+is a global minimum.
+"""
+solution_sketch = """
+Suppose f is convex and x* is a local minimum. Let y be any other point.
+By convexity: f(lambda*y + (1-lambda)*x*) <= lambda*f(y) + (1-lambda)*f(x*)
+for all lambda in [0,1].
+
+Since x* is a local minimum, for small lambda:
+f(x* + lambda*(y - x*)) >= f(x*).
+
+Combining: f(x*) <= lambda*f(y) + (1-lambda)*f(x*).
+Subtracting (1-lambda)*f(x*): lambda*f(x*) <= lambda*f(y).
+Dividing by lambda > 0: f(x*) <= f(y).
+
+Since y was arbitrary, x* is a global minimum. QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Used the definition of convexity correctly"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Used the local minimum condition"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Combined both conditions to derive f(x*) <= f(y)"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded global minimality for arbitrary y"
+weight = 3
+
+[[solve.sub_problems.rubric]]
+criterion = "Reasoning is clear and complete"
+weight = 3

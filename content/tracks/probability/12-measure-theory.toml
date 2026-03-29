@@ -1,0 +1,132 @@
+id = "prob-12-measure-theory"
+title = "Measure-Theoretic Probability and ML Foundations"
+track = "probability"
+tier = "research"
+prerequisites = ["prob-05-law-of-large-numbers", "prob-06-central-limit-theorem"]
+strategy_tags = ["recast", "wishful-thinking"]
+concept_tags = ["measure-theory", "sample-space"]
+
+[spark]
+scenario = """
+When training a neural network, you minimise E[L(theta)] where L is a loss
+and the expectation is over the data distribution. But what exactly is
+'the data distribution'? For continuous data, individual points have
+probability zero. Measure theory provides the rigorous foundation: a
+probability measure on a sigma-algebra over the sample space. Without it,
+statements like 'gradient descent converges almost surely' are informal
+hand-waving.
+"""
+industry_domain = "ml_research"
+connection_question = "Why can't we just assign probabilities to individual outcomes when the sample space is uncountable?"
+
+[ground]
+concept_brief = """
+Measure-theoretic probability replaces 'P(outcome)' with a probability
+measure P defined on a sigma-algebra of events. This handles continuous
+distributions, limits of random variables, and conditional expectation
+rigorously. The triple (Omega, F, P) is the formal probability space.
+"""
+intuition = """
+Imagine trying to assign a length to every subset of [0,1]. You quickly
+run into paradoxes (Vitali sets). Measure theory sidesteps this by only
+assigning probabilities to 'well-behaved' subsets (the sigma-algebra).
+It is the price of mathematical rigour when dealing with infinity.
+"""
+field_tags = ["probability", "analysis", "measure-theory"]
+
+[[ground.definitions]]
+term = "Sigma-Algebra"
+statement = "A collection F of subsets of Omega that contains Omega, is closed under complementation, and is closed under countable unions."
+
+[[ground.definitions]]
+term = "Probability Measure"
+statement = "A function P: F -> [0,1] with P(Omega) = 1 and countable additivity: P(union A_i) = sum P(A_i) for disjoint A_i."
+
+[[ground.definitions]]
+term = "Almost Sure"
+statement = "An event occurs 'almost surely' if P(event) = 1. It may fail on a set of measure zero."
+
+[[ground.connections]]
+target_concept = "law-of-large-numbers"
+relationship = "The strong LLN states convergence 'almost surely', which requires measure theory to define precisely."
+
+[[ground.connections]]
+target_concept = "large-deviations"
+relationship = "Large deviation principles are stated in terms of probability measures on metric spaces."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To show that the Borel sigma-algebra on [0,1] is uncountable, which
+strategy gives the cleanest argument?
+"""
+correct_strategy = "contradiction"
+distractors = ["induction", "pigeonhole", "get-hands-dirty"]
+explanation = """
+Assume the Borel sigma-algebra is countable. Since it contains every
+singleton {x} for x in [0,1], and [0,1] is uncountable, we reach a
+contradiction with the closure properties. More precisely, every subset
+of a countable set is countable, but the power set of an uncountable set
+is uncountable, and the Borel algebra contains enough sets to separate
+points.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Let X be uniform on [0,1]. The CDF is F(x) = x for x in [0,1].
+What is P(0.3 <= X <= 0.7)?
+"""
+answer = 0.4
+tolerance = 0.001
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that if F is a sigma-algebra on Omega, then the empty set is in F.
+(Hint: use the axioms that Omega is in F and F is closed under complements.)
+"""
+solution_sketch = """
+By axiom, Omega is in F. Since F is closed under complementation,
+Omega^c = empty set is in F. QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Stated that Omega is in F by axiom"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied closure under complementation"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded empty set = Omega^c is in F"
+weight = 5
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that a probability measure satisfies P(A^c) = 1 - P(A) using
+only the axioms of a probability measure.
+"""
+solution_sketch = """
+A and A^c are disjoint and A union A^c = Omega.
+By countable additivity: P(Omega) = P(A) + P(A^c).
+Since P(Omega) = 1: P(A^c) = 1 - P(A). QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Noted A and A^c partition Omega"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied additivity for disjoint events"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Used P(Omega) = 1 to conclude"
+weight = 5

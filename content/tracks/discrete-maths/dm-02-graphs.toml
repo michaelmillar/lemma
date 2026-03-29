@@ -1,0 +1,147 @@
+id = "dm-02-graphs"
+title = "Graphs and Social Networks"
+track = "discrete-maths"
+tier = "foundation"
+prerequisites = []
+strategy_tags = ["draw-picture", "get-hands-dirty"]
+concept_tags = ["graph", "tree"]
+
+[spark]
+scenario = """
+A social media platform models users as vertices and follower relationships
+as directed edges. The network has 5 users. You want to know whether every
+user can reach every other user through a chain of follows. How do you check
+connectivity, and what is the maximum number of directed edges possible?
+"""
+industry_domain = "social_media"
+connection_question = "If the follow relationship were mutual (undirected), would the maximum edge count change?"
+
+[ground]
+concept_brief = """
+A graph G = (V, E) consists of a set V of vertices and a set E of edges
+connecting pairs of vertices. Graphs can be directed or undirected, weighted
+or unweighted. They model relationships in social networks, road maps,
+dependency systems, and countless other domains. A tree is a connected graph
+with no cycles, and it always has exactly |V| - 1 edges.
+"""
+intuition = """
+Think of vertices as people and edges as handshakes. In an undirected graph,
+every handshake is mutual. A tree is the leanest possible connected graph:
+removing any single edge disconnects it. Adding any edge to a tree creates
+exactly one cycle.
+"""
+field_tags = ["graph-theory", "discrete-mathematics", "computer-science"]
+
+[[ground.definitions]]
+term = "Graph"
+statement = "A pair G = (V, E) where V is a finite set of vertices and E is a set of edges, each connecting two vertices."
+
+[[ground.definitions]]
+term = "Degree"
+statement = "The number of edges incident to a vertex. In a directed graph, in-degree and out-degree are counted separately."
+
+[[ground.definitions]]
+term = "Connected Graph"
+statement = "An undirected graph where there is a path between every pair of vertices."
+
+[[ground.definitions]]
+term = "Tree"
+statement = "A connected acyclic graph. Equivalently, a connected graph on n vertices with exactly n-1 edges."
+
+[[ground.connections]]
+target_concept = "tree"
+relationship = "A tree is a special case of a graph: connected with no cycles."
+
+[[ground.connections]]
+target_concept = "counting"
+relationship = "Counting paths, cycles, and subgraphs in a graph is a core combinatorial task."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A directed graph on 5 vertices allows at most one edge from vertex u to
+vertex v for each ordered pair (u,v) with u != v. What is the maximum
+number of directed edges?
+"""
+answer = 20
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Count ordered pairs: each vertex can send an edge to every other vertex."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "5 * 4 = 20 ordered pairs, so at most 20 directed edges."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+An undirected simple graph on 5 vertices (no self-loops, no multi-edges) has
+at most how many edges?
+"""
+answer = 10
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Count unordered pairs: C(5,2)."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "C(5,2) = 10."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You need to show that a connected graph on n vertices has at least n-1 edges.
+Which proof technique is most natural?
+"""
+correct_strategy = "induction"
+distractors = ["contradiction", "pigeonhole", "bijection"]
+explanation = """
+Induction on n is the standard approach. The base case n=1 is trivial (0 edges).
+For the inductive step, removing a leaf (which must exist) yields a connected
+graph on n-1 vertices with at least n-2 edges, giving at least n-1 total.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that the sum of all vertex degrees in an undirected graph equals
+twice the number of edges (the Handshaking Lemma).
+"""
+solution_sketch = """
+Each edge {u,v} contributes exactly 1 to the degree of u and exactly 1 to the
+degree of v. Summing degrees over all vertices therefore counts each edge
+exactly twice. Hence the sum of degrees = 2|E|.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Argued that each edge contributes to exactly two vertex degrees"
+weight = 8
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded that the total degree sum equals 2|E|"
+weight = 7
+
+[[solve.sub_problems.rubric]]
+criterion = "Reasoning is clear and complete"
+weight = 5
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A tree on 8 vertices has how many edges?
+"""
+answer = 7
+tolerance = 0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "A tree on n vertices always has exactly n-1 edges."

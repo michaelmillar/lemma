@@ -1,0 +1,136 @@
+id = "la-04-systems-of-equations"
+title = "Systems of Equations and Supply Chains"
+track = "linear-algebra"
+tier = "foundation"
+prerequisites = ["la-02-linear-transformations"]
+strategy_tags = ["get-hands-dirty", "recast", "draw-picture"]
+concept_tags = ["matrix", "rank", "null-space"]
+
+[spark]
+scenario = """
+In the Leontief input-output model, every industry consumes outputs from
+other industries. Steel needs coal, coal needs steel for machinery, and
+both need transport. Solving for the production levels that satisfy all
+demands simultaneously is a system of linear equations Ax = d. Logistics
+companies use this daily to balance supply chains across hundreds of
+interdependent nodes.
+"""
+industry_domain = "operations_research"
+connection_question = "When a supply chain has redundant routes, what does that correspond to in the null space of the system matrix?"
+
+[ground]
+concept_brief = """
+A system of linear equations Ax = b has a solution if and only if b lies
+in the column space of A. The solution is unique when the null space is
+trivial (rank = number of unknowns). Gaussian elimination systematically
+row-reduces A to find the rank, identify free variables, and express the
+general solution as a particular solution plus the null space.
+"""
+intuition = """
+Each equation is a hyperplane in n-dimensional space. The solution set
+is their intersection. If the planes all meet at a single point, the
+solution is unique. If they meet along a line or plane, there are
+infinitely many solutions (free variables). If they never all meet, the
+system is inconsistent. The rank tells you how many independent
+constraints you truly have.
+"""
+field_tags = ["linear-algebra"]
+
+[[ground.definitions]]
+term = "Consistent System"
+statement = "A system Ax = b is consistent if b is in the column space of A, i.e., at least one solution exists."
+
+[[ground.definitions]]
+term = "Free Variable"
+statement = "A variable corresponding to a non-pivot column in the row echelon form; it can take any value, parameterising the solution set."
+
+[[ground.definitions]]
+term = "General Solution"
+statement = "x = x_p + x_h, where x_p is a particular solution to Ax = b and x_h is any element of the null space of A."
+
+[[ground.connections]]
+target_concept = "determinant"
+relationship = "For a square system Ax = b, Cramer's rule expresses each variable as a ratio of determinants, but only when det(A) != 0."
+
+[[ground.connections]]
+target_concept = "least-squares"
+relationship = "When Ax = b has no exact solution (inconsistent), the least-squares solution minimises ||Ax - b||^2."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A supply chain model has coefficient matrix A of size 4x5 with rank 3.
+How many free variables does the system Ax = b have (assuming it is
+consistent)?
+"""
+answer = 2.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "Free variables = number of columns - rank = 5 - 3 = 2."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The augmented matrix [A|b] has been row-reduced to:
+[[1, 0, 2, 3],
+ [0, 1, -1, 5],
+ [0, 0, 0, 0]].
+The system has 3 unknowns. What is the dimension of the solution set?
+"""
+answer = 1.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "Rank is 2, unknowns are 3, so dimension of solution set = 3 - 2 = 1 (one free variable)."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To solve a large sparse system of 500 equations in 500 unknowns arising
+from a supply chain model, which strategy guides the choice of method?
+"""
+correct_strategy = "recast"
+distractors = ["draw-picture", "extreme-principle", "symmetry"]
+explanation = """
+Recast: rather than applying naive Gaussian elimination (O(n^3) and
+destroying sparsity), recast the problem to exploit the sparse structure.
+Use LU decomposition with pivoting that preserves sparsity, or iterative
+methods like conjugate gradient. The key insight is transforming the
+problem representation to match the structure of the data.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that if Ax = 0 has only the trivial solution (x = 0), then for
+any b, the system Ax = b has at most one solution.
+"""
+solution_sketch = """
+Suppose x1 and x2 are both solutions to Ax = b. Then A(x1 - x2) =
+Ax1 - Ax2 = b - b = 0. So x1 - x2 is in the null space of A. By
+hypothesis the null space is {0}, so x1 - x2 = 0, giving x1 = x2.
+Therefore the solution is unique. QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Assumed two solutions x1 and x2 to Ax = b"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Showed their difference lies in the null space"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Used the hypothesis that the null space is trivial"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded x1 = x2"
+weight = 3

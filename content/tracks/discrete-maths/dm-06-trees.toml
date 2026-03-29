@@ -1,0 +1,149 @@
+id = "dm-06-trees"
+title = "Trees and Database Indices"
+track = "discrete-maths"
+tier = "core"
+prerequisites = ["dm-02-graphs"]
+strategy_tags = ["draw-picture", "get-hands-dirty", "induction"]
+concept_tags = ["tree", "graph"]
+
+[spark]
+scenario = """
+A database stores 1 million records indexed by a B-tree of order 100 (each
+internal node has up to 100 children). What is the minimum height needed
+to index all records? Trees are the data structure behind every database
+index, file system, and DOM.
+"""
+industry_domain = "databases"
+connection_question = "What property of trees makes them so efficient for lookup compared to a general graph?"
+
+[ground]
+concept_brief = """
+A tree is a connected acyclic graph. Rooted trees add a designated root vertex,
+giving every other vertex a unique parent. Binary trees (at most 2 children)
+underpin binary search, heaps, and expression parsing. B-trees generalise to
+high branching factors for disk-based storage. Cayley's formula states that
+the number of labelled trees on n vertices is n^{n-2}.
+"""
+intuition = """
+A tree is the minimum-cost way to keep a graph connected: exactly n-1 edges
+for n vertices, and no wasted cycles. Every path between two vertices is
+unique, which is why lookups are fast and unambiguous. Increasing the branching
+factor (as in B-trees) reduces height, trading wider nodes for fewer disk seeks.
+"""
+field_tags = ["graph-theory", "data-structures", "discrete-mathematics"]
+
+[[ground.definitions]]
+term = "Rooted Tree"
+statement = "A tree with a distinguished root vertex. Every other vertex has a unique parent on the path to the root."
+
+[[ground.definitions]]
+term = "Binary Tree"
+statement = "A rooted tree where each vertex has at most two children (left and right)."
+
+[[ground.definitions]]
+term = "Cayley's Formula"
+statement = "The number of labelled trees on n vertices is n^{n-2}."
+latex = "t_n = n^{n-2}"
+
+[[ground.definitions]]
+term = "Leaf"
+statement = "A vertex of degree 1 in a tree (or a vertex with no children in a rooted tree)."
+
+[[ground.connections]]
+target_concept = "graph"
+relationship = "A tree is a connected graph with no cycles, the minimal connected spanning subgraph."
+
+[[ground.connections]]
+target_concept = "recurrence-relation"
+relationship = "Many tree properties (height, node count) satisfy recurrences over subtrees."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A B-tree of order 100 (each internal node has at most 100 children) needs to
+index 1,000,000 records stored in leaves. What is the minimum height h such
+that 100^h >= 1,000,000?
+"""
+answer = 3
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "100^2 = 10,000. 100^3 = 1,000,000. So h = 3."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+How many labelled trees exist on 5 vertices? (Use Cayley's formula.)
+"""
+answer = 125
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Cayley's formula: n^{n-2} = 5^3 = 125."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A full binary tree has every internal node with exactly 2 children. If such a
+tree has 15 vertices, how many are leaves?
+"""
+answer = 8
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "In a full binary tree with n vertices, the number of leaves is (n+1)/2."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "(15+1)/2 = 8 leaves."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To prove that every tree on n >= 2 vertices has at least two leaves, which
+strategy is most effective?
+"""
+correct_strategy = "extreme-principle"
+distractors = ["symmetry", "pigeonhole", "invariant"]
+explanation = """
+Consider the longest path in the tree. Its two endpoints must be leaves
+(otherwise the path could be extended). The extreme principle (take the
+longest path) gives the argument directly.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove by induction that a tree on n vertices has exactly n-1 edges.
+"""
+solution_sketch = """
+Base case: n=1, the tree is a single vertex with 0 = 1-1 edges.
+Inductive step: assume all trees on k vertices have k-1 edges. Take a tree T
+on k+1 vertices. T has a leaf v (every tree on 2+ vertices has at least one).
+Removing v and its incident edge gives a tree on k vertices, which by hypothesis
+has k-1 edges. Restoring v adds one edge, giving k = (k+1)-1 edges total.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Base case is correct (n=1, 0 edges)"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Identified that a tree has a leaf that can be removed"
+weight = 6
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied the inductive hypothesis to the smaller tree"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded correctly"
+weight = 5

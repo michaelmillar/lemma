@@ -1,0 +1,10 @@
+[package]
+name = "lemma_content"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+lemma_core = { path = "../core" }
+serde = { workspace = true }
+anyhow = { workspace = true }
+toml = { workspace = true }

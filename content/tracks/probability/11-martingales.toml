@@ -1,0 +1,118 @@
+id = "prob-11-martingales"
+title = "Martingales and Fair Games"
+track = "probability"
+tier = "advanced"
+prerequisites = ["prob-10-random-walks", "prob-03-expected-value"]
+strategy_tags = ["wishful-thinking", "recast", "contradiction"]
+concept_tags = ["martingale", "optional-stopping", "expected-value"]
+
+[spark]
+scenario = """
+A gambler at a casino uses the 'doubling strategy': bet 1 GBP, if you lose,
+double the bet. The first win recovers all losses plus 1 GBP profit. This
+seems like a guaranteed winning strategy. Yet casinos remain profitable.
+The Optional Stopping Theorem explains why: you cannot beat a fair game
+by choosing when to stop, under the right conditions.
+"""
+industry_domain = "finance"
+connection_question = "If E[S_n] = S_0 for all n, can you find a stopping rule that makes E[S_T] > S_0?"
+
+[ground]
+concept_brief = """
+A martingale is a stochastic process where the conditional expected future
+value equals the present value: E[X_{n+1}|X_0,...,X_n] = X_n. The
+Optional Stopping Theorem (OST) states that under bounded stopping times,
+E[X_T] = E[X_0]. You cannot extract profit from a fair game by timing.
+"""
+intuition = """
+A martingale is a 'fair game' in mathematical form. Your expected fortune
+tomorrow, given everything you know today, equals your fortune today. The
+OST says that no matter how cleverly you choose when to walk away, your
+expected final fortune equals what you started with. The doubling strategy
+fails because it requires unbounded wealth and unbounded time.
+"""
+field_tags = ["probability", "stochastic-processes"]
+
+[[ground.definitions]]
+term = "Martingale"
+statement = "A sequence {X_n} where E[X_{n+1} | X_0, ..., X_n] = X_n for all n."
+
+[[ground.definitions]]
+term = "Optional Stopping Theorem"
+statement = "If {X_n} is a martingale and T is a bounded stopping time, then E[X_T] = E[X_0]."
+
+[[ground.connections]]
+target_concept = "random-walk"
+relationship = "A symmetric random walk is the prototypical martingale."
+
+[[ground.connections]]
+target_concept = "concentration-inequality"
+relationship = "Azuma's inequality gives concentration bounds specifically for martingales."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+In the doubling strategy, the gambler starts with 1 GBP bet on a fair
+coin (win = +bet, lose = -bet). If they lose k times in a row then win,
+their net profit is always 1 GBP, but they need 2^k - 1 GBP in capital
+to survive k losses. What capital is needed to survive 10 consecutive
+losses?
+"""
+answer = 1023.0
+tolerance = 0.01
+points = 10
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The probability of losing 10 fair coin flips in a row is (1/2)^10.
+Express as a decimal rounded to 4 places.
+"""
+answer = 0.000977
+tolerance = 0.0001
+points = 10
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To prove that a certain process is NOT a martingale, which strategy is
+most effective?
+"""
+correct_strategy = "get-hands-dirty"
+distractors = ["contradiction", "symmetry", "invariant"]
+explanation = """
+Compute E[X_{n+1}|X_n] directly for a specific state. If it does not
+equal X_n, you have a concrete counterexample. Getting your hands dirty
+with a specific calculation is the fastest way to disprove the martingale
+property.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that if X_n is a martingale, then E[X_n] = E[X_0] for all n.
+(This is a weaker statement than the OST but captures the core idea.)
+"""
+solution_sketch = """
+By iterated expectation (tower property):
+E[X_n] = E[E[X_n | X_{n-1}]] = E[X_{n-1}]     (by the martingale property).
+By induction: E[X_n] = E[X_{n-1}] = ... = E[X_0]. QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Stated the tower property of conditional expectation"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied the martingale property E[X_n|X_{n-1}] = X_{n-1}"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Used induction or repeated application to reach E[X_0]"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Argument is clear and logically complete"
+weight = 5

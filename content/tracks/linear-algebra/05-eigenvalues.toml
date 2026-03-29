@@ -1,0 +1,137 @@
+id = "la-05-eigenvalues"
+title = "Eigenvalues and PageRank"
+track = "linear-algebra"
+tier = "core"
+prerequisites = ["la-03-determinants"]
+strategy_tags = ["get-hands-dirty", "penultimate-step", "recast"]
+concept_tags = ["eigenvalue", "eigenvector", "matrix"]
+
+[spark]
+scenario = """
+Google's original PageRank algorithm models the web as a massive directed
+graph. Each page is a node, each hyperlink an edge. The transition matrix
+M describes a random surfer clicking links. The PageRank vector is the
+dominant eigenvector of M (the eigenvector with eigenvalue 1). Pages with
+larger components in this vector are ranked higher. Google computed this
+eigenvector for billions of pages using the power iteration method.
+"""
+industry_domain = "search_engineering"
+connection_question = "Why does the random surfer converge to a single ranking regardless of where they start? What property of the eigenvalue guarantees this?"
+
+[ground]
+concept_brief = """
+An eigenvalue lambda of a matrix A is a scalar such that Av = lambda*v
+for some nonzero vector v (the eigenvector). Eigenvalues are roots of
+the characteristic polynomial det(A - lambda*I) = 0. They reveal the
+intrinsic scaling factors of a linear transformation along its natural
+directions.
+"""
+intuition = """
+Most vectors get both rotated and stretched by a matrix. Eigenvectors
+are special: they only get stretched (or flipped). The eigenvalue is the
+stretch factor. If you repeatedly apply the matrix (power iteration),
+the component along the dominant eigenvector (largest |lambda|) grows
+fastest, drowning out all other directions. That is why PageRank
+converges: the dominant eigenvector emerges naturally from iteration.
+"""
+field_tags = ["linear-algebra"]
+
+[[ground.definitions]]
+term = "Characteristic Polynomial"
+statement = "p(lambda) = det(A - lambda*I). Its roots are the eigenvalues of A."
+
+[[ground.definitions]]
+term = "Eigenspace"
+statement = "For eigenvalue lambda, the eigenspace is null(A - lambda*I): all eigenvectors for lambda plus the zero vector."
+
+[[ground.definitions]]
+term = "Dominant Eigenvalue"
+statement = "The eigenvalue with the largest absolute value. Power iteration converges to its eigenvector."
+
+[[ground.connections]]
+target_concept = "determinant"
+relationship = "det(A) equals the product of all eigenvalues. A is singular if and only if 0 is an eigenvalue."
+
+[[ground.connections]]
+target_concept = "spectral-theorem"
+relationship = "For symmetric matrices, the spectral theorem guarantees all eigenvalues are real and eigenvectors are orthogonal."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A 3-page web has transition matrix M = [[0, 1/2, 0], [1/2, 0, 1],
+[1/2, 1/2, 0]]. The dominant eigenvalue is 1. If the PageRank vector is
+proportional to (2, 3, 2), what is the PageRank score of page 2 after
+normalising so the scores sum to 1? Give your answer to 3 decimal
+places.
+"""
+answer = 0.429
+tolerance = 0.001
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "Sum = 2+3+2 = 7. PageRank of page 2 = 3/7."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Matrix A = [[4, 1], [2, 3]]. Find the sum of its eigenvalues.
+"""
+answer = 7.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "The sum of eigenvalues equals the trace of the matrix: 4 + 3 = 7."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To find eigenvalues of a 2x2 matrix, you need to solve a quadratic.
+For a 100x100 matrix in practice, which strategy guides the approach?
+"""
+correct_strategy = "penultimate-step"
+distractors = ["draw-picture", "pigeonhole", "symmetry"]
+explanation = """
+Penultimate step: rather than computing the characteristic polynomial
+(a degree-100 polynomial, numerically unstable), work backwards from
+'we want Av = lambda*v'. The penultimate step before having eigenvalues
+is having a matrix in near-diagonal form. So use iterative algorithms
+(QR iteration, power method) that progressively transform A towards a
+form where eigenvalues are readable from the diagonal.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that eigenvectors corresponding to distinct eigenvalues are
+linearly independent.
+"""
+solution_sketch = """
+Let Av1 = lambda1*v1 and Av2 = lambda2*v2 with lambda1 != lambda2.
+Suppose c1*v1 + c2*v2 = 0. Apply A: c1*lambda1*v1 + c2*lambda2*v2 = 0.
+Multiply the first equation by lambda1: c1*lambda1*v1 + c2*lambda1*v2 = 0.
+Subtract: c2*(lambda2 - lambda1)*v2 = 0. Since lambda2 != lambda1 and
+v2 != 0, we get c2 = 0. Similarly c1 = 0. So {v1, v2} is linearly
+independent. Extend by induction for k distinct eigenvalues. QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Set up the linear dependence equation c1*v1 + c2*v2 = 0"
+weight = 3
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied A to both sides and used Av_i = lambda_i * v_i"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Eliminated one coefficient using the distinctness of eigenvalues"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded both coefficients are zero"
+weight = 4

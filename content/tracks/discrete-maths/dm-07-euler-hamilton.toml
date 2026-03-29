@@ -1,0 +1,150 @@
+id = "dm-07-euler-hamilton"
+title = "Paths and Route Optimisation"
+track = "discrete-maths"
+tier = "core"
+prerequisites = ["dm-02-graphs"]
+strategy_tags = ["draw-picture", "get-hands-dirty", "recast"]
+concept_tags = ["graph"]
+
+[spark]
+scenario = """
+A delivery company serves 8 locations connected by roads. They want a route
+that visits every location exactly once and returns to the depot (a Hamiltonian
+cycle). Meanwhile, a snowplough needs to traverse every road exactly once
+(an Eulerian circuit). Which problem is easy to check and which is
+computationally hard?
+"""
+industry_domain = "logistics"
+connection_question = "Why does one of these problems have a clean necessary-and-sufficient condition while the other does not?"
+
+[ground]
+concept_brief = """
+An Eulerian circuit traverses every edge exactly once and returns to the start.
+Euler proved a graph has one if and only if it is connected and every vertex
+has even degree. A Hamiltonian cycle visits every vertex exactly once. Unlike
+the Eulerian case, no simple necessary-and-sufficient condition is known, and
+deciding whether a Hamiltonian cycle exists is NP-complete.
+"""
+intuition = """
+Euler's condition is local: check each vertex's degree. That makes it fast.
+Hamiltonicity is global: you must consider the overall structure of the graph.
+This local-versus-global gap is a recurring theme in graph theory and
+computational complexity.
+"""
+field_tags = ["graph-theory", "discrete-mathematics", "algorithms"]
+
+[[ground.definitions]]
+term = "Eulerian Circuit"
+statement = "A closed walk in a graph that traverses every edge exactly once."
+
+[[ground.definitions]]
+term = "Euler's Theorem"
+statement = "A connected graph has an Eulerian circuit if and only if every vertex has even degree."
+
+[[ground.definitions]]
+term = "Hamiltonian Cycle"
+statement = "A cycle that visits every vertex of the graph exactly once."
+
+[[ground.definitions]]
+term = "Dirac's Theorem"
+statement = "If every vertex of a simple graph on n >= 3 vertices has degree >= n/2, then the graph has a Hamiltonian cycle."
+
+[[ground.connections]]
+target_concept = "graph"
+relationship = "Eulerian and Hamiltonian problems are fundamental questions about traversal in graphs."
+
+[[ground.connections]]
+target_concept = "complexity-class"
+relationship = "Deciding Hamiltonicity is NP-complete, while deciding the Eulerian property is in P."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The Konigsberg bridge problem: a graph has 4 vertices (landmasses) with the
+following degrees: 3, 3, 3, 5. Does an Eulerian circuit exist? Answer 1 for
+yes, 0 for no.
+"""
+answer = 0
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "For an Eulerian circuit, every vertex must have even degree."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "All four vertices have odd degree, so no Eulerian circuit exists."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A complete graph K_5 has 5 vertices, each connected to every other. How many
+edges does K_5 have, and does it satisfy Dirac's condition for a Hamiltonian
+cycle?
+"""
+answer = 10
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "C(5,2) = 10 edges. Each vertex has degree 4, and n/2 = 2.5, so 4 >= 2.5."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To prove that a graph with an Eulerian circuit must have all even degrees,
+what proof approach is most natural?
+"""
+correct_strategy = "direct-proof"
+distractors = ["induction", "contradiction", "bijection"]
+explanation = """
+A direct argument works cleanly: as the circuit passes through a vertex, it
+uses one edge to enter and one to leave, consuming edges in pairs. Each vertex
+therefore has even degree.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A graph on 6 vertices has every vertex with degree 3. Does Dirac's theorem
+guarantee a Hamiltonian cycle? Answer 1 for yes, 0 for no.
+"""
+answer = 1
+tolerance = 0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "n/2 = 3. Each vertex has degree 3 >= 3. So Dirac's condition is met."
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that if a connected graph has exactly 2 vertices of odd degree, then it
+has an Eulerian path (a walk traversing every edge exactly once, but not
+necessarily returning to the start).
+"""
+solution_sketch = """
+Let u and v be the two vertices of odd degree. Add an edge {u,v} to the graph.
+Now every vertex has even degree (the degrees of u and v each increase by 1,
+becoming even). By Euler's theorem, the augmented graph has an Eulerian circuit.
+Remove the added edge {u,v} from this circuit. What remains is a walk from
+u to v (or v to u) that traverses every original edge exactly once: an
+Eulerian path.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Added an auxiliary edge to make all degrees even"
+weight = 7
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied Euler's theorem to the augmented graph"
+weight = 6
+
+[[solve.sub_problems.rubric]]
+criterion = "Removed the auxiliary edge to obtain the Eulerian path"
+weight = 7

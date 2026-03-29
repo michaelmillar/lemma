@@ -1,0 +1,137 @@
+id = "la-06-inner-products"
+title = "Inner Products and Recommendation Engines"
+track = "linear-algebra"
+tier = "core"
+prerequisites = ["la-01-vectors-and-spaces"]
+strategy_tags = ["draw-picture", "get-hands-dirty", "recast"]
+concept_tags = ["inner-product", "orthogonality", "projection"]
+
+[spark]
+scenario = """
+Netflix and Spotify represent every user and every item as vectors in a
+shared latent space. To predict whether you will like a film, the system
+computes the cosine similarity between your user vector and the film
+vector: cos(theta) = <u, v> / (||u|| * ||v||). A high inner product
+means strong alignment of taste. The entire recommendation pipeline
+rests on inner products to measure and rank similarity at scale.
+"""
+industry_domain = "ml_engineering"
+connection_question = "Why does cosine similarity ignore the magnitude of the vectors? When would raw dot product be a better choice?"
+
+[ground]
+concept_brief = """
+An inner product <u, v> on a vector space is a function satisfying
+linearity in the first argument, symmetry, and positive definiteness.
+It gives a notion of length (||v|| = sqrt(<v,v>)), angle
+(cos theta = <u,v>/(||u||*||v||)), and orthogonality (<u,v> = 0).
+Orthogonal projection onto a subspace finds the closest point in that
+subspace.
+"""
+intuition = """
+An inner product is a ruler and protractor for vector spaces. Without
+it, you can add and scale vectors but cannot measure distances or angles.
+The moment you define an inner product, the space gains geometry.
+Orthogonal vectors are 'completely unrelated' directions. Projection
+answers 'what is the best approximation of v using only directions in
+my subspace?', which is the core idea behind least squares, PCA, and
+Fourier analysis.
+"""
+field_tags = ["linear-algebra"]
+
+[[ground.definitions]]
+term = "Inner Product"
+statement = "A function <.,.>: V x V -> R satisfying (1) linearity: <au+bv, w> = a<u,w> + b<v,w>, (2) symmetry: <u,v> = <v,u>, (3) positive definiteness: <v,v> >= 0 with equality iff v = 0."
+
+[[ground.definitions]]
+term = "Orthogonal Projection"
+statement = "The projection of v onto subspace W is the unique vector p in W such that v - p is orthogonal to every vector in W."
+latex = "\\text{proj}_W(v) = A(A^T A)^{-1} A^T v"
+
+[[ground.definitions]]
+term = "Gram-Schmidt Process"
+statement = "An algorithm that takes a set of linearly independent vectors and produces an orthonormal set spanning the same subspace."
+
+[[ground.connections]]
+target_concept = "least-squares"
+relationship = "The least-squares solution is the orthogonal projection of b onto the column space of A."
+
+[[ground.connections]]
+target_concept = "spectral-theorem"
+relationship = "The spectral theorem guarantees that symmetric matrices have orthonormal eigenvectors, linking inner products to eigendecomposition."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+User vector u = (3, 4, 0) and film vector v = (4, 3, 0). Compute the
+cosine similarity cos(theta) = <u,v> / (||u|| * ||v||). Give your answer
+to 2 decimal places.
+"""
+answer = 0.96
+tolerance = 0.01
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "<u,v> = 12+12+0 = 24. ||u|| = 5, ||v|| = 5. cos(theta) = 24/25 = 0.96."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Find the orthogonal projection of v = (1, 2, 3) onto the subspace
+spanned by w = (1, 0, 0). What is the length of the projection vector?
+"""
+answer = 1.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "proj_w(v) = (<v,w>/<w,w>) * w = (1/1) * (1,0,0) = (1,0,0). Length = 1."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You need to check whether two vectors in R^1000 are orthogonal. Which
+strategy leads to the most efficient approach?
+"""
+correct_strategy = "get-hands-dirty"
+distractors = ["contradiction", "induction", "extreme-principle"]
+explanation = """
+Get hands dirty: simply compute the dot product directly. It is a single
+sum of 1000 products, O(n). No clever trick or indirect argument is
+needed. Sometimes the straightforward computation is the best strategy.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove the Cauchy-Schwarz inequality: |<u,v>| <= ||u|| * ||v|| for all
+vectors u, v in an inner product space.
+"""
+solution_sketch = """
+If v = 0, both sides are 0 and the inequality holds. Assume v != 0.
+For any scalar t, consider ||u - t*v||^2 >= 0.
+Expanding: <u,u> - 2t<u,v> + t^2<v,v> >= 0.
+This is a quadratic in t, nonnegative for all t, so its discriminant
+must be <= 0: (2<u,v>)^2 - 4<u,u><v,v> <= 0.
+Simplifying: <u,v>^2 <= <u,u><v,v> = ||u||^2 * ||v||^2.
+Taking square roots: |<u,v>| <= ||u|| * ||v||. QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Considered the expression ||u - tv||^2 >= 0"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Expanded using inner product properties"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied the nonnegativity of a quadratic's discriminant"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Derived the final inequality correctly"
+weight = 5

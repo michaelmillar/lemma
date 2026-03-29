@@ -1,0 +1,148 @@
+id = "calc-09-convergence"
+title = "Convergence and Training Dynamics"
+track = "calculus"
+tier = "advanced"
+prerequisites = ["calc-07-optimisation"]
+strategy_tags = ["get-hands-dirty", "penultimate-step", "recast"]
+concept_tags = ["convergence", "optimisation", "limit"]
+
+[spark]
+scenario = """
+You are tuning a deep learning model. With a learning rate of 0.1,
+training loss oscillates wildly. At 0.001, it decreases steadily but
+takes hours. Learning rate schedules (cosine annealing, warm-up) control
+convergence speed. Understanding the mathematics of convergence tells
+you exactly when gradient descent is guaranteed to converge, how fast,
+and why the learning rate is the critical hyperparameter.
+"""
+industry_domain = "machine_learning"
+connection_question = "For gradient descent on f(x) = x^2 with learning rate eta, what values of eta guarantee convergence to the minimum?"
+
+[ground]
+concept_brief = """
+Convergence of an iterative method means the sequence of iterates
+x_0, x_1, x_2, ... approaches a fixed point. For gradient descent on
+a smooth convex function with Lipschitz gradient (constant L), choosing
+a learning rate eta < 2/L guarantees convergence. The convergence rate
+measures how quickly the error shrinks: linear convergence means the
+error is multiplied by a constant factor r < 1 at each step.
+"""
+intuition = """
+Imagine bouncing a ball inside a bowl. If you give it a gentle push
+(small learning rate), it spirals slowly to the bottom. Too hard a push
+(large learning rate) and it bounces over the rim. The sweet spot gives
+the fastest descent without overshooting. The condition eta < 2/L is
+the precise threshold between 'spiralling in' and 'flying out'.
+"""
+field_tags = ["calculus", "optimisation", "numerical-methods"]
+
+[[ground.definitions]]
+term = "Convergence Rate"
+statement = "The rate at which |x_n - x*| shrinks. Linear convergence means |x_{n+1} - x*| <= r * |x_n - x*| for some r < 1."
+
+[[ground.definitions]]
+term = "Lipschitz Continuity"
+statement = "f is L-Lipschitz if |f(x) - f(y)| <= L * |x - y| for all x, y."
+
+[[ground.definitions]]
+term = "Learning Rate Condition"
+statement = "For gradient descent on a function with L-Lipschitz gradient, convergence is guaranteed when eta < 2/L."
+
+[[ground.connections]]
+target_concept = "limit"
+relationship = "Convergence is defined via limits: x_n converges to x* means lim_{n->inf} x_n = x*."
+
+[[ground.connections]]
+target_concept = "gradient"
+relationship = "Gradient descent generates the convergent sequence x_{n+1} = x_n - eta * nabla f(x_n)."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Consider gradient descent on f(x) = 5x^2. The gradient is f'(x) = 10x
+and the Lipschitz constant is L = 10. What is the maximum learning rate
+that guarantees convergence?
+"""
+answer = 0.2
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "The condition is eta < 2/L = 2/10 = 0.2."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Starting from x_0 = 10, run gradient descent on f(x) = x^2 with
+eta = 0.3. Compute x_1, x_2, x_3. What is x_3? Round to 2 decimal
+places.
+"""
+answer = 0.64
+tolerance = 0.01
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "x_{n+1} = x_n - 0.3 * 2 * x_n = 0.4 * x_n. So x_1 = 4, x_2 = 1.6, x_3 = 0.64."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You observe that gradient descent oscillates without converging. Before
+reducing the learning rate, what strategy should you use to diagnose
+the problem?
+"""
+correct_strategy = "get-hands-dirty"
+distractors = ["contradiction", "symmetry", "bijection"]
+explanation = """
+Compute several iterates by hand (or log them). Plot x_n vs n and
+f(x_n) vs n. This reveals whether the oscillation is growing (divergent,
+eta too large), stable (limit cycle), or slowly damping (convergent but
+slow). Getting hands dirty with concrete values diagnoses the issue
+before you change hyperparameters blindly.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that gradient descent on f(x) = (L/2)*x^2 with learning rate
+eta < 2/L converges linearly to x* = 0 from any starting point x_0.
+"""
+solution_sketch = """
+The update is x_{n+1} = x_n - eta * L * x_n = (1 - eta*L) * x_n.
+
+Let r = |1 - eta*L|. By induction: x_n = (1 - eta*L)^n * x_0.
+
+For convergence we need |r| < 1, i.e., -1 < 1 - eta*L < 1.
+
+The right inequality gives eta > 0 (true by assumption).
+The left inequality gives eta < 2/L.
+
+So |x_n| = |1 - eta*L|^n * |x_0| -> 0 as n -> infinity.
+
+The convergence is linear with rate r = |1 - eta*L|. The optimal
+rate r = 0 occurs at eta = 1/L. QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Derived the update formula x_{n+1} = (1 - eta*L) * x_n"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Identified the convergence condition |1 - eta*L| < 1"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Solved for eta < 2/L and eta > 0"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Showed |x_n| -> 0 as n -> infinity"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Noted the optimal learning rate eta = 1/L"
+weight = 3

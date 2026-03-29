@@ -1,0 +1,10 @@
+[workspace]
+members = ["crates/core", "crates/content", "crates/server"]
+resolver = "2"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+thiserror = "2"
+toml = "0.8"

@@ -1,0 +1,443 @@
+[[concepts]]
+id = "sample-space"
+label = "Sample Space"
+description = "The set of all possible outcomes of a random experiment."
+aliases = ["outcome space", "omega", "probability space"]
+
+[[concepts]]
+id = "event"
+label = "Event"
+description = "A subset of the sample space; a collection of outcomes."
+aliases = ["probabilistic event"]
+
+[[concepts]]
+id = "conditional-probability"
+label = "Conditional Probability"
+description = "The probability of an event given that another event has occurred."
+aliases = ["conditional prob", "P(A|B)"]
+
+[[concepts]]
+id = "bayes-theorem"
+label = "Bayes' Theorem"
+description = "Inverts conditional probabilities to compute P(cause|evidence) from P(evidence|cause) and priors."
+aliases = ["bayes rule", "bayesian updating", "bayes formula"]
+
+[[concepts]]
+id = "prior"
+label = "Prior Probability"
+description = "The initial belief about an event before observing evidence."
+aliases = ["prior", "prior distribution", "base rate"]
+
+[[concepts]]
+id = "posterior"
+label = "Posterior Probability"
+description = "The updated belief about an event after observing evidence."
+aliases = ["posterior distribution"]
+
+[[concepts]]
+id = "likelihood"
+label = "Likelihood"
+description = "The probability of observing the evidence given a particular hypothesis."
+aliases = ["likelihood function"]
+
+[[concepts]]
+id = "expected-value"
+label = "Expected Value"
+description = "The probability-weighted average of all possible values of a random variable."
+aliases = ["expectation", "mean", "E[X]", "expected outcome"]
+
+[[concepts]]
+id = "linearity-of-expectation"
+label = "Linearity of Expectation"
+description = "E[X+Y] = E[X] + E[Y] regardless of dependence between X and Y."
+aliases = ["linearity of E"]
+
+[[concepts]]
+id = "variance"
+label = "Variance"
+description = "A measure of how far a random variable's values spread from its mean."
+aliases = ["Var(X)", "second central moment"]
+
+[[concepts]]
+id = "standard-deviation"
+label = "Standard Deviation"
+description = "The square root of the variance; measures spread in the same units as the data."
+aliases = ["sd", "sigma", "std dev"]
+
+[[concepts]]
+id = "law-of-large-numbers"
+label = "Law of Large Numbers"
+description = "The sample average converges to the expected value as the sample size grows."
+aliases = ["LLN", "weak law", "strong law"]
+
+[[concepts]]
+id = "central-limit-theorem"
+label = "Central Limit Theorem"
+description = "The sum of many independent random variables tends toward a normal distribution."
+aliases = ["CLT"]
+
+[[concepts]]
+id = "normal-distribution"
+label = "Normal Distribution"
+description = "The bell-curve distribution arising from the CLT, parameterised by mean and variance."
+aliases = ["gaussian", "bell curve", "N(mu, sigma^2)"]
+
+[[concepts]]
+id = "markov-chain"
+label = "Markov Chain"
+description = "A stochastic process where the future state depends only on the present, not the past."
+aliases = ["markov process", "memoryless chain"]
+
+[[concepts]]
+id = "stationary-distribution"
+label = "Stationary Distribution"
+description = "A probability distribution that remains unchanged under the transition matrix of a Markov chain."
+aliases = ["steady state", "equilibrium distribution"]
+
+[[concepts]]
+id = "generating-function"
+label = "Generating Function"
+description = "A formal power series encoding a sequence, enabling algebraic manipulation of combinatorial problems."
+aliases = ["probability generating function", "PGF", "moment generating function", "MGF"]
+
+[[concepts]]
+id = "concentration-inequality"
+label = "Concentration Inequality"
+description = "Bounds on how much a random variable deviates from a central value."
+aliases = ["tail bound", "chernoff bound", "hoeffding inequality"]
+
+[[concepts]]
+id = "random-walk"
+label = "Random Walk"
+description = "A path formed by successive random steps, fundamental to modelling stochastic processes."
+aliases = ["drunkard's walk"]
+
+[[concepts]]
+id = "martingale"
+label = "Martingale"
+description = "A stochastic process whose conditional expected future value equals its present value."
+aliases = ["fair game process"]
+
+[[concepts]]
+id = "optional-stopping"
+label = "Optional Stopping Theorem"
+description = "Conditions under which the expected value of a martingale at a stopping time equals its initial value."
+aliases = ["optional stopping", "Doob's optional stopping"]
+
+[[concepts]]
+id = "measure-theory"
+label = "Measure Theory"
+description = "The mathematical framework for rigorously defining length, area, probability, and integration."
+aliases = ["sigma algebra", "lebesgue measure"]
+
+[[concepts]]
+id = "large-deviations"
+label = "Large Deviations Theory"
+description = "Studies the exponential decay of probabilities of rare events far from the mean."
+aliases = ["large deviation principle", "cramer's theorem", "rate function"]
+
+[[concepts]]
+id = "independence"
+label = "Independence"
+description = "Events A and B are independent when P(A and B) = P(A) * P(B)."
+aliases = ["statistical independence", "independent events"]
+
+[[concepts]]
+id = "law-of-total-probability"
+label = "Law of Total Probability"
+description = "Expresses P(A) as a weighted sum over a partition: P(A) = sum P(A|B_i) * P(B_i)."
+aliases = ["total probability", "partition rule"]
+
+[[concepts]]
+id = "monte-carlo"
+label = "Monte Carlo Method"
+description = "Using repeated random sampling to estimate numerical results."
+aliases = ["monte carlo simulation", "stochastic simulation"]
+
+[[concepts]]
+id = "confidence-interval"
+label = "Confidence Interval"
+description = "A range of values that contains the true parameter with a specified probability."
+aliases = ["CI"]
+
+[[concepts]]
+id = "transition-matrix"
+label = "Transition Matrix"
+description = "A matrix describing the probabilities of transitioning between states in a Markov chain."
+aliases = ["stochastic matrix"]
+
+[[concepts]]
+id = "vector-space"
+label = "Vector Space"
+description = "A set of vectors closed under addition and scalar multiplication, satisfying eight axioms."
+aliases = ["linear space"]
+
+[[concepts]]
+id = "linear-transformation"
+label = "Linear Transformation"
+description = "A function T between vector spaces preserving addition and scalar multiplication: T(au+bv) = aT(u)+bT(v)."
+aliases = ["linear map", "linear operator"]
+
+[[concepts]]
+id = "matrix"
+label = "Matrix"
+description = "A rectangular array of numbers representing a linear transformation between finite-dimensional vector spaces."
+aliases = ["matrix representation"]
+
+[[concepts]]
+id = "determinant"
+label = "Determinant"
+description = "A scalar value encoding whether a matrix is invertible and the volume scaling factor of the associated linear map."
+aliases = ["det"]
+
+[[concepts]]
+id = "eigenvalue"
+label = "Eigenvalue"
+description = "A scalar lambda such that Av = lambda*v for some nonzero vector v (the eigenvector)."
+aliases = ["eigenvalue", "characteristic value"]
+
+[[concepts]]
+id = "eigenvector"
+label = "Eigenvector"
+description = "A nonzero vector v such that Av = lambda*v; the direction unchanged by the linear transformation A."
+aliases = ["characteristic vector"]
+
+[[concepts]]
+id = "basis"
+label = "Basis"
+description = "A linearly independent spanning set for a vector space; every vector has a unique coordinate representation."
+aliases = ["basis vectors"]
+
+[[concepts]]
+id = "rank"
+label = "Rank"
+description = "The dimension of the column space (image) of a matrix; equivalently the number of linearly independent columns."
+aliases = ["matrix rank", "column rank"]
+
+[[concepts]]
+id = "null-space"
+label = "Null Space"
+description = "The set of all vectors x such that Ax = 0; the kernel of the linear transformation."
+aliases = ["kernel", "nullspace"]
+
+[[concepts]]
+id = "inner-product"
+label = "Inner Product"
+description = "A generalisation of the dot product; a bilinear form yielding notions of length, angle, and orthogonality."
+aliases = ["dot product", "scalar product"]
+
+[[concepts]]
+id = "orthogonality"
+label = "Orthogonality"
+description = "Two vectors are orthogonal when their inner product is zero; generalises perpendicularity."
+aliases = ["orthogonal", "perpendicular"]
+
+[[concepts]]
+id = "svd"
+label = "Singular Value Decomposition"
+description = "Factorises any matrix A = U*Sigma*V^T into orthogonal matrices U, V and diagonal singular values Sigma."
+aliases = ["SVD"]
+
+[[concepts]]
+id = "pca"
+label = "Principal Component Analysis"
+description = "Projects data onto the directions of maximum variance using the eigendecomposition of the covariance matrix."
+aliases = ["PCA"]
+
+[[concepts]]
+id = "least-squares"
+label = "Least Squares"
+description = "Finds the vector x minimising ||Ax - b||^2; the projection of b onto the column space of A."
+aliases = ["ordinary least squares", "OLS"]
+
+[[concepts]]
+id = "positive-definite"
+label = "Positive Definite"
+description = "A symmetric matrix A where x^T A x > 0 for all nonzero x; equivalently all eigenvalues are positive."
+aliases = ["positive definite matrix", "PD"]
+
+[[concepts]]
+id = "matrix-decomposition"
+label = "Matrix Decomposition"
+description = "Factoring a matrix into structured components (LU, QR, SVD, eigendecomposition) to simplify computation."
+aliases = ["matrix factorisation"]
+
+[[concepts]]
+id = "span"
+label = "Span"
+description = "The set of all linear combinations of a given set of vectors."
+aliases = ["linear span"]
+
+[[concepts]]
+id = "linear-independence"
+label = "Linear Independence"
+description = "A set of vectors where no vector can be written as a linear combination of the others."
+aliases = ["linearly independent"]
+
+[[concepts]]
+id = "projection"
+label = "Projection"
+description = "The closest point in a subspace to a given vector; computed via P = A(A^T A)^{-1} A^T."
+aliases = ["orthogonal projection"]
+
+[[concepts]]
+id = "spectral-theorem"
+label = "Spectral Theorem"
+description = "Every real symmetric matrix has an orthonormal basis of eigenvectors and all eigenvalues are real."
+aliases = ["eigendecomposition of symmetric matrices"]
+
+[[concepts]]
+id = "limit"
+label = "Limit"
+description = "The value a function approaches as the input approaches a given point."
+aliases = ["limiting value", "lim"]
+
+[[concepts]]
+id = "continuity"
+label = "Continuity"
+description = "A function is continuous at a point when the limit equals the function value there."
+aliases = ["continuous function"]
+
+[[concepts]]
+id = "derivative"
+label = "Derivative"
+description = "The instantaneous rate of change of a function, defined as the limit of the difference quotient."
+aliases = ["differentiation", "f'(x)", "dy/dx"]
+
+[[concepts]]
+id = "integral"
+label = "Integral"
+description = "The accumulated area under a curve, defined as a limit of Riemann sums."
+aliases = ["integration", "antiderivative", "definite integral"]
+
+[[concepts]]
+id = "chain-rule"
+label = "Chain Rule"
+description = "The derivative of a composition f(g(x)) equals f'(g(x)) * g'(x)."
+aliases = ["composition rule"]
+
+[[concepts]]
+id = "fundamental-theorem-of-calculus"
+label = "Fundamental Theorem of Calculus"
+description = "Links differentiation and integration: the derivative of the integral of f recovers f, and the definite integral equals the antiderivative difference."
+aliases = ["FTC", "fundamental theorem"]
+
+[[concepts]]
+id = "taylor-series"
+label = "Taylor Series"
+description = "An infinite sum of terms computed from the values of a function's derivatives at a single point."
+aliases = ["Taylor expansion", "Maclaurin series", "power series expansion"]
+
+[[concepts]]
+id = "gradient"
+label = "Gradient"
+description = "The vector of partial derivatives of a multivariable function, pointing in the direction of steepest ascent."
+aliases = ["grad", "nabla f"]
+
+[[concepts]]
+id = "partial-derivative"
+label = "Partial Derivative"
+description = "The derivative of a multivariable function with respect to one variable, holding the others constant."
+aliases = ["partial differentiation"]
+
+[[concepts]]
+id = "optimisation"
+label = "Optimisation"
+description = "Finding inputs that minimise or maximise a function, using derivatives to locate critical points."
+aliases = ["optimization", "minimisation", "maximisation"]
+
+[[concepts]]
+id = "differential-equation"
+label = "Differential Equation"
+description = "An equation relating a function to its derivatives, modelling dynamic systems."
+aliases = ["ODE", "ordinary differential equation", "DE"]
+
+[[concepts]]
+id = "convergence"
+label = "Convergence"
+description = "The property of a sequence or series approaching a definite limit."
+aliases = ["series convergence", "sequence convergence"]
+
+[[concepts]]
+id = "epsilon-delta"
+label = "Epsilon-Delta Definition"
+description = "The rigorous definition of a limit: for every epsilon > 0 there exists delta > 0 such that |f(x) - L| < epsilon whenever 0 < |x - a| < delta."
+aliases = ["epsilon-delta proof", "rigorous limit definition"]
+
+[[concepts]]
+id = "graph"
+label = "Graph"
+description = "A set of vertices connected by edges; the fundamental structure for modelling pairwise relationships."
+aliases = ["undirected graph", "directed graph", "digraph", "network"]
+
+[[concepts]]
+id = "tree"
+label = "Tree"
+description = "A connected acyclic graph; equivalently a graph on n vertices with exactly n-1 edges."
+aliases = ["rooted tree", "spanning tree", "forest"]
+
+[[concepts]]
+id = "recurrence-relation"
+label = "Recurrence Relation"
+description = "An equation defining a sequence where each term is a function of preceding terms."
+aliases = ["recurrence", "recursive formula", "difference equation"]
+
+[[concepts]]
+id = "modular-arithmetic"
+label = "Modular Arithmetic"
+description = "Arithmetic on integers where numbers wrap around after reaching a modulus."
+aliases = ["clock arithmetic", "mod", "congruence"]
+
+[[concepts]]
+id = "combinatorics"
+label = "Combinatorics"
+description = "The study of counting, arrangement, and combination of discrete structures."
+aliases = ["combinatorial analysis", "enumerative combinatorics"]
+
+[[concepts]]
+id = "binomial-coefficient"
+label = "Binomial Coefficient"
+description = "C(n,k) counts the number of ways to choose k items from n; the coefficients of (x+y)^n."
+aliases = ["n choose k", "combination", "binomial"]
+
+[[concepts]]
+id = "inclusion-exclusion"
+label = "Inclusion-Exclusion Principle"
+description = "Counts the union of sets by alternately adding and subtracting intersection sizes."
+aliases = ["inclusion exclusion", "sieve formula", "PIE"]
+
+[[concepts]]
+id = "bijection-principle"
+label = "Bijection Principle"
+description = "Two finite sets have the same size if and only if there exists a bijection between them."
+aliases = ["counting by bijection", "one-to-one correspondence principle"]
+
+[[concepts]]
+id = "counting"
+label = "Counting"
+description = "Foundational enumeration using the product rule, sum rule, and permutations."
+aliases = ["enumeration", "product rule", "sum rule"]
+
+[[concepts]]
+id = "boolean-algebra"
+label = "Boolean Algebra"
+description = "An algebraic structure over {0,1} with AND, OR, NOT satisfying distributive and complement laws."
+aliases = ["propositional logic", "boolean logic", "switching algebra"]
+
+[[concepts]]
+id = "formal-language"
+label = "Formal Language"
+description = "A set of strings over a finite alphabet, classified by the Chomsky hierarchy."
+aliases = ["regular language", "context-free language", "grammar"]
+
+[[concepts]]
+id = "automaton"
+label = "Automaton"
+description = "An abstract machine that reads input and transitions between states to accept or reject strings."
+aliases = ["finite automaton", "DFA", "NFA", "pushdown automaton", "Turing machine"]
+
+[[concepts]]
+id = "complexity-class"
+label = "Complexity Class"
+description = "A set of problems solvable within given resource bounds, such as P, NP, or PSPACE."
+aliases = ["P", "NP", "NP-complete", "NP-hard", "computational complexity"]

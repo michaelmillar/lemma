@@ -1,0 +1,126 @@
+id = "prob-10-random-walks"
+title = "Random Walks and Diffusion Models"
+track = "probability"
+tier = "advanced"
+prerequisites = ["prob-03-expected-value", "prob-04-variance"]
+strategy_tags = ["draw-picture", "get-hands-dirty", "symmetry"]
+concept_tags = ["random-walk", "expected-value", "variance", "martingale"]
+
+[spark]
+scenario = """
+Modern image generation models (DALL-E, Stable Diffusion) work by learning
+to reverse a random walk. The forward process adds Gaussian noise step by
+step until the image is pure static. The model learns the reverse: given
+noise, denoise step by step to produce an image. Understanding random walks
+is the mathematical foundation of diffusion-based generative AI.
+"""
+industry_domain = "ml_engineering"
+connection_question = "If you add noise to an image 1000 times, the result is pure noise. Why is it possible to learn the reverse process?"
+
+[ground]
+concept_brief = """
+A random walk is a path formed by successive random steps. The simplest
+version: start at 0, at each step move +1 or -1 with equal probability.
+Despite the simplicity, random walks exhibit deep properties: the expected
+position stays at 0, but the expected distance from 0 grows as sqrt(n).
+"""
+intuition = """
+A random walk is a drunkard stumbling along a road. After n steps, they
+have not drifted on average (E[S_n] = 0), but they have wandered: the
+typical distance from the start is about sqrt(n). This sqrt(n) scaling
+is why diffusion processes spread proportionally to the square root of
+time, not linearly.
+"""
+field_tags = ["probability", "stochastic-processes"]
+
+[[ground.definitions]]
+term = "Simple Random Walk"
+statement = "S_n = X_1 + ... + X_n where each X_i = +1 or -1 with equal probability."
+
+[[ground.definitions]]
+term = "Recurrence"
+statement = "A random walk in d dimensions is recurrent if it returns to the origin with probability 1. This holds for d=1 and d=2, but not d >= 3."
+
+[[ground.connections]]
+target_concept = "martingale"
+relationship = "A simple symmetric random walk is a martingale: E[S_{n+1}|S_n] = S_n."
+
+[[ground.connections]]
+target_concept = "central-limit-theorem"
+relationship = "S_n / sqrt(n) converges to N(0,1) by the CLT, explaining the sqrt(n) spread."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+For a simple symmetric random walk (p = 1/2), what is E[S_n^2] after n
+steps? Express in terms of n (give the answer for n = 100).
+"""
+answer = 100.0
+tolerance = 0.01
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Var(S_n) = n*Var(X_i) = n*1 = n. Since E[S_n] = 0, E[S_n^2] = Var(S_n) = n."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+In a biased random walk with P(+1) = 0.6 and P(-1) = 0.4, what is E[S_n]
+after n = 50 steps?
+"""
+answer = 10.0
+tolerance = 0.01
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "E[X_i] = 0.6*(+1) + 0.4*(-1) = 0.2. E[S_n] = n*E[X_i]."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To prove that a symmetric random walk in 2D is recurrent (returns to origin
+with probability 1), which strategy provides the key insight?
+"""
+correct_strategy = "recast"
+distractors = ["pigeonhole", "extreme-principle", "monovariant"]
+explanation = """
+Recast the 2D walk as two independent 1D walks (one for x-coordinate,
+one for y-coordinate). The walk returns to the origin when both coordinates
+simultaneously return to 0. The calculation then uses the generating
+function for return probabilities in 1D, which diverges in 2D (recurrent)
+but converges in 3D (transient).
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that a simple symmetric random walk S_n is a martingale, i.e.,
+E[S_{n+1} | S_0, ..., S_n] = S_n.
+"""
+solution_sketch = """
+S_{n+1} = S_n + X_{n+1} where X_{n+1} is independent of S_0,...,S_n.
+E[S_{n+1} | S_0,...,S_n] = E[S_n + X_{n+1} | S_0,...,S_n]
+                         = S_n + E[X_{n+1} | S_0,...,S_n]
+                         = S_n + E[X_{n+1}]     (by independence)
+                         = S_n + 0 = S_n.  QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Decomposed S_{n+1} = S_n + X_{n+1}"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Used linearity of conditional expectation"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied independence to simplify E[X_{n+1} | history]"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded E[X_{n+1}] = 0 by symmetry"
+weight = 3

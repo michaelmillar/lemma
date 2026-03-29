@@ -1,0 +1,153 @@
+id = "calc-12-functional-analysis"
+title = "Functional Analysis and Kernel Methods"
+track = "calculus"
+tier = "research"
+prerequisites = ["calc-09-convergence"]
+strategy_tags = ["recast", "change-viewpoint", "penultimate-step"]
+concept_tags = ["convergence", "limit"]
+
+[spark]
+scenario = """
+Support vector machines (SVMs) map data into a high-dimensional feature
+space where a linear separator exists. The kernel trick avoids computing
+this mapping explicitly by working in a reproducing kernel Hilbert space
+(RKHS). The mathematics of functional analysis, particularly Hilbert
+spaces, inner products, and convergence in function spaces, underpins why
+the kernel trick works and which kernels are valid.
+"""
+industry_domain = "machine_learning"
+connection_question = "In finite dimensions, vectors live in R^n with the dot product. What changes when your 'vectors' are functions and your inner product is an integral?"
+
+[ground]
+concept_brief = """
+Functional analysis studies infinite-dimensional vector spaces of
+functions. A Hilbert space is a complete inner product space, generalising
+R^n to infinite dimensions. Convergence in a Hilbert space means
+convergence in the norm induced by the inner product. The Riesz
+representation theorem says every continuous linear functional on a
+Hilbert space can be represented as an inner product. In machine learning,
+RKHS theory guarantees that kernel functions correspond to inner products
+in some feature space.
+"""
+intuition = """
+Think of functions as infinite-dimensional vectors. Each point x in the
+domain is a 'coordinate', and f(x) is the value in that coordinate. The
+inner product <f, g> = integral of f*g measures similarity between
+functions, just as the dot product measures similarity between vectors.
+A Hilbert space is the infinite-dimensional analogue of Euclidean space:
+all the geometric tools (projection, orthogonality, distance) still work.
+"""
+field_tags = ["analysis", "functional-analysis"]
+
+[[ground.definitions]]
+term = "Hilbert Space"
+statement = "A complete inner product space: a vector space with an inner product where every Cauchy sequence converges."
+
+[[ground.definitions]]
+term = "Reproducing Kernel Hilbert Space"
+statement = "A Hilbert space of functions where evaluation at any point is a continuous linear functional: f(x) = <f, K_x>."
+latex = "f(x) = \\langle f, K_x \\rangle"
+
+[[ground.definitions]]
+term = "Riesz Representation Theorem"
+statement = "Every continuous linear functional on a Hilbert space H can be represented as an inner product with a fixed element of H."
+
+[[ground.connections]]
+target_concept = "limit"
+relationship = "Completeness of a Hilbert space means every Cauchy sequence has a limit within the space."
+
+[[ground.connections]]
+target_concept = "convergence"
+relationship = "Norm convergence in function spaces is stronger than pointwise convergence and essential for learning theory guarantees."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+In L^2([0,1]), the inner product is <f, g> = integral from 0 to 1 of
+f(x)*g(x) dx. Compute <f, g> where f(x) = x and g(x) = x^2.
+Express as a fraction (give the decimal to 4 places).
+"""
+answer = 0.25
+tolerance = 0.001
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "integral from 0 to 1 of x * x^2 dx = integral of x^3 dx = [x^4/4] from 0 to 1 = 1/4."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The Gaussian kernel is K(x, y) = exp(-||x - y||^2 / (2*sigma^2)).
+For sigma = 1, compute K(0, 1) rounded to 4 decimal places.
+"""
+answer = 0.6065
+tolerance = 0.001
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "K(0, 1) = exp(-1/2) ~ 0.6065."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You need to prove that a proposed kernel K(x, y) is valid (i.e., it
+corresponds to an inner product in some feature space). What is the key
+strategy?
+"""
+correct_strategy = "recast"
+distractors = ["induction", "pigeonhole", "extreme-principle"]
+explanation = """
+Recast the problem: a kernel is valid if and only if the Gram matrix
+K_{ij} = K(x_i, x_j) is positive semi-definite for any finite set of
+points. This changes the abstract question 'does a feature space exist?'
+into the concrete question 'is a matrix PSD?' which can be checked via
+eigenvalues or the determinant criterion.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that the function space L^2([0,1]) with inner product
+<f, g> = integral from 0 to 1 of f(x)*g(x) dx is an inner product space.
+Verify the four inner product axioms.
+"""
+solution_sketch = """
+1. Linearity in the first argument:
+   <alpha*f + beta*g, h> = integral of (alpha*f + beta*g)*h
+   = alpha * integral of f*h + beta * integral of g*h
+   = alpha*<f,h> + beta*<g,h>.
+
+2. Conjugate symmetry (for real functions, just symmetry):
+   <f, g> = integral of f*g = integral of g*f = <g, f>.
+
+3. Positive definiteness:
+   <f, f> = integral of f^2 >= 0.
+   <f, f> = 0 implies f = 0 almost everywhere (in L^2).
+
+4. (Follows from 1-3.) The inner product is well-defined on L^2
+   equivalence classes. QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Verified linearity in the first argument"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Verified symmetry"
+weight = 3
+
+[[solve.sub_problems.rubric]]
+criterion = "Verified positive definiteness (<f,f> >= 0)"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Addressed the 'almost everywhere' subtlety for <f,f> = 0"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Reasoning is clear and all four axioms are explicitly stated"
+weight = 4

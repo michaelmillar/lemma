@@ -1,0 +1,133 @@
+id = "prob-09-concentration"
+title = "Concentration Inequalities and Load Balancing"
+track = "probability"
+tier = "advanced"
+prerequisites = ["prob-04-variance", "prob-05-law-of-large-numbers"]
+strategy_tags = ["recast", "get-hands-dirty", "penultimate-step"]
+concept_tags = ["concentration-inequality", "expected-value", "variance"]
+
+[spark]
+scenario = """
+A load balancer distributes 1 million requests across 1000 servers using
+consistent hashing. Ideally each server gets 1000 requests. In practice,
+some get more. How likely is it that any server receives more than 1200
+requests? Concentration inequalities give tight bounds on such deviations,
+far sharper than Chebyshev.
+"""
+industry_domain = "distributed_systems"
+connection_question = "Chebyshev gives a 1/k^2 bound. Can you do exponentially better when variables are independent?"
+
+[ground]
+concept_brief = """
+Concentration inequalities bound the probability that a random variable
+deviates far from its mean. Markov and Chebyshev are the simplest.
+Chernoff and Hoeffding bounds give exponentially decreasing tails for sums
+of independent variables, making them essential for algorithm analysis and
+system design.
+"""
+intuition = """
+Chebyshev says 'unlikely to be far from the mean' but gives weak (polynomial)
+bounds. Chernoff/Hoeffding say 'for independent sums, deviations decay
+exponentially'. The key idea: use the moment generating function E[e^{tX}]
+as a proxy, then optimise over t. This Markov-on-the-MGF trick is the
+engine behind all exponential tail bounds.
+"""
+field_tags = ["probability", "statistics"]
+
+[[ground.definitions]]
+term = "Chernoff Bound"
+statement = "For independent X_i in [0,1] with sum S and mean mu: P(S >= (1+d)*mu) <= (e^d/(1+d)^{1+d})^mu."
+
+[[ground.definitions]]
+term = "Hoeffding's Inequality"
+statement = "For independent X_i in [a_i, b_i]: P(|S_n - E[S_n]| >= t) <= 2*exp(-2t^2 / sum(b_i-a_i)^2)."
+
+[[ground.connections]]
+target_concept = "law-of-large-numbers"
+relationship = "Concentration inequalities quantify the rate at which LLN convergence happens."
+
+[[ground.connections]]
+target_concept = "large-deviations"
+relationship = "Large deviations theory generalises concentration inequalities to give exact exponential rates."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+1000 requests are assigned to a specific server. Each of 1,000,000 requests
+independently goes to this server with probability 1/1000. The expected
+count is 1000. Using the Chernoff bound P(X >= (1+d)*mu) <= exp(-mu*d^2/3)
+for d in (0,1), bound P(X >= 1200). Use d = 0.2, mu = 1000. Give the
+exponent (i.e., compute mu*d^2/3).
+"""
+answer = 13.3333
+tolerance = 0.01
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "d = (1200-1000)/1000 = 0.2. mu*d^2/3 = 1000*0.04/3."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Using Hoeffding's inequality for n=100 i.i.d. variables in [0,1] with
+E[X_bar] = 0.5, bound P(|X_bar - 0.5| >= 0.1). Each (b_i-a_i)=1.
+Round to 4 decimal places.
+"""
+answer = 0.2707
+tolerance = 0.01
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "P <= 2*exp(-2*n*t^2) where t=0.1, n=100. So 2*exp(-2*100*0.01) = 2*exp(-2)."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To derive the Chernoff bound, what is the key opening move?
+"""
+correct_strategy = "recast"
+distractors = ["induction", "extreme-principle", "symmetry"]
+explanation = """
+Recast P(X >= a) as P(e^{tX} >= e^{ta}) for any t > 0, then apply
+Markov's inequality to e^{tX}. This transforms a tail probability into
+an MGF optimisation problem. The entire theory of exponential bounds rests
+on this change of representation.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove the Markov inequality: for a non-negative random variable X and
+any a > 0, P(X >= a) <= E[X]/a.
+"""
+solution_sketch = """
+E[X] = sum_{x} x*P(X=x)
+     >= sum_{x >= a} x*P(X=x)     (dropping non-negative terms where x < a)
+     >= sum_{x >= a} a*P(X=x)     (since x >= a in this sum)
+     = a * P(X >= a).
+Dividing both sides by a gives P(X >= a) <= E[X]/a. QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Started from the definition of E[X]"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Dropped non-negative terms to get a lower bound"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Replaced x with a in the restricted sum"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Divided to isolate P(X >= a)"
+weight = 3
+
+[[solve.sub_problems.rubric]]
+criterion = "Reasoning is clear and each step justified"
+weight = 3

@@ -1,0 +1,126 @@
+id = "la-01-vectors-and-spaces"
+title = "Vector Spaces and Word Embeddings"
+track = "linear-algebra"
+tier = "foundation"
+prerequisites = []
+strategy_tags = ["draw-picture", "get-hands-dirty"]
+concept_tags = ["vector-space", "basis", "span", "linear-independence"]
+
+[spark]
+scenario = """
+In NLP, every word is represented as a vector in a 300-dimensional space
+(Word2Vec, GloVe). The famous result: king - man + woman = queen. This
+arithmetic only works because word embeddings live in a vector space where
+addition and scalar multiplication have geometric meaning. What makes a
+collection of vectors a 'space'?
+"""
+industry_domain = "ml_engineering"
+connection_question = "Why can you add and subtract word vectors meaningfully? What properties must the space satisfy?"
+
+[ground]
+concept_brief = """
+A vector space V over a field F is a set of vectors with two operations
+(addition, scalar multiplication) satisfying eight axioms: closure,
+associativity, commutativity, identity elements, inverses, and
+distributivity. A basis is a minimal spanning set; its size is the
+dimension.
+"""
+intuition = """
+Think of a vector space as a universe of arrows. You can add arrows
+(tip to tail), scale them (stretch or shrink), and any arrow in the
+universe can be built from a handful of 'basis' arrows. The dimension
+tells you how many independent directions exist. R^2 has 2, R^3 has 3,
+and your word embedding space has 300.
+"""
+field_tags = ["linear-algebra"]
+
+[[ground.definitions]]
+term = "Vector Space"
+statement = "A set V with operations + and * satisfying eight axioms (closure, associativity, commutativity, zero, inverses, distributivity, scalar associativity, identity)."
+
+[[ground.definitions]]
+term = "Basis"
+statement = "A linearly independent set that spans V. Every vector in V has a unique representation as a linear combination of basis vectors."
+
+[[ground.definitions]]
+term = "Dimension"
+statement = "The number of vectors in any basis of V. All bases of a finite-dimensional space have the same size."
+
+[[ground.connections]]
+target_concept = "linear-transformation"
+relationship = "Linear transformations map between vector spaces, and their behaviour is fully determined by what they do to a basis."
+
+[[ground.connections]]
+target_concept = "inner-product"
+relationship = "An inner product adds geometric structure (angles, lengths) on top of the algebraic structure of a vector space."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+In R^3, you have vectors v1 = (1,0,0), v2 = (0,1,0), v3 = (1,1,0).
+What is the dimension of span{v1, v2, v3}?
+"""
+answer = 2.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "v3 = v1 + v2, so v3 is linearly dependent on {v1, v2}."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A word embedding space has dimension 300. What is the minimum number of
+word vectors needed to span the entire space?
+"""
+answer = 300.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To determine whether a set of n vectors in R^m is linearly independent,
+which strategy is most efficient computationally?
+"""
+correct_strategy = "recast"
+distractors = ["get-hands-dirty", "contradiction", "pigeonhole"]
+explanation = """
+Recast: form a matrix with the vectors as columns, then row-reduce.
+The vectors are independent if and only if the rank equals n (no zero
+rows in the echelon form). This converts a spanning question into a
+matrix computation.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that any linearly dependent set of vectors in R^n has the property
+that at least one vector can be written as a linear combination of the
+others.
+"""
+solution_sketch = """
+If {v1,...,vk} is linearly dependent, there exist scalars c1,...,ck,
+not all zero, such that c1*v1 + ... + ck*vk = 0. Let ci != 0.
+Then vi = -(c1/ci)*v1 - ... - (ck/ci)*vk (omitting the i-th term).
+So vi is a linear combination of the others. QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Started from the definition of linear dependence"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Identified a nonzero coefficient ci"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Solved for vi in terms of the other vectors"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Argument is clear and complete"
+weight = 3

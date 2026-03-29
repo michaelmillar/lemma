@@ -1,0 +1,99 @@
+id = "prob-08-generating-functions"
+title = "Generating Functions and Network Paths"
+track = "probability"
+tier = "core"
+prerequisites = ["prob-03-expected-value"]
+strategy_tags = ["recast", "get-hands-dirty"]
+concept_tags = ["generating-function", "expected-value"]
+
+[spark]
+scenario = """
+In a network routing system, a packet traverses a series of hops. At each
+hop, it is delayed by 0, 1, or 2 milliseconds with known probabilities.
+To compute the distribution of total delay across k hops, you could
+enumerate all k-tuples. Or you could multiply polynomials. Generating
+functions turn convolutions into multiplication.
+"""
+industry_domain = "networking"
+connection_question = "Why is multiplying polynomials equivalent to adding independent random variables?"
+
+[ground]
+concept_brief = """
+The probability generating function (PGF) of a discrete random variable X
+is G_X(z) = E[z^X] = sum P(X=k)*z^k. The key property: if X and Y are
+independent, G_{X+Y}(z) = G_X(z) * G_Y(z). This converts the convolution
+of distributions into simple polynomial multiplication.
+"""
+intuition = """
+A generating function packages an entire probability distribution into a
+single object. Multiplying two PGFs is like rolling two dice and asking
+about the sum: the coefficient of z^k in the product tells you the
+probability the sum equals k. It is a change of representation that makes
+hard combinatorial operations (convolution) into easy algebraic ones
+(multiplication).
+"""
+field_tags = ["probability", "combinatorics"]
+
+[[ground.definitions]]
+term = "Probability Generating Function"
+statement = "G_X(z) = E[z^X] = sum_{k=0}^{inf} P(X=k) * z^k."
+latex = "G_X(z) = E[z^X] = \\sum_{k=0}^{\\infty} P(X=k) \\cdot z^k"
+
+[[ground.definitions]]
+term = "Convolution Property"
+statement = "If X and Y are independent, G_{X+Y}(z) = G_X(z) * G_Y(z)."
+
+[[ground.connections]]
+target_concept = "expected-value"
+relationship = "E[X] = G'_X(1), giving a shortcut to compute the mean from the generating function."
+
+[[ground.connections]]
+target_concept = "variance"
+relationship = "Var(X) = G''_X(1) + G'_X(1) - (G'_X(1))^2."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A single hop has delay distribution: P(0ms) = 0.5, P(1ms) = 0.3,
+P(2ms) = 0.2. Write the PGF as G(z) = 0.5 + 0.3z + 0.2z^2.
+What is E[delay] for one hop? (Compute G'(1).)
+"""
+answer = 0.7
+tolerance = 0.01
+points = 10
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+For two independent hops with the same delay distribution, the PGF of the
+total delay is [G(z)]^2. What is the probability that the total delay
+equals exactly 2ms? (Find the coefficient of z^2 in [G(z)]^2.)
+"""
+answer = 0.29
+tolerance = 0.01
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Expand (0.5 + 0.3z + 0.2z^2)^2 and collect the z^2 coefficient."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "z^2 terms: 0.5*0.2 + 0.3*0.3 + 0.2*0.5 = 0.10 + 0.09 + 0.10 = 0.29."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You need to find the distribution of the sum of 100 independent
+Bernoulli(p) random variables. Rather than computing 2^100 terms of a
+convolution, what strategy makes this tractable?
+"""
+correct_strategy = "recast"
+distractors = ["get-hands-dirty", "symmetry", "invariant"]
+explanation = """
+Recast: the PGF of Bernoulli(p) is (1-p+pz). The PGF of the sum of 100
+independent copies is (1-p+pz)^100 = sum C(100,k) p^k (1-p)^{100-k} z^k.
+This is the binomial distribution, obtained immediately by recasting
+convolution as multiplication.
+"""
+points = 10

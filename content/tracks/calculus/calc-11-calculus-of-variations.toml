@@ -1,0 +1,153 @@
+id = "calc-11-calculus-of-variations"
+title = "Calculus of Variations and Optimal Control"
+track = "calculus"
+tier = "advanced"
+prerequisites = ["calc-07-optimisation"]
+strategy_tags = ["penultimate-step", "recast", "wishful-thinking"]
+concept_tags = ["optimisation", "integral", "derivative"]
+
+[spark]
+scenario = """
+A delivery drone must fly from warehouse A to customer B using the least
+energy. The path is not a straight line because of wind patterns. The
+calculus of variations finds the optimal path by optimising over an
+infinite-dimensional space of all possible curves. The same mathematics
+powers optimal control in robotics, shortest-path routing in networks,
+and trajectory planning in autonomous vehicles.
+"""
+industry_domain = "robotics"
+connection_question = "In ordinary calculus, we find the x that minimises f(x). In the calculus of variations, what are we finding? What replaces x?"
+
+[ground]
+concept_brief = """
+The calculus of variations optimises functionals: mappings from functions
+to real numbers. Instead of finding a point x that minimises f(x), we
+find a function y(x) that minimises a functional J[y] = integral of
+L(x, y, y') dx. The Euler-Lagrange equation is the necessary condition
+for a minimum, analogous to f'(x) = 0 in ordinary calculus.
+"""
+intuition = """
+Ordinary optimisation adjusts a few numbers. Variational calculus adjusts
+an entire curve. Imagine a piece of string pinned at two ends. It hangs
+in a shape that minimises potential energy. The Euler-Lagrange equation is
+Nature's recipe for the optimal shape. Any tiny perturbation of the curve
+increases the energy, just as any tiny change to x* increases f(x*) at a
+minimum.
+"""
+field_tags = ["calculus", "optimisation", "physics"]
+
+[[ground.definitions]]
+term = "Functional"
+statement = "A mapping J from a space of functions to the real numbers, e.g., J[y] = integral of L(x, y, y') dx."
+
+[[ground.definitions]]
+term = "Euler-Lagrange Equation"
+statement = "dL/dy - d/dx(dL/dy') = 0, the necessary condition for a function y(x) to be a stationary point of J[y]."
+latex = "\\frac{\\partial L}{\\partial y} - \\frac{d}{dx}\\frac{\\partial L}{\\partial y'} = 0"
+
+[[ground.definitions]]
+term = "Brachistochrone Problem"
+statement = "Find the curve between two points along which a bead slides (under gravity, without friction) in the least time. The solution is a cycloid."
+
+[[ground.connections]]
+target_concept = "derivative"
+relationship = "The Euler-Lagrange equation uses ordinary derivatives and partial derivatives to characterise variational extrema."
+
+[[ground.connections]]
+target_concept = "integral"
+relationship = "The functional to be optimised is typically defined as a definite integral of a Lagrangian."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+For the functional J[y] = integral from 0 to 1 of (y'^2 + y^2) dx with
+y(0) = 0, y(1) = sinh(1), the Euler-Lagrange equation gives y'' - y = 0.
+Verify that y(x) = sinh(x) satisfies this. What is y(0.5)? Round to 4
+decimal places.
+"""
+answer = 0.5211
+tolerance = 0.001
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "sinh(0.5) = (e^{0.5} - e^{-0.5}) / 2 ~ (1.6487 - 0.6065) / 2."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The shortest path between two points in Euclidean space minimises
+J[y] = integral of sqrt(1 + y'^2) dx. The Euler-Lagrange equation
+simplifies to y'' = 0. What is the general solution?
+"""
+answer = 0.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "y'' = 0 integrates to y' = c_1, then y = c_1*x + c_2. This is a straight line. The 'answer' 0.0 represents the y'' value confirming the straight-line solution."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You need to derive the Euler-Lagrange equation from first principles.
+What is the best opening strategy?
+"""
+correct_strategy = "penultimate-step"
+distractors = ["induction", "pigeonhole", "symmetry"]
+explanation = """
+Work backwards from the goal. The penultimate step is recognising that at
+a minimum, the first variation delta J = 0 for all perturbations. This
+means the integral of (dL/dy - d/dx(dL/dy')) * eta(x) dx = 0 for all
+test functions eta. By the fundamental lemma of the calculus of
+variations, the integrand must be zero, giving the Euler-Lagrange
+equation.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Derive the Euler-Lagrange equation. Start from J[y] = integral from a
+to b of L(x, y, y') dx and show that stationarity (delta J = 0 for all
+perturbations) implies dL/dy - d/dx(dL/dy') = 0.
+"""
+solution_sketch = """
+Let y* be the minimiser and consider y* + epsilon*eta where eta(a) = eta(b) = 0.
+
+Define Phi(epsilon) = J[y* + epsilon*eta]. At the minimum, Phi'(0) = 0.
+
+Phi'(0) = integral from a to b of (dL/dy * eta + dL/dy' * eta') dx.
+
+Integrate the second term by parts:
+integral of (dL/dy') * eta' dx = [dL/dy' * eta] from a to b - integral of d/dx(dL/dy') * eta dx.
+
+The boundary term vanishes since eta(a) = eta(b) = 0.
+
+So Phi'(0) = integral from a to b of (dL/dy - d/dx(dL/dy')) * eta dx = 0.
+
+Since this holds for all admissible eta, by the fundamental lemma:
+dL/dy - d/dx(dL/dy') = 0. QED.
+"""
+points = 25
+
+[[solve.sub_problems.rubric]]
+criterion = "Introduced the perturbation y* + epsilon*eta with correct boundary conditions"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Computed Phi'(0) correctly"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Performed integration by parts on the dL/dy' * eta' term"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Showed the boundary term vanishes"
+weight = 3
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied the fundamental lemma to conclude the Euler-Lagrange equation"
+weight = 4

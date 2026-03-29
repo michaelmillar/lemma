@@ -1,0 +1,141 @@
+id = "calc-06-multivariable"
+title = "Partial Derivatives and Loss Surfaces"
+track = "calculus"
+tier = "core"
+prerequisites = ["calc-04-chain-rule"]
+strategy_tags = ["draw-picture", "get-hands-dirty", "change-viewpoint"]
+concept_tags = ["partial-derivative", "gradient"]
+
+[spark]
+scenario = """
+A neural network with millions of parameters defines a loss surface in
+high-dimensional space. To train the network, you need the gradient: the
+vector of partial derivatives with respect to every weight. Each partial
+derivative tells you how the loss changes when you nudge one weight while
+holding all others fixed. Navigating this landscape is the central
+challenge of deep learning.
+"""
+industry_domain = "machine_learning"
+connection_question = "For L(w1, w2) = (w1 - 1)^2 + (w2 + 2)^2, what is the gradient at (3, -1)? In which direction does gradient descent step?"
+
+[ground]
+concept_brief = """
+The partial derivative df/dx_i measures the rate of change of f with
+respect to x_i, holding all other variables constant. The gradient is the
+vector of all partial derivatives: nabla f = (df/dx_1, ..., df/dx_n).
+It points in the direction of steepest ascent. In optimisation, we move
+in the opposite direction (negative gradient) to descend.
+"""
+intuition = """
+Imagine standing on a mountainous terrain (the loss surface). The partial
+derivative with respect to x tells you how steep the slope is if you walk
+due east. The partial with respect to y tells you the slope due north. The
+gradient combines both into a single arrow pointing uphill. Gradient
+descent says: walk in the exact opposite direction.
+"""
+field_tags = ["calculus", "multivariable-analysis"]
+
+[[ground.definitions]]
+term = "Partial Derivative"
+statement = "df/dx_i = lim_{h->0} (f(x + h*e_i) - f(x))/h, the derivative of f treating all variables except x_i as constants."
+latex = "\\frac{\\partial f}{\\partial x_i}"
+
+[[ground.definitions]]
+term = "Gradient"
+statement = "nabla f = (df/dx_1, df/dx_2, ..., df/dx_n), the vector of all partial derivatives."
+latex = "\\nabla f = \\left(\\frac{\\partial f}{\\partial x_1}, \\ldots, \\frac{\\partial f}{\\partial x_n}\\right)"
+
+[[ground.definitions]]
+term = "Directional Derivative"
+statement = "The rate of change of f in the direction of unit vector u: D_u f = nabla f . u."
+
+[[ground.connections]]
+target_concept = "derivative"
+relationship = "Partial derivatives generalise the single-variable derivative to functions of several variables."
+
+[[ground.connections]]
+target_concept = "optimisation"
+relationship = "Setting all partial derivatives to zero locates critical points of multivariable functions."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+For f(x, y) = x^2*y + 3x*y^2, compute df/dx at the point (2, 1).
+"""
+answer = 7.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "df/dx = 2x*y + 3y^2. At (2,1): 2(2)(1) + 3(1) = 7."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+For f(x, y) = x^2 + 4y^2, compute the directional derivative at (1, 1)
+in the direction of u = (3/5, 4/5). Round to 2 decimal places.
+"""
+answer = 7.6
+tolerance = 0.01
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "nabla f at (1,1) = (2, 8). D_u f = (2)(3/5) + (8)(4/5) = 6/5 + 32/5 = 38/5."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You have a function of 100 variables and need to find the minimum. Direct
+visualisation is impossible. What strategy best helps you reason about
+the shape of the loss surface?
+"""
+correct_strategy = "change-viewpoint"
+distractors = ["pigeonhole", "induction", "symmetry"]
+explanation = """
+Change your viewpoint from the full 100-dimensional space to lower-
+dimensional slices. Plot the loss along random 2D subspaces through the
+current point. This reveals whether the landscape is bowl-shaped
+(convex), has saddle points, or has many local minima. The technique
+of random cross-sections is widely used in deep learning research.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that the gradient nabla f points in the direction of steepest
+ascent. That is, among all unit vectors u, the directional derivative
+D_u f = nabla f . u is maximised when u = nabla f / |nabla f|.
+"""
+solution_sketch = """
+By the Cauchy-Schwarz inequality:
+nabla f . u <= |nabla f| * |u| = |nabla f| (since |u| = 1).
+
+Equality holds when u is parallel to nabla f, i.e., u = nabla f / |nabla f|.
+
+Therefore D_u f = nabla f . u is maximised at u = nabla f / |nabla f|,
+and the maximum value is |nabla f|. QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Stated the directional derivative formula D_u f = nabla f . u"
+weight = 3
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied the Cauchy-Schwarz inequality correctly"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Identified the equality condition (u parallel to nabla f)"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded that the gradient direction maximises the rate of change"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Reasoning is clear and complete"
+weight = 3

@@ -1,0 +1,139 @@
+id = "calc-08-differential-equations"
+title = "ODEs and Physics Simulation"
+track = "calculus"
+tier = "core"
+prerequisites = ["calc-03-integrals"]
+strategy_tags = ["get-hands-dirty", "draw-picture", "wishful-thinking"]
+concept_tags = ["differential-equation", "derivative", "integral"]
+
+[spark]
+scenario = """
+In a game engine, every rigid body obeys Newton's second law: F = ma,
+which is a differential equation for position. Euler integration
+approximates the solution by taking small time steps: v += a*dt, then
+x += v*dt. Runge-Kutta (RK4) takes the same idea but evaluates the
+derivative at multiple points per step, producing far more accurate
+physics. Understanding ODEs is the foundation of all real-time simulation.
+"""
+industry_domain = "game_development"
+connection_question = "A ball is thrown with velocity v0 under gravity (a = -9.8 m/s^2). The ODE is dv/dt = -9.8. What is v(t)? What is x(t)?"
+
+[ground]
+concept_brief = """
+An ordinary differential equation (ODE) relates a function to its
+derivatives: dy/dt = f(t, y). The simplest case dy/dt = ky gives
+exponential growth/decay y = Ce^{kt}. Numerical methods (Euler, RK4)
+approximate solutions by stepping forward in small increments. The order
+of an ODE is the highest derivative present.
+"""
+intuition = """
+A differential equation is a recipe that tells you the velocity at every
+point on a map. Given your starting position (initial condition), you
+follow the velocity arrows to trace your path. Euler's method says
+'take a small step in the current direction, then re-evaluate'; RK4
+says 'sample the direction at several nearby points and average them
+for a better step'.
+"""
+field_tags = ["calculus", "differential-equations"]
+
+[[ground.definitions]]
+term = "Ordinary Differential Equation"
+statement = "An equation of the form dy/dt = f(t, y), relating a function y(t) to its derivatives with respect to one variable."
+
+[[ground.definitions]]
+term = "Euler Method"
+statement = "y_{n+1} = y_n + h * f(t_n, y_n), advancing the solution by step size h using the current derivative."
+latex = "y_{n+1} = y_n + h \\, f(t_n, y_n)"
+
+[[ground.definitions]]
+term = "Initial Value Problem"
+statement = "An ODE together with a starting condition y(t_0) = y_0 that determines a unique solution."
+
+[[ground.connections]]
+target_concept = "derivative"
+relationship = "The ODE is expressed in terms of derivatives. Solving it means finding the function that satisfies the derivative relationship."
+
+[[ground.connections]]
+target_concept = "integral"
+relationship = "Solving dy/dt = f(t) by separation of variables requires integration."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Solve the ODE dy/dt = 3y with initial condition y(0) = 2.
+What is y(1)? Round to 2 decimal places.
+"""
+answer = 40.17
+tolerance = 0.1
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "This is exponential growth: y(t) = 2*e^{3t}. At t = 1: y = 2*e^3 ~ 2*20.086."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Use Euler's method with step size h = 0.5 to approximate the solution of
+dy/dt = -2y at t = 1, starting from y(0) = 4. Give your approximation.
+"""
+answer = 0.0
+tolerance = 0.01
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Step 1: y(0.5) = 4 + 0.5*(-2*4) = 4 - 4 = 0. Step 2: y(1) = 0 + 0.5*(-2*0) = 0. (The exact solution is 4*e^{-2} ~ 0.54; Euler overshoots badly here.)"
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+Given dy/dx = x/y with y(0) = 1, what strategy should you use to solve
+this analytically?
+"""
+correct_strategy = "recast"
+distractors = ["induction", "pigeonhole", "extreme-principle"]
+explanation = """
+Recast by separating variables: move all y terms to one side and x terms
+to the other. y*dy = x*dx, then integrate both sides. This changes the
+problem from a differential equation into two standard integrals.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that the solution to dy/dt = ky with y(0) = y_0 is y(t) = y_0 * e^{kt}.
+Verify by substitution and show uniqueness using the integrating factor method.
+"""
+solution_sketch = """
+Existence (verification): Let y(t) = y_0 * e^{kt}. Then
+dy/dt = y_0 * k * e^{kt} = k * y(t). Also y(0) = y_0 * e^0 = y_0. Check.
+
+Uniqueness: Rewrite as dy/dt - ky = 0. Multiply by the integrating
+factor e^{-kt}: d/dt[y * e^{-kt}] = e^{-kt}(dy/dt - ky) = 0.
+
+So y * e^{-kt} = C (constant). At t = 0: C = y_0.
+Therefore y(t) = y_0 * e^{kt} is the unique solution. QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Verified y(t) = y_0 * e^{kt} satisfies the ODE by direct substitution"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Checked the initial condition y(0) = y_0"
+weight = 3
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied the integrating factor e^{-kt} correctly"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Showed y * e^{-kt} is constant, hence the solution is unique"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Reasoning is clear and complete"
+weight = 3

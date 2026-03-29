@@ -1,0 +1,155 @@
+id = "dm-12-complexity"
+title = "Complexity Classes and NP-Hardness"
+track = "discrete-maths"
+tier = "research"
+prerequisites = ["dm-07-euler-hamilton"]
+strategy_tags = ["recast", "penultimate-step", "change-viewpoint"]
+concept_tags = ["complexity-class", "graph"]
+
+[spark]
+scenario = """
+A university needs to schedule exams so that no student has two exams at the
+same time. This is equivalent to graph colouring: students are edges between
+courses, and time slots are colours. Determining the minimum number of colours
+(the chromatic number) is NP-hard. Why does 'hard' here mean something
+precise, and what does it imply for real-world schedulers?
+"""
+industry_domain = "software_engineering"
+connection_question = "If P = NP were proved, what would happen to modern cryptography?"
+
+[ground]
+concept_brief = """
+Complexity classes group decision problems by the resources needed to solve
+them. P contains problems solvable in polynomial time. NP contains problems
+whose solutions can be verified in polynomial time. A problem is NP-complete
+if it is in NP and every NP problem reduces to it in polynomial time.
+The P vs NP question, whether P = NP, is the most important open problem in
+theoretical computer science.
+"""
+intuition = """
+Think of P as 'easy to solve' and NP as 'easy to check'. Sudoku is in NP:
+hard to complete, easy to verify. If you could solve any NP-complete problem
+fast, you could solve all of NP fast, because every NP problem can be
+translated (reduced) to any NP-complete problem. The hardness cascades through
+reductions.
+"""
+field_tags = ["computational-complexity", "theoretical-computer-science", "discrete-mathematics"]
+
+[[ground.definitions]]
+term = "P"
+statement = "The class of decision problems solvable by a deterministic Turing machine in polynomial time."
+
+[[ground.definitions]]
+term = "NP"
+statement = "The class of decision problems whose 'yes' instances have certificates verifiable in polynomial time."
+
+[[ground.definitions]]
+term = "NP-Complete"
+statement = "A problem that is in NP and NP-hard: every NP problem polynomial-time reduces to it."
+
+[[ground.definitions]]
+term = "Polynomial Reduction"
+statement = "A mapping from instances of problem A to instances of problem B, computable in polynomial time, preserving yes/no answers."
+
+[[ground.connections]]
+target_concept = "graph"
+relationship = "Many NP-complete problems are graph problems: Hamiltonian cycle, graph colouring, clique, vertex cover."
+
+[[ground.connections]]
+target_concept = "modular-arithmetic"
+relationship = "Cryptographic hardness assumptions (factoring, discrete log) connect number theory to complexity."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The complete graph K_4 requires at least how many colours for a proper vertex
+colouring (no two adjacent vertices share a colour)?
+"""
+answer = 4
+tolerance = 0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "In K_4, every vertex is adjacent to every other, so all 4 must have distinct colours."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To show that problem X is NP-complete, you first show X is in NP, then reduce
+a known NP-complete problem to X. What is this proof strategy called?
+"""
+correct_strategy = "recast"
+distractors = ["contradiction", "induction", "extreme-principle"]
+explanation = """
+You recast a known hard problem (e.g. 3-SAT) as an instance of X. If X
+could be solved in polynomial time, so could 3-SAT, contradicting the
+assumption that 3-SAT is NP-hard. The reduction recasts one problem in
+terms of another.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A problem of size n has a brute-force solution checking all 2^n subsets. For
+n=20, how many subsets must be checked?
+"""
+answer = 1048576
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "2^20 = 1,048,576."
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that if any NP-complete problem can be solved in polynomial time, then
+P = NP.
+"""
+solution_sketch = """
+Let L be an NP-complete problem solvable in polynomial time p(n). By definition,
+every problem Q in NP has a polynomial-time reduction f from Q to L. Given an
+instance x of Q, compute f(x) in polynomial time q(n), then solve f(x) using
+the polynomial-time algorithm for L in time p(q(n)). The composition of two
+polynomials is a polynomial, so Q is solved in polynomial time. Since Q was an
+arbitrary NP problem, P = NP.
+"""
+points = 25
+
+[[solve.sub_problems.rubric]]
+criterion = "Stated that an NP-complete problem has reductions from all NP problems"
+weight = 6
+
+[[solve.sub_problems.rubric]]
+criterion = "Composed the reduction with the polynomial-time solver"
+weight = 7
+
+[[solve.sub_problems.rubric]]
+criterion = "Argued the composition of polynomials is polynomial"
+weight = 6
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded P = NP"
+weight = 6
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The Vertex Cover problem asks for the smallest set of vertices covering all
+edges. In a cycle graph C_5 (5 vertices in a cycle), what is the minimum
+vertex cover size?
+"""
+answer = 3
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "A cycle of 5 needs ceil(5/2) = 3 vertices to cover all 5 edges. Two vertices can cover at most 4 edges in a cycle."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "Pick 3 vertices such that no two are adjacent gaps: e.g. vertices 1,2,4 cover edges {1,2},{2,3},{4,5},{1,5},{3,4}. Minimum is 3."

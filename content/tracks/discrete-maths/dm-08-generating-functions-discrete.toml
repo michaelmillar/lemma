@@ -1,0 +1,152 @@
+id = "dm-08-generating-functions-discrete"
+title = "Generating Functions and Counting"
+track = "discrete-maths"
+tier = "core"
+prerequisites = ["dm-04-recurrences"]
+strategy_tags = ["recast", "get-hands-dirty", "penultimate-step"]
+concept_tags = ["generating-function", "recurrence-relation", "combinatorics"]
+
+[spark]
+scenario = """
+An API can return responses in 3 shapes: single object, list, or paginated
+list. A composite response nests these shapes. How many distinct response
+structures have total nesting depth exactly n? Generating functions turn this
+counting problem into algebra: encode the sequence as a power series, solve
+for the series, then read off coefficients.
+"""
+industry_domain = "software_engineering"
+connection_question = "You have seen generating functions in probability (moment generating functions). How does the discrete-maths usage differ?"
+
+[ground]
+concept_brief = """
+The ordinary generating function (OGF) for a sequence a_0, a_1, a_2, ... is
+the formal power series A(x) = sum a_n * x^n. Translating a recurrence into
+an equation for A(x) often lets you solve for A(x) in closed form, then
+extract coefficients. Generating functions unify counting, recurrences, and
+algebraic identities into a single framework.
+"""
+intuition = """
+Think of a generating function as a 'clothesline' that hangs every term of
+a sequence on its own power of x. Multiplying two generating functions
+convolves their sequences, which corresponds to combining independent choices.
+This is why the product of two OGFs counts ordered pairs.
+"""
+field_tags = ["combinatorics", "discrete-mathematics", "enumerative-combinatorics"]
+
+[[ground.definitions]]
+term = "Ordinary Generating Function"
+statement = "A(x) = sum_{n>=0} a_n * x^n, a formal power series encoding the sequence (a_n)."
+
+[[ground.definitions]]
+term = "Convolution"
+statement = "The coefficient of x^n in A(x)*B(x) is sum_{k=0}^{n} a_k * b_{n-k}."
+
+[[ground.definitions]]
+term = "Closed Form via Partial Fractions"
+statement = "If A(x) = P(x)/Q(x) with deg P < deg Q, decompose into partial fractions and expand each as a geometric series to read off coefficients."
+
+[[ground.connections]]
+target_concept = "recurrence-relation"
+relationship = "Multiplying by x and shifting indices translates recurrence relations into algebraic equations for the generating function."
+
+[[ground.connections]]
+target_concept = "counting"
+relationship = "Generating functions provide a systematic machine for solving counting problems."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The Fibonacci recurrence is F(n) = F(n-1) + F(n-2) with F(0)=0, F(1)=1.
+Its generating function is F(x) = x / (1 - x - x^2). Use this to confirm
+F(6) by computing the 6th Fibonacci number directly.
+"""
+answer = 8
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Compute: F(0)=0, F(1)=1, F(2)=1, F(3)=2, F(4)=3, F(5)=5, F(6)=8."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The generating function for the number of ways to make change using coins
+of value 1 and 2 is G(x) = 1/((1-x)(1-x^2)). Find the coefficient of x^4
+(number of ways to make 4 using 1s and 2s).
+"""
+answer = 3
+tolerance = 0
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Enumerate: {1,1,1,1}, {1,1,2}, {2,2}. Three ways."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "Alternatively, expand 1/(1-x) = 1+x+x^2+... and 1/(1-x^2) = 1+x^2+x^4+..., then convolve to get the coefficient of x^4."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+A counting problem asks for the number of binary strings of length n with no
+two consecutive 1s. You recognise the recurrence a_n = a_{n-1} + a_{n-2}.
+To extract a closed form, which strategy is most powerful?
+"""
+correct_strategy = "recast"
+distractors = ["get-hands-dirty", "draw-picture", "symmetry"]
+explanation = """
+Recasting the recurrence into a generating function (or using the characteristic
+equation) transforms the problem from recursive to algebraic, giving a direct
+closed-form solution.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+The generating function for the Catalan numbers is C(x) = (1 - sqrt(1-4x))/(2x).
+Compute C_3 (the 3rd Catalan number, with C_0=1).
+"""
+answer = 5
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "C_0=1, C_1=1, C_2=2, C_3=5. Use C_n = sum_{i=0}^{n-1} C_i * C_{n-1-i}."
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Derive the generating function for the Fibonacci sequence. Starting from
+F(n) = F(n-1) + F(n-2), F(0)=0, F(1)=1, show that F(x) = x / (1 - x - x^2).
+"""
+solution_sketch = """
+Let F(x) = sum_{n>=0} F_n * x^n. Multiply the recurrence F_n = F_{n-1} + F_{n-2}
+by x^n and sum for n >= 2:
+  sum_{n>=2} F_n * x^n = sum_{n>=2} F_{n-1} * x^n + sum_{n>=2} F_{n-2} * x^n.
+The left side is F(x) - F_0 - F_1*x = F(x) - x.
+The first sum on the right is x*(F(x) - F_0) = x*F(x).
+The second sum is x^2 * F(x).
+So F(x) - x = x*F(x) + x^2*F(x).
+Rearranging: F(x)(1 - x - x^2) = x, hence F(x) = x / (1 - x - x^2).
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Correctly set up the generating function sum"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Identified the shifted sums on the right-hand side"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Solved algebraically for F(x)"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Final expression matches x/(1-x-x^2)"
+weight = 5

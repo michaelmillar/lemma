@@ -1,0 +1,141 @@
+id = "calc-03-integrals"
+title = "Integration and Cumulative Metrics"
+track = "calculus"
+tier = "foundation"
+prerequisites = ["calc-02-derivatives"]
+strategy_tags = ["draw-picture", "get-hands-dirty", "recast"]
+concept_tags = ["integral", "fundamental-theorem-of-calculus"]
+
+[spark]
+scenario = """
+Your network monitoring tool plots throughput in MB/s over time. The
+throughput varies: 50 MB/s at first, peaking at 200 MB/s, then falling
+off. To compute the total data transferred over a 10-minute window, you
+need the area under this throughput curve. That area is the definite
+integral, and the fundamental theorem of calculus gives you an exact
+way to compute it.
+"""
+industry_domain = "infrastructure_engineering"
+connection_question = "If throughput is T(t) = 100 + 50*sin(pi*t/10) MB/s for t in [0, 10] minutes, how would you compute total data transferred?"
+
+[ground]
+concept_brief = """
+The definite integral of f from a to b is the signed area under the curve,
+defined as a limit of Riemann sums. The fundamental theorem of calculus
+(FTC) connects integration and differentiation: if F'(x) = f(x), then
+the integral of f from a to b equals F(b) - F(a). This transforms area
+computation into finding antiderivatives.
+"""
+intuition = """
+Imagine slicing the region under a curve into thin vertical strips. Each
+strip has width dx and height f(x), so area ~ f(x)*dx. Add up all strips
+and take the limit as they become infinitely thin: that is the integral.
+The FTC says you do not need to sum infinitely many strips; just find any
+function whose derivative is f, evaluate it at the endpoints, and subtract.
+"""
+field_tags = ["calculus", "analysis"]
+
+[[ground.definitions]]
+term = "Definite Integral"
+statement = "The integral of f from a to b is the limit of Riemann sums: lim_{n->inf} sum_{i=1}^{n} f(x_i*) * Delta_x."
+latex = "\\int_a^b f(x)\\,dx = \\lim_{n \\to \\infty} \\sum_{i=1}^{n} f(x_i^*) \\Delta x"
+
+[[ground.definitions]]
+term = "Fundamental Theorem of Calculus"
+statement = "If F is an antiderivative of f on [a,b], then the integral of f from a to b equals F(b) - F(a)."
+latex = "\\int_a^b f(x)\\,dx = F(b) - F(a)"
+
+[[ground.definitions]]
+term = "Riemann Sum"
+statement = "An approximation of the integral by summing f(x_i) * Delta_x over a partition of [a,b]."
+
+[[ground.connections]]
+target_concept = "derivative"
+relationship = "The FTC states differentiation and integration are inverse operations."
+
+[[ground.connections]]
+target_concept = "differential-equation"
+relationship = "Solving differential equations often requires integration; initial conditions pin down the constant of integration."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Compute the definite integral of f(x) = 3x^2 from 0 to 4.
+"""
+answer = 64.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "The antiderivative of 3x^2 is x^3. Evaluate at the endpoints: 4^3 - 0^3."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Using the left Riemann sum with n = 4 equal subintervals, approximate the
+integral of f(x) = x^2 from 0 to 2. Round to 2 decimal places.
+"""
+answer = 1.75
+tolerance = 0.01
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "Delta_x = 0.5. Evaluate f at x = 0, 0.5, 1, 1.5. Sum: (0 + 0.25 + 1 + 2.25) * 0.5."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You are asked to evaluate the integral of 1/(1+x^2) from 0 to 1. You
+do not immediately recognise the antiderivative. What strategy should
+you try first?
+"""
+correct_strategy = "recast"
+distractors = ["contradiction", "pigeonhole", "extreme-principle"]
+explanation = """
+Recast the integrand by recognising it as the derivative of arctan(x).
+Changing representation from 'unfamiliar integrand' to 'known derivative'
+is the core move for evaluating integrals analytically.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove Part 1 of the Fundamental Theorem of Calculus: if f is continuous
+on [a,b] and F(x) = integral from a to x of f(t) dt, then F'(x) = f(x).
+"""
+solution_sketch = """
+By definition: F'(x) = lim_{h->0} (F(x+h) - F(x))/h
+= lim_{h->0} (1/h) * integral from x to x+h of f(t) dt.
+
+By the Mean Value Theorem for integrals, there exists c in [x, x+h]
+such that integral from x to x+h of f(t) dt = f(c) * h.
+
+So F'(x) = lim_{h->0} f(c) * h / h = lim_{h->0} f(c).
+
+As h -> 0, c -> x, and since f is continuous, f(c) -> f(x).
+Therefore F'(x) = f(x). QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Wrote F'(x) as the limit of the difference quotient"
+weight = 3
+
+[[solve.sub_problems.rubric]]
+criterion = "Expressed the numerator as an integral from x to x+h"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied the Mean Value Theorem for integrals"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Used continuity of f to conclude F'(x) = f(x)"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Reasoning is clear and complete"
+weight = 4

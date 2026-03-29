@@ -1,0 +1,127 @@
+id = "prob-03-expected-value"
+title = "Expected Value and Pricing Models"
+track = "probability"
+tier = "foundation"
+prerequisites = ["prob-01-sample-spaces"]
+strategy_tags = ["get-hands-dirty", "change-viewpoint"]
+concept_tags = ["expected-value", "linearity-of-expectation"]
+
+[spark]
+scenario = """
+An insurance company prices car policies. The average claim costs 5000 GBP,
+but only 8% of policyholders claim in a given year. The company has 200,000
+policyholders. How should they set premiums to cover expected costs while
+remaining competitive?
+"""
+industry_domain = "finance"
+connection_question = "If you had to set a minimum premium, what calculation would you do first?"
+
+[ground]
+concept_brief = """
+The expected value E[X] of a random variable X is the probability-weighted
+average of all possible values. Linearity of expectation, E[X+Y] = E[X] + E[Y],
+holds regardless of dependence and is one of the most powerful tools in
+probability.
+"""
+intuition = """
+Expected value is the long-run average. If you repeated the experiment
+infinitely many times and averaged the results, you would get E[X]. The
+magic of linearity is that you can decompose complex problems into simple
+pieces and add the expectations, even when the pieces are tangled together.
+"""
+field_tags = ["probability", "statistics"]
+
+[[ground.definitions]]
+term = "Expected Value"
+statement = "E[X] = sum of x * P(X=x) over all possible values x."
+latex = "E[X] = \\sum_x x \\cdot P(X = x)"
+
+[[ground.definitions]]
+term = "Linearity of Expectation"
+statement = "E[aX + bY] = aE[X] + bE[Y] for any constants a, b and random variables X, Y."
+latex = "E[aX + bY] = aE[X] + bE[Y]"
+
+[[ground.connections]]
+target_concept = "variance"
+relationship = "Variance measures how far values typically deviate from the expected value."
+
+[[ground.connections]]
+target_concept = "law-of-large-numbers"
+relationship = "The LLN guarantees the sample average converges to E[X] as sample size grows."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+What is the expected annual cost per policyholder if each has an 8%
+probability of making a 5000 GBP claim? Answer in GBP.
+"""
+answer = 400.0
+tolerance = 0.01
+points = 10
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+You roll a fair die and win the number of pounds shown. What is E[X]?
+Round to 4 decimal places.
+"""
+answer = 3.5
+tolerance = 0.001
+points = 10
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Using linearity of expectation: if you roll 10 fair dice and sum the
+results, what is the expected total?
+"""
+answer = 35.0
+tolerance = 0.01
+points = 15
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+A problem asks: 'In a random permutation of n people seated in a circle,
+what is the expected number of people sitting in their original seat?'
+What strategy simplifies this dramatically?
+"""
+correct_strategy = "change-viewpoint"
+distractors = ["get-hands-dirty", "extreme-principle", "contradiction"]
+explanation = """
+Define X_i = 1 if person i is in their original seat, 0 otherwise.
+By linearity, E[sum X_i] = sum E[X_i] = n * (1/n) = 1. The key insight
+is changing viewpoint from the total to individual indicator variables.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove linearity of expectation for two discrete random variables X and Y
+on a finite sample space S (not assuming independence).
+"""
+solution_sketch = """
+E[X+Y] = sum over s in S of (X(s)+Y(s)) * P(s)
+       = sum over s of X(s)*P(s) + sum over s of Y(s)*P(s)
+       = E[X] + E[Y].
+The decomposition uses only distributivity of multiplication over addition
+and the ability to split a sum, no independence needed. QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Wrote the definition of E[X+Y] as a sum over the sample space"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Split the sum into two separate sums"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Identified each sum as E[X] and E[Y] respectively"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Noted that independence is not required"
+weight = 3

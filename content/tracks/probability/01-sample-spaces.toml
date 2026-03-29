@@ -1,0 +1,124 @@
+id = "prob-01-sample-spaces"
+title = "Sample Spaces and A/B Testing"
+track = "probability"
+tier = "foundation"
+prerequisites = []
+strategy_tags = ["get-hands-dirty", "draw-picture"]
+concept_tags = ["sample-space", "event", "independence"]
+
+[spark]
+scenario = """
+Your team runs an A/B test on a checkout flow. Version A has a 3.2%
+conversion rate, Version B has 3.8%. The product manager wants to ship B
+immediately. But with 500 visitors per variant, how confident should you
+be that B is actually better, and not just random noise?
+"""
+industry_domain = "product_engineering"
+connection_question = "How would you model the set of all possible outcomes for 500 coin flips? What changes when the coin is biased?"
+
+[ground]
+concept_brief = """
+A sample space is the set of all possible outcomes of a random experiment.
+Events are subsets of the sample space. Understanding sample spaces is the
+foundation for computing any probability: you need to know what can happen
+before you can reason about what will happen.
+"""
+intuition = """
+Think of the sample space as a complete map of possibility. Every random
+experiment (coin flip, dice roll, user clicking a button) has a universe of
+outcomes. An event is a region on that map. Probability measures how much
+of the map each region covers.
+"""
+field_tags = ["probability", "statistics"]
+
+[[ground.definitions]]
+term = "Sample Space"
+statement = "The set S of all possible outcomes of a random experiment."
+latex = "\\Omega = \\{\\omega_1, \\omega_2, \\ldots\\}"
+
+[[ground.definitions]]
+term = "Event"
+statement = "A subset A of the sample space S. We say event A occurs if the outcome is in A."
+latex = "A \\subseteq \\Omega"
+
+[[ground.definitions]]
+term = "Probability Axioms"
+statement = "P(S) = 1, P(A) >= 0 for all events A, and P(A union B) = P(A) + P(B) for disjoint events."
+
+[[ground.connections]]
+target_concept = "conditional-probability"
+relationship = "Once you have a sample space and events, conditioning restricts the sample space to a subset."
+
+[[ground.connections]]
+target_concept = "independence"
+relationship = "Two events are independent when knowing one occurred does not change the probability of the other."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A fair six-sided die is rolled twice. How many outcomes are in the sample
+space? (Each outcome is an ordered pair of die faces.)
+"""
+answer = 36.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+In the same experiment (two fair dice), what is the probability that the
+sum equals 7? Express as a decimal rounded to 4 places.
+"""
+answer = 0.1667
+tolerance = 0.001
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "List the pairs that sum to 7: (1,6), (2,5), (3,4), (4,3), (5,2), (6,1)."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+A problem states: 'Prove that when two fair dice are rolled, the events
+"first die shows 3" and "sum is even" are independent.' What strategy
+should you begin with?
+"""
+correct_strategy = "get-hands-dirty"
+distractors = ["symmetry", "contradiction", "pigeonhole"]
+explanation = """
+Start by computing P(A), P(B), and P(A and B) explicitly from the sample
+space. With small finite spaces, direct enumeration is the clearest first
+step before attempting a general argument.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that for a finite sample space with equally likely outcomes,
+P(A) = |A| / |S| satisfies all three probability axioms.
+"""
+solution_sketch = """
+Axiom 1: P(A) = |A|/|S| >= 0 since |A| >= 0 and |S| > 0.
+Axiom 2: P(S) = |S|/|S| = 1.
+Axiom 3: If A and B are disjoint, A intersection B = empty set,
+so |A union B| = |A| + |B|, hence P(A union B) = (|A|+|B|)/|S| = P(A)+P(B). QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Verified P(A) >= 0 for all events A"
+weight = 3
+
+[[solve.sub_problems.rubric]]
+criterion = "Showed P(S) = 1"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Proved additivity for disjoint events"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Reasoning is clear and complete"
+weight = 3

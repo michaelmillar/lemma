@@ -1,0 +1,154 @@
+id = "la-13-matrix-analysis"
+title = "Matrix Analysis and Optimisation Convergence"
+track = "linear-algebra"
+tier = "research"
+prerequisites = ["la-10-pca"]
+strategy_tags = ["penultimate-step", "recast", "wishful-thinking"]
+concept_tags = ["eigenvalue", "positive-definite", "spectral-theorem"]
+
+[spark]
+scenario = """
+Gradient descent on a quadratic f(x) = (1/2) x^T A x - b^T x converges
+at a rate determined by the condition number kappa(A) = lambda_max /
+lambda_min. A condition number of 1000 means convergence is 1000 times
+slower than optimal. Preconditioning transforms the problem to reduce
+kappa, directly accelerating training. Every large-scale ML optimiser
+(Adam, L-BFGS, natural gradient) is implicitly or explicitly managing
+the condition number of the Hessian. Understanding matrix analysis is
+understanding why some models train in minutes and others take days.
+"""
+industry_domain = "ml_optimisation"
+connection_question = "Why does the condition number control convergence speed? What happens geometrically when kappa is large?"
+
+[ground]
+concept_brief = """
+Matrix analysis studies properties of matrices as operators: norms,
+condition numbers, matrix functions, and perturbation theory. The
+condition number kappa(A) = ||A|| * ||A^{-1}|| measures sensitivity to
+perturbation. For symmetric positive definite matrices, kappa =
+lambda_max / lambda_min. Gradient descent on a quadratic converges as
+(kappa - 1)/(kappa + 1) per step: larger kappa means slower convergence.
+"""
+intuition = """
+A large condition number means the landscape is a narrow valley: steep
+in one direction, shallow in another. Gradient descent zigzags across
+the valley instead of heading straight to the minimum, because the
+gradient points sideways (down the steep wall) rather than along the
+valley floor. Preconditioning rescales the axes to make the valley
+rounder (kappa closer to 1). The spectral theorem tells you exactly
+which axes to rescale and by how much: the eigenvectors and eigenvalues
+of the Hessian.
+"""
+field_tags = ["linear-algebra"]
+
+[[ground.definitions]]
+term = "Condition Number"
+statement = "kappa(A) = ||A|| * ||A^{-1}||. For SPD matrices, kappa = lambda_max / lambda_min. Measures how much output error is amplified relative to input perturbation."
+latex = "\\kappa(A) = \\frac{\\lambda_{\\max}}{\\lambda_{\\min}}"
+
+[[ground.definitions]]
+term = "Convergence Rate"
+statement = "For gradient descent on (1/2) x^T A x - b^T x with step size 2/(lambda_max + lambda_min), the error contracts by factor (kappa-1)/(kappa+1) per iteration."
+
+[[ground.definitions]]
+term = "Preconditioning"
+statement = "Replacing the system Ax = b with M^{-1}Ax = M^{-1}b where M approximates A, reducing the effective condition number."
+
+[[ground.connections]]
+target_concept = "svd"
+relationship = "The condition number in the 2-norm equals sigma_max / sigma_min. The SVD directly reveals the condition number."
+
+[[ground.connections]]
+target_concept = "pca"
+relationship = "PCA reveals the eigenvalue spread of the covariance matrix. A large spread (high condition number) indicates that some directions carry far more variance than others."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A symmetric positive definite matrix A has eigenvalues 100 and 0.1.
+What is the condition number kappa(A)?
+"""
+answer = 1000.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "kappa = lambda_max / lambda_min = 100 / 0.1 = 1000."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Gradient descent on a quadratic with condition number kappa = 99 has
+per-step error contraction ratio (kappa-1)/(kappa+1). After one step,
+the error is multiplied by this ratio. What is the contraction ratio?
+Give your answer to 2 decimal places.
+"""
+answer = 0.98
+tolerance = 0.01
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "(99 - 1)/(99 + 1) = 98/100 = 0.98."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+Gradient descent is converging slowly because the Hessian has a large
+condition number. You want to speed convergence without changing the
+objective. Which strategy best describes the approach?
+"""
+correct_strategy = "wishful-thinking"
+distractors = ["draw-picture", "pigeonhole", "invariant"]
+explanation = """
+Wishful thinking: 'I wish the condition number were 1.' If A were the
+identity, gradient descent would converge in one step. So ask: what
+transformation M makes M^{-1}A close to I? That is preconditioning.
+The wishful-thinking strategy starts from the ideal case and works
+backwards to find a transformation that approximates it. Common
+preconditioners (diagonal, incomplete Cholesky, approximate inverse)
+are all approximations to this ideal.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that for a symmetric positive definite matrix A, the gradient
+descent iteration x_{k+1} = x_k - alpha*(A x_k - b) with optimal step
+size alpha = 2/(lambda_max + lambda_min) satisfies ||e_{k+1}||_A <=
+((kappa-1)/(kappa+1)) * ||e_k||_A, where e_k = x_k - x* and
+||e||_A = sqrt(e^T A e).
+"""
+solution_sketch = """
+Let e_k = x_k - x*. Since Ax* = b, the error update is:
+e_{k+1} = e_k - alpha*A*e_k = (I - alpha*A)*e_k.
+
+By the spectral theorem, A = Q Lambda Q^T. In the eigenbasis:
+e_{k+1} = Q (I - alpha*Lambda) Q^T e_k.
+
+So ||e_{k+1}||_A^2 = e_k^T Q (I-alpha*Lambda) Lambda (I-alpha*Lambda) Q^T e_k.
+
+The A-norm contraction factor is max_i |1 - alpha*lambda_i|. With
+alpha = 2/(lambda_max + lambda_min), the maximum is achieved at the
+extreme eigenvalues and equals (lambda_max - lambda_min)/(lambda_max +
+lambda_min) = (kappa - 1)/(kappa + 1). QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Derived the error recurrence e_{k+1} = (I - alpha A) e_k"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Diagonalised using the spectral theorem"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Identified the contraction factor as max |1 - alpha lambda_i|"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Computed the optimal alpha and resulting ratio (kappa-1)/(kappa+1)"
+weight = 5

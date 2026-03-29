@@ -1,0 +1,141 @@
+id = "la-08-matrix-decompositions"
+title = "Matrix Decompositions and Compression"
+track = "linear-algebra"
+tier = "core"
+prerequisites = ["la-05-eigenvalues"]
+strategy_tags = ["recast", "get-hands-dirty", "penultimate-step"]
+concept_tags = ["svd", "matrix-decomposition", "rank"]
+
+[spark]
+scenario = """
+A 1000x1000 grayscale image is a matrix of pixel intensities. Storing it
+raw takes 1 million numbers. But the SVD factorises this matrix as a sum
+of rank-1 matrices weighted by singular values. Keeping only the top k
+singular values gives a rank-k approximation using only k*(1000+1000+1)
+numbers. For k=50, you store 100,050 numbers instead of 1,000,000 while
+retaining the dominant visual features. This is the foundation of image
+and data compression.
+"""
+industry_domain = "computer_vision"
+connection_question = "Why does truncating small singular values preserve the 'important' structure? What does each singular value represent?"
+
+[ground]
+concept_brief = """
+Matrix decompositions factor a matrix into simpler structured components.
+LU decomposition enables efficient equation solving. QR decomposition
+provides numerical stability for least squares. The SVD (A = U Sigma V^T)
+works for any matrix and reveals the rank, the best low-rank
+approximations (Eckart-Young theorem), and the fundamental subspaces.
+"""
+intuition = """
+Decomposing a matrix is like decomposing a force into components. Each
+factorisation reveals different structure. LU says 'this transformation
+is an upper-triangular step after a lower-triangular step'. QR says
+'this is a rotation after a stretch along axes'. SVD says 'rotate input
+coordinates (V^T), scale along axes (Sigma), then rotate output
+coordinates (U)'. The singular values in Sigma are the stretching
+factors, and dropping the small ones is like ignoring weak forces.
+"""
+field_tags = ["linear-algebra"]
+
+[[ground.definitions]]
+term = "Singular Value Decomposition"
+statement = "For any m x n matrix A, there exist orthogonal matrices U (m x m) and V (n x n) and a diagonal matrix Sigma such that A = U Sigma V^T. The diagonal entries sigma_i are the singular values."
+
+[[ground.definitions]]
+term = "Eckart-Young Theorem"
+statement = "The best rank-k approximation of A (in Frobenius or spectral norm) is obtained by keeping only the top k singular values and their corresponding singular vectors."
+
+[[ground.definitions]]
+term = "LU Decomposition"
+statement = "Factorises a square matrix as A = LU (or PA = LU with pivoting), where L is lower-triangular and U is upper-triangular."
+
+[[ground.connections]]
+target_concept = "eigenvalue"
+relationship = "The singular values of A are the square roots of the eigenvalues of A^T A. For symmetric positive definite matrices, singular values equal eigenvalues."
+
+[[ground.connections]]
+target_concept = "least-squares"
+relationship = "The SVD provides the most numerically stable method for computing least-squares solutions."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A 500x400 image matrix has singular values sigma_1 = 200, sigma_2 = 150,
+sigma_3 = 50, sigma_4 = 10, and the rest are negligible. If you keep
+only the top 2 singular values, how many numbers do you store? (Each
+rank-1 component uses 500 + 400 + 1 numbers.)
+"""
+answer = 1802.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "2 components, each needing 500 + 400 + 1 = 901 numbers. Total = 2 * 901 = 1802."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A matrix A has singular values 6, 3, 2, 1. What is the Frobenius norm
+of A? (Frobenius norm = sqrt of sum of squared singular values.)
+Give your answer to 2 decimal places.
+"""
+answer = 7.07
+tolerance = 0.01
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "||A||_F = sqrt(36 + 9 + 4 + 1) = sqrt(50) = 5*sqrt(2)."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+You need to solve the linear system Ax = b for many different right-hand
+sides b_1, b_2, ..., b_100 with the same matrix A. Which strategy
+minimises total computation?
+"""
+correct_strategy = "penultimate-step"
+distractors = ["contradiction", "extreme-principle", "pigeonhole"]
+explanation = """
+Penultimate step: the penultimate step before solving each system is
+having A in a factored form. If you compute the LU decomposition once
+(O(n^3)), then each subsequent solve is just forward and back
+substitution (O(n^2)). Total cost: O(n^3) + 100*O(n^2) instead of
+100*O(n^3). The insight is to identify what expensive precomputation
+enables cheap repeated use.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that for any matrix A, rank(A) equals the number of nonzero
+singular values of A.
+"""
+solution_sketch = """
+Let A = U Sigma V^T be the SVD with singular values sigma_1 >= ... >=
+sigma_r > 0 = sigma_{r+1} = ... . The column space of A equals the
+column space of U Sigma (since V^T is invertible). The columns of U
+corresponding to nonzero sigma_i span the image of A. Since U has
+orthonormal columns, these r columns are linearly independent.
+Therefore rank(A) = r, the number of nonzero singular values. QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Started from the SVD A = U Sigma V^T"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Observed that V^T is invertible and does not change the column space"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Identified the columns of U Sigma corresponding to nonzero singular values"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded rank equals the count of nonzero singular values"
+weight = 3

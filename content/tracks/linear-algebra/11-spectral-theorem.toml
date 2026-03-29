@@ -1,0 +1,139 @@
+id = "la-11-spectral-theorem"
+title = "Spectral Theorem and Graph Clustering"
+track = "linear-algebra"
+tier = "advanced"
+prerequisites = ["la-05-eigenvalues", "la-06-inner-products"]
+strategy_tags = ["recast", "change-viewpoint", "draw-picture"]
+concept_tags = ["spectral-theorem", "eigenvalue", "positive-definite", "orthogonality"]
+
+[spark]
+scenario = """
+In spectral clustering, you build a graph where nodes are data points
+and edge weights measure similarity. The graph Laplacian L = D - W is
+a real symmetric matrix. By the spectral theorem, its eigenvalues are
+real and its eigenvectors are orthogonal. The smallest nonzero
+eigenvectors (the Fiedler vectors) reveal natural clusters in the data.
+Social networks use this to detect communities, and image segmentation
+algorithms use it to partition pixels into coherent regions.
+"""
+industry_domain = "social_network_analysis"
+connection_question = "Why does the second-smallest eigenvector of the Laplacian reveal the best two-way cut? What does the zero eigenvalue correspond to?"
+
+[ground]
+concept_brief = """
+The spectral theorem states that every real symmetric matrix A has an
+orthonormal basis of eigenvectors with real eigenvalues: A = Q Lambda Q^T
+where Q is orthogonal and Lambda is diagonal. This is the most powerful
+structural result in linear algebra. It guarantees that symmetric
+matrices are diagonalisable, their eigenspaces are orthogonal, and they
+can be completely understood through their eigenvalues.
+"""
+intuition = """
+A symmetric matrix is one that equals its own transpose: the
+transformation treats all directions 'fairly' (no shearing). The
+spectral theorem says such a matrix has a set of perpendicular axes
+along which it only stretches (never rotates). The eigenvalues are the
+stretch factors. This is why symmetric matrices appear everywhere:
+covariance matrices, graph Laplacians, Hessians in optimisation. They
+all have this clean, perpendicular eigenvector structure.
+"""
+field_tags = ["linear-algebra"]
+
+[[ground.definitions]]
+term = "Spectral Theorem"
+statement = "Every real symmetric n x n matrix A can be decomposed as A = Q Lambda Q^T where Q is orthogonal (Q^T Q = I) and Lambda = diag(lambda_1, ..., lambda_n) with all lambda_i real."
+
+[[ground.definitions]]
+term = "Graph Laplacian"
+statement = "L = D - W, where W is the weighted adjacency matrix and D is the diagonal degree matrix. L is always symmetric positive semi-definite."
+
+[[ground.definitions]]
+term = "Fiedler Vector"
+statement = "The eigenvector corresponding to the second-smallest eigenvalue of the graph Laplacian. Its sign pattern reveals a natural bipartition of the graph."
+
+[[ground.connections]]
+target_concept = "positive-definite"
+relationship = "A symmetric matrix is positive definite if and only if all its eigenvalues are positive. The spectral theorem makes this equivalence transparent."
+
+[[ground.connections]]
+target_concept = "pca"
+relationship = "PCA relies on the spectral theorem: the covariance matrix is symmetric, so its eigenvectors are orthogonal principal components."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A graph Laplacian L for a 4-node graph has eigenvalues 0, 1, 3, 4.
+What is the trace of L?
+"""
+answer = 8.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "The trace equals the sum of eigenvalues: 0 + 1 + 3 + 4 = 8."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A symmetric 3x3 matrix has eigenvectors q1, q2, q3 forming an
+orthonormal basis, with eigenvalues 5, 2, -1. What is x^T A x when
+x = q1 + q2?
+"""
+answer = 7.0
+tolerance = 0.0
+points = 10
+
+[[solve.sub_problems.hints]]
+cost = 3
+text = "x^T A x = (q1+q2)^T A (q1+q2) = q1^T(5q1) + q2^T(2q2) + cross terms = 5 + 2 = 7 (cross terms vanish by orthogonality)."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+A social network graph has 10 million nodes. To find natural communities,
+you need the Fiedler vector of the Laplacian. Computing the full
+eigendecomposition is impossible. Which strategy guides the approach?
+"""
+correct_strategy = "recast"
+distractors = ["direct-proof", "extreme-principle", "pigeonhole"]
+explanation = """
+Recast: instead of computing all eigenvalues of a 10M x 10M matrix
+(infeasible), recast the problem as finding just one eigenvector. Use
+the Lanczos algorithm or power iteration on the shifted Laplacian. The
+graph is sparse (each node has few edges), so matrix-vector products are
+cheap (O(edges)). The problem is transformed from 'diagonalise a huge
+matrix' to 'iteratively find one vector', exploiting sparsity.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that all eigenvalues of a real symmetric matrix are real.
+"""
+solution_sketch = """
+Let A be real symmetric and suppose Av = lambda*v with v != 0 (possibly
+complex). Take the conjugate transpose: v*^T A = conj(lambda) v*^T
+(since A = A^T = conj(A) for real A). Multiply on the right by v:
+v*^T A v = conj(lambda) v*^T v. But also v*^T A v = lambda v*^T v.
+So lambda v*^T v = conj(lambda) v*^T v. Since v != 0, v*^T v > 0,
+so lambda = conj(lambda), meaning lambda is real. QED.
+"""
+points = 15
+
+[[solve.sub_problems.rubric]]
+criterion = "Considered potentially complex eigenvalue and eigenvector"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Took the conjugate transpose and used A = A^T"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Showed lambda * (v*^T v) = conj(lambda) * (v*^T v)"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Used v*^T v > 0 to conclude lambda = conj(lambda)"
+weight = 3

@@ -1,0 +1,137 @@
+id = "prob-05-law-of-large-numbers"
+title = "Law of Large Numbers and Monte Carlo"
+track = "probability"
+tier = "core"
+prerequisites = ["prob-03-expected-value", "prob-04-variance"]
+strategy_tags = ["get-hands-dirty", "recast"]
+concept_tags = ["law-of-large-numbers", "monte-carlo", "variance", "expected-value"]
+
+[spark]
+scenario = """
+A game studio needs to estimate the probability that a randomly generated
+dungeon is completable. There is no closed-form formula. Instead, they
+generate 10,000 dungeons and check each one. As n grows, the fraction of
+completable dungeons converges to the true probability. Why does this work?
+"""
+industry_domain = "game_engineering"
+connection_question = "How many samples do you need before you trust the estimate? What guarantees convergence?"
+
+[ground]
+concept_brief = """
+The Law of Large Numbers (LLN) states that the sample average of i.i.d.
+random variables converges to the expected value as the sample size grows.
+The weak form gives convergence in probability; the strong form gives
+almost sure convergence. This is the theoretical foundation of Monte Carlo
+simulation.
+"""
+intuition = """
+Flip a fair coin 10 times and you might get 70% heads. Flip it 10,000
+times and you will be very close to 50%. The LLN says the noise averages
+out. The more samples you take, the more the randomness cancels, and the
+sample mean settles down to the true mean.
+"""
+field_tags = ["probability", "statistics"]
+
+[[ground.definitions]]
+term = "Weak Law of Large Numbers"
+statement = "For i.i.d. random variables with finite mean mu: P(|X_bar_n - mu| > epsilon) -> 0 as n -> infinity."
+
+[[ground.definitions]]
+term = "Chebyshev's Inequality"
+statement = "P(|X - mu| >= k*sigma) <= 1/k^2 for any k > 0."
+latex = "P(|X - \\mu| \\geq k\\sigma) \\leq \\frac{1}{k^2}"
+
+[[ground.connections]]
+target_concept = "central-limit-theorem"
+relationship = "While LLN tells you the sample mean converges, the CLT tells you how fast and what shape the fluctuations take."
+
+[[ground.connections]]
+target_concept = "concentration-inequality"
+relationship = "Concentration inequalities give quantitative bounds on the rate of convergence that LLN guarantees."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Using Chebyshev's inequality: if X has mean 100 and standard deviation 15,
+what is the upper bound on P(|X - 100| >= 45)? Express as a fraction
+(decimal, 4 places).
+"""
+answer = 0.1111
+tolerance = 0.001
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "k = 45/15 = 3. Chebyshev gives P <= 1/k^2."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+You estimate pi by Monte Carlo: throw n points uniformly into the unit
+square and count how many fall in the inscribed quarter-circle. The
+estimator is pi_hat = 4 * (hits/n). If n = 1,000,000, and the true
+variance of a single indicator is p(1-p) where p = pi/4, approximately
+what is the standard deviation of pi_hat? Round to 4 decimal places.
+"""
+answer = 0.0016
+tolerance = 0.0002
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Var(pi_hat) = 16 * p(1-p)/n. Use p = pi/4 ~ 0.7854."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "p(1-p) ~ 0.7854 * 0.2146 ~ 0.1685. Var = 16*0.1685/1000000 ~ 2.696e-6. SD ~ 0.00164."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+To prove the weak LLN from Chebyshev's inequality, which strategy gives
+the cleanest path?
+"""
+correct_strategy = "recast"
+distractors = ["induction", "contradiction", "extreme-principle"]
+explanation = """
+Recast the problem: apply Chebyshev to X_bar_n instead of individual X_i.
+Since Var(X_bar_n) = sigma^2/n, Chebyshev gives P(|X_bar_n - mu| >= eps)
+<= sigma^2/(n*eps^2) -> 0. The key step is recasting from individual
+variables to the sample mean.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove the weak law of large numbers using Chebyshev's inequality.
+Assume X_1, ..., X_n are i.i.d. with mean mu and finite variance sigma^2.
+"""
+solution_sketch = """
+Let X_bar_n = (X_1 + ... + X_n) / n.
+E[X_bar_n] = mu (by linearity).
+Var(X_bar_n) = sigma^2/n (by independence and scaling).
+By Chebyshev: P(|X_bar_n - mu| >= eps) <= Var(X_bar_n)/eps^2 = sigma^2/(n*eps^2).
+As n -> infinity, sigma^2/(n*eps^2) -> 0. QED.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Computed E[X_bar_n] = mu using linearity"
+weight = 4
+
+[[solve.sub_problems.rubric]]
+criterion = "Computed Var(X_bar_n) = sigma^2/n using independence"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied Chebyshev's inequality correctly"
+weight = 5
+
+[[solve.sub_problems.rubric]]
+criterion = "Took the limit and concluded convergence in probability"
+weight = 3
+
+[[solve.sub_problems.rubric]]
+criterion = "Reasoning is clear and complete"
+weight = 3

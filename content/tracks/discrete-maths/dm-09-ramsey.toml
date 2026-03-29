@@ -1,0 +1,130 @@
+id = "dm-09-ramsey"
+title = "Ramsey Theory and Guaranteed Structure"
+track = "discrete-maths"
+tier = "advanced"
+prerequisites = ["dm-02-graphs"]
+strategy_tags = ["pigeonhole", "get-hands-dirty", "draw-picture"]
+concept_tags = ["graph", "combinatorics"]
+
+[spark]
+scenario = """
+In any social network of 6 people, where each pair is either friends or
+strangers, there must exist a group of 3 who are all mutual friends or a group
+of 3 who are all mutual strangers. This is R(3,3) = 6, the smallest Ramsey
+number guaranteeing monochromatic structure. Ramsey theory says that complete
+disorder is impossible once a system is large enough.
+"""
+industry_domain = "social_media"
+connection_question = "Why is computing R(5,5) still an open problem if R(3,3) = 6 is so small?"
+
+[ground]
+concept_brief = """
+Ramsey's theorem states that for any positive integers r and s, there exists
+a minimum number R(r,s) such that any 2-colouring of the edges of K_{R(r,s)}
+contains a red K_r or a blue K_s. The theorem guarantees that sufficiently
+large structures always contain ordered substructures. Computing exact Ramsey
+numbers is notoriously hard: R(3,3) = 6, R(4,4) = 18, but R(5,5) is unknown.
+"""
+intuition = """
+Colour every edge of a complete graph red or blue. Ramsey says you cannot
+avoid a monochromatic clique once the graph is big enough. The proof of
+R(3,3) = 6 uses the pigeonhole principle: pick any vertex, it has 5 edges,
+at least 3 must share a colour, and among those 3 neighbours either a
+monochromatic triangle exists or the triangle they form is the other colour.
+"""
+field_tags = ["combinatorics", "graph-theory", "discrete-mathematics"]
+
+[[ground.definitions]]
+term = "Ramsey Number R(r,s)"
+statement = "The smallest n such that every 2-colouring of K_n contains a red K_r or a blue K_s."
+
+[[ground.definitions]]
+term = "Monochromatic Clique"
+statement = "A complete subgraph whose edges all share the same colour."
+
+[[ground.definitions]]
+term = "Upper Bound"
+statement = "R(r,s) <= R(r-1,s) + R(r,s-1), proved by the pigeonhole argument on vertex neighbourhoods."
+
+[[ground.connections]]
+target_concept = "graph"
+relationship = "Ramsey theory studies unavoidable substructures in edge-coloured complete graphs."
+
+[[ground.connections]]
+target_concept = "counting"
+relationship = "Ramsey bounds use counting arguments and the pigeonhole principle to force monochromatic subgraphs."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Prove or verify: R(3,3) = 6 means that 5 people are NOT enough to guarantee
+a monochromatic triangle. Construct a 2-colouring of K_5 with no
+monochromatic triangle. How many red edges does your colouring use?
+"""
+answer = 5
+tolerance = 0
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Colour K_5 as a 'pentagon plus pentagram': the 5 edges of the outer cycle red, the 5 diagonals blue (or vice versa)."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "Each colour class forms a cycle C_5, which contains no triangle. This uses 5 red and 5 blue edges."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+Using the recursive bound R(r,s) <= R(r-1,s) + R(r,s-1) with R(r,2) = r
+for all r, compute an upper bound for R(3,4).
+"""
+answer = 10
+tolerance = 0
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "R(3,4) <= R(2,4) + R(3,3) = 4 + 6 = 10."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+The proof of R(3,3) = 6 begins by picking a vertex, noting it has 5
+neighbours, and observing at least 3 edges share a colour. Which principle
+drives this step?
+"""
+correct_strategy = "pigeonhole"
+distractors = ["symmetry", "extreme-principle", "invariant"]
+explanation = """
+Five edges from one vertex, two possible colours: by pigeonhole, at least
+ceil(5/2) = 3 edges share the same colour.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that R(3,3) <= 6: in any 2-colouring of K_6, there is a monochromatic
+triangle.
+"""
+solution_sketch = """
+Pick any vertex v. It has 5 edges, each red or blue. By pigeonhole, at least
+3 edges from v share a colour; say edges to u1, u2, u3 are red. Now consider
+the triangle u1-u2-u3. If any edge among {u1u2, u1u3, u2u3} is red, that
+edge together with v forms a red triangle. If none is red, then all three
+are blue, forming a blue triangle. Either way a monochromatic triangle exists.
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Applied pigeonhole to get 3 edges of the same colour from one vertex"
+weight = 7
+
+[[solve.sub_problems.rubric]]
+criterion = "Considered both cases for the edges among the 3 neighbours"
+weight = 7
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded a monochromatic triangle in both cases"
+weight = 6

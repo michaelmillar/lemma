@@ -1,0 +1,146 @@
+id = "dm-01-counting"
+title = "Counting and Feature Combinations"
+track = "discrete-maths"
+tier = "foundation"
+prerequisites = []
+strategy_tags = ["get-hands-dirty", "change-viewpoint"]
+concept_tags = ["counting", "combinatorics", "binomial-coefficient"]
+
+[spark]
+scenario = """
+Your team maintains a SaaS product with 10 independent feature flags. QA needs
+to verify that every possible combination of enabled and disabled flags works
+correctly. How many test configurations are there? What if only combinations
+of exactly 3 flags matter?
+"""
+industry_domain = "software_engineering"
+connection_question = "If you had 20 flags instead of 10, would doubling the flags double the configurations?"
+
+[ground]
+concept_brief = """
+Counting is the backbone of combinatorics. The product rule says that if one
+choice has m options and an independent choice has n options, the pair has
+m * n outcomes. The binomial coefficient C(n,k) counts the ways to choose
+k items from n without regard to order. Together these tools let you enumerate
+configurations, test cases, and possibilities in any discrete system.
+"""
+intuition = """
+Each feature flag is a binary switch: on or off. Ten independent binary
+switches give 2^10 = 1024 combinations, the same as a 10-bit binary number.
+Choosing exactly k flags to enable is asking 'how many k-element subsets
+does a 10-element set have?', answered by the binomial coefficient C(10,k).
+"""
+field_tags = ["combinatorics", "discrete-mathematics", "computer-science"]
+
+[[ground.definitions]]
+term = "Product Rule"
+statement = "If task A has m outcomes and independent task B has n outcomes, doing both has m * n outcomes."
+
+[[ground.definitions]]
+term = "Binomial Coefficient"
+statement = "C(n,k) = n! / (k! * (n-k)!) counts the k-element subsets of an n-element set."
+latex = "\\binom{n}{k} = \\frac{n!}{k!(n-k)!}"
+
+[[ground.definitions]]
+term = "Sum Rule"
+statement = "If tasks A and B are mutually exclusive, the total number of outcomes is m + n."
+
+[[ground.connections]]
+target_concept = "binomial-coefficient"
+relationship = "The binomial coefficient is the primary tool for counting subsets of a given size."
+
+[[ground.connections]]
+target_concept = "inclusion-exclusion"
+relationship = "When choices overlap, inclusion-exclusion corrects the over-count from naive application of the sum rule."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A product has 10 independent feature flags, each either enabled or disabled.
+How many distinct configurations exist?
+"""
+answer = 1024
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "Each flag has 2 states. Apply the product rule across all 10 flags."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "2^10 = 1024."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+How many ways can you choose exactly 3 flags to enable out of 10?
+"""
+answer = 120
+tolerance = 0
+points = 15
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "You need C(10,3) = 10! / (3! * 7!)."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "10 * 9 * 8 / (3 * 2 * 1) = 120."
+
+[[solve.sub_problems]]
+kind = "numerical"
+prompt = """
+A licence plate has 3 uppercase letters followed by 4 digits. How many
+distinct plates are possible?
+"""
+answer = 175760000
+tolerance = 0
+points = 20
+
+[[solve.sub_problems.hints]]
+cost = 5
+text = "26 choices per letter, 10 choices per digit. Apply the product rule."
+
+[[solve.sub_problems.hints]]
+cost = 10
+text = "26^3 * 10^4 = 17576 * 10000 = 175,760,000."
+
+[[solve.sub_problems]]
+kind = "strategy_id"
+prompt = """
+A problem states: 'Show that among any 5 integers, two of them have the same
+remainder when divided by 4.' Which tactic applies?
+"""
+correct_strategy = "pigeonhole"
+distractors = ["symmetry", "invariant", "extreme-principle"]
+explanation = """
+There are only 4 possible remainders (0, 1, 2, 3) but 5 integers. By the
+pigeonhole principle, at least two must share the same remainder.
+"""
+points = 10
+
+[[solve.sub_problems]]
+kind = "proof"
+prompt = """
+Prove that C(n,k) = C(n,n-k) for all 0 <= k <= n using a combinatorial
+(bijection) argument.
+"""
+solution_sketch = """
+C(n,k) counts the ways to choose k items to include from n. Each such choice
+determines a complementary set of n-k items that are excluded. This gives a
+bijection between k-element subsets and (n-k)-element subsets, so C(n,k) = C(n,n-k).
+"""
+points = 20
+
+[[solve.sub_problems.rubric]]
+criterion = "Identified that choosing k items to include uniquely determines n-k items excluded"
+weight = 8
+
+[[solve.sub_problems.rubric]]
+criterion = "Explicitly stated or described the bijection"
+weight = 7
+
+[[solve.sub_problems.rubric]]
+criterion = "Concluded equality of the two binomial coefficients"
+weight = 5
